@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos de GIC",
+    "program": "Programme",
+    "research": "Recherche",
+    "calendar": "Calendrier",
+    "project": "Projet",
+    "facultyStaff": "Faculté et Personnel"
+  },
+  "home": {
+    "hero": {
+      "title": "Ensemble, construire un meilleur avenir pour le Cambodge",
+      "description": "Lorem Ipsum est simplement un texte factice de l'industrie de l'impression et de la composition. Lorem Ipsum est le texte factice standard de l'industrie depuis les années 1500, lorsqu'un imprimeur inconnu a pris une galère de type"
+    },
+    "goals": {
+      "title": "Nos objectifs",
+      "description": "Notre mission principale est de produire des diplômés hautement qualifiés de l'enseignement de premier cycle et supérieur en informatique. Parallèlement, nous nous concentrons également sur la fourniture d'éthique professionnelle et l'encouragement du patriotisme."
+    }
+  },
+  "alumniMessages": {
+    "title": "Messages des anciens et des étudiants"
+  },
+  "projects": {
+    "subtitle": "NOS PROJETS",
+    "title": "Nos derniers projets cool.",
+    "viewWorks": "Voir nos travaux"
+  },
+  "internships": {
+    "title": "Où nos étudiants font-ils leur stage?",
+    "viewEvents": "Voir tous les événements"
+  },
+  "events": {
+    "title": "Événements/Conférences",
+    "description": "Dans l'environnement d'aujourd'hui, accumuler des connaissances finit par éroder votre pouvoir. Si vous savez quelque chose de très important, la façon d'obtenir le pouvoir est de le partager réellement.",
+    "viewAll": "Voir tous les événements"
+  },
+  "partners": {
+    "title": "Nos partenaires universitaires"
+  },
+  "footer": {
+    "links": {
+      "column1": {
+        "title": "Rapports GIC",
+        "studentsAlumni": "Étudiants et anciens",
+        "notableWorks": "Travaux remarquables des étudiants"
+      },
+      "column2": {
+        "title": "Que disent les anciens de GIC?",
+        "awardees": "Lauréats",
+        "scholarships": "Bourses"
+      },
+      "column3": {
+        "title": "Rapports GIC",
+        "studentsAlumni": "Étudiants et anciens",
+        "notableWorks": "Travaux remarquables des étudiants"
+      }
+    }
+  }
+}
+

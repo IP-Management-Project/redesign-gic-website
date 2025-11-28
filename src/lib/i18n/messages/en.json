@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About GIC",
+    "program": "Program",
+    "research": "Research",
+    "calendar": "Calendar",
+    "project": "Project",
+    "facultyStaff": "Faculty & Staff"
+  },
+  "home": {
+    "hero": {
+      "title": "Together, Building a Better Future for Cambodia",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type"
+    },
+    "goals": {
+      "title": "Our Goals",
+      "description": "Our main mission is to produce highly qualified graduates from both undergraduate and higher education in computer science. Meanwhile, we also focus on both providing professional ethics and encouraging patriotism."
+    }
+  },
+  "alumniMessages": {
+    "title": "Messages from alumni and students"
+  },
+  "projects": {
+    "subtitle": "OUR PROJECTS",
+    "title": "Our latest cool projects.",
+    "viewWorks": "View Our Works"
+  },
+  "internships": {
+    "title": "Where Our Students Do Internship?",
+    "viewEvents": "View all Events"
+  },
+  "events": {
+    "title": "Events/Talks",
+    "description": "In today's environment, hoarding knowledge ultimately erodes your power. If you know something very important, the way to get power is by actually sharing it.",
+    "viewAll": "View all events"
+  },
+  "partners": {
+    "title": "Our University Partners"
+  },
+  "footer": {
+    "links": {
+      "column1": {
+        "title": "GIC'S Reports",
+        "studentsAlumni": "Students & Alumni",
+        "notableWorks": "Students' Notable Works"
+      },
+      "column2": {
+        "title": "What alumni say about GIC?",
+        "awardees": "Awardees",
+        "scholarships": "Scholarships"
+      },
+      "column3": {
+        "title": "GIC'S Reports",
+        "studentsAlumni": "Students & Alumni",
+        "notableWorks": "Students' Notable Works"
+      }
+    }
+  }
+}
+
