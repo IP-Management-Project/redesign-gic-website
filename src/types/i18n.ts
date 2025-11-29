@@ -1,4 +1,4 @@
-export type Locale = 'en' | 'km' | 'fr';
+export type Locale = 'en' | 'kh' | 'fr';
 
 export interface Language {
   code: Locale;

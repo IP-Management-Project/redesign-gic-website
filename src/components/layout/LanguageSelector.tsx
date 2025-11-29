@@ -8,7 +8,7 @@ import { cn } from '@/utils/cn';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'km', name: 'Khmer', flag: '🇰🇭' },
+  { code: 'kh', name: 'Khmer', flag: '🇰🇭' },
   { code: 'fr', name: 'French', flag: '🇫🇷' }
 ];
 
