@@ -1,6 +1,11 @@
 import { useTranslations } from 'next-intl';
 import { PartnerCarousel } from '@/components/sections/PartnerCarousel';
 import { universityPartners } from '@/data/partners';
+import { routing } from '@/lib/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export default function PartnersPage() {
   const t = useTranslations('partners');

@@ -1,3 +1,9 @@
+import { routing } from '@/lib/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default function ResearchPage() {
   return (
     <div className="bg-white min-h-screen py-12">

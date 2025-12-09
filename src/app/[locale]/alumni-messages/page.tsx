@@ -2,6 +2,11 @@ import { useTranslations } from 'next-intl';
 import { TestimonialCard } from '@/components/sections/TestimonialCard';
 import { testimonials } from '@/data/testimonials';
 import { PaginationDots } from '@/components/ui/PaginationDots';
+import { routing } from '@/lib/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export default function AlumniMessagesPage() {
   const t = useTranslations('alumniMessages');

@@ -1,6 +1,11 @@
 import { useTranslations } from 'next-intl';
 import { EventCard } from '@/components/sections/EventCard';
 import { events } from '@/data/events';
+import { routing } from '@/lib/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export default function EventsPage() {
   const t = useTranslations('events');

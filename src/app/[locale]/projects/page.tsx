@@ -2,6 +2,11 @@ import { useTranslations } from 'next-intl';
 import { ProjectCard } from '@/components/sections/ProjectCard';
 import { projects } from '@/data/projects';
 import { Button } from '@/components/ui/Button';
+import { routing } from '@/lib/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export default function ProjectsPage() {
   const t = useTranslations('projects');
