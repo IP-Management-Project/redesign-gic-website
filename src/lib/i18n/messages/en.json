@@ -2,11 +2,45 @@
   "nav": {
     "home": "Home",
     "about": "About GIC",
-    "program": "Program",
+    "program": "Programs",
     "research": "Research",
     "calendar": "Calendar",
     "project": "Project",
-    "facultyStaff": "Faculty & Staff"
+    "facultyStaff": "Faculty & Staff",
+    "aboutSub": {
+      "whoWeAre": "Who we are?",
+      "ourMissions": "Our missions",
+      "ourVisions": "Our visions",
+      "ourService": "Our Service"
+    },
+    "programSub": {
+      "assosiate": "Associate",
+      "engineer": "Engineer",
+      "master": "Master",
+      "doctor": "Doctor"
+    },
+    "researchSub": {
+      "laboratory": "Laboratory",
+      "publications": "Publications",
+      "softwareTools": "Software & Tools"
+    },
+    "projectSub": {
+      "incubationCenter": "Incubation Center",
+      "erasmusAlien": "Erasmus + KA2 ALIEN",
+      "erasmusMontus": "Erasmus + KA2 MONTUS",
+      "erasmusHitihe": "Erasmus + KA2 HITIHE",
+      "others": "Others"
+    },
+    "calendarSub": {
+      "academicCalendar": "Academic Calendar",
+      "seminarEvent": "Seminar/Event",
+      "timetable": "Timetable"
+    },
+    "facultyStaffSub": {
+      "staff": "Staff",
+      "staffMobility": "Staff's Mobility/Capacity Building",
+      "guestLecturer": "Guest Lecturer/Researcher"
+    }
   },
   "home": {
     "hero": {
