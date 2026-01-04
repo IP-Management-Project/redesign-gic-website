@@ -3,9 +3,10 @@ import { cn } from "@/utils/cn";
 
 interface GICLogoProps {
   className?: string;
+  showText?: boolean;
 }
 
-export function GICLogo({ className }: GICLogoProps) {
+export function GICLogo({ className, showText = true }: GICLogoProps) {
   return (
     <div className={cn("flex flex-col items-center", className)}>
       <div className="flex items-center gap-3">
@@ -27,11 +28,12 @@ export function GICLogo({ className }: GICLogoProps) {
           className="max-h-14 w-auto object-contain"
         />
       </div>
-      
-      <p className="mt-1 text-center max-w-lg hidden sm:block">
-        Département de Génie Informatique et Communication<br />
-        Department of Information and Communication Engineering
-      </p>
+      {showText && (
+        <p className="mt-1 text-center max-w-lg hidden sm:block">
+          Département de Génie Informatique et Communication<br />
+          Department of Information and Communication Engineering
+        </p>
+      )}
     </div>
   );
 }

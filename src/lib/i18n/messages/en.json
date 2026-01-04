@@ -44,12 +44,33 @@
   },
   "home": {
     "hero": {
+      "label": "GIC Highlights",
       "title": "Together, Building a Better Future for Cambodia",
       "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type"
     },
     "goals": {
       "title": "Our Goals",
       "description": "Our main mission is to produce highly qualified graduates from both undergraduate and higher education in computer science. Meanwhile, we also focus on both providing professional ethics and encouraging patriotism."
+    },
+    "exploreGIC": {
+      "title": "Explore GIC in minutes",
+      "videoUrl": "https://www.youtube.com/embed/WkctD4PZWyE",
+      "futureStudents": {
+        "title": "Future Students",
+        "description": "We value the most professionalism, morality, and patriotism."
+      },
+      "academicPrograms": {
+        "title": "Academic Programs",
+        "description": "Our curriculum is focus on solid foundation and new technology trend that not only meets the current market need, but also allows students to further their study."
+      },
+      "teachingMethodologies": {
+        "title": "Teaching Methodologies",
+        "description": "There is no better way to understand GIC than by joining us."
+      },
+      "careerOpportunities": {
+        "title": "Career Opportunities",
+        "description": "Our alumni work in almost every tech companies in the city."
+      }
     }
   },
   "alumniMessages": {
@@ -57,11 +78,12 @@
   },
   "projects": {
     "subtitle": "OUR PROJECTS",
-    "title": "Our latest cool projects.",
+    "title": "Our latest projects.",
     "viewWorks": "View Our Works"
   },
   "internships": {
-    "title": "Where Our Students Do Internship?",
+    "title": "Where Our Students Do Internships?",
+    "description": "Our students gain practical experience through internships with leading companies and organizations in Cambodia and internationally.",
     "viewEvents": "View all Events"
   },
   "events": {
@@ -70,7 +92,8 @@
     "viewAll": "View all events"
   },
   "partners": {
-    "title": "Our University Partners"
+    "title": "Our University Partners",
+    "description": "We collaborate with leading universities and institutions worldwide to provide our students with global opportunities and quality education."
   },
   "footer": {
     "links": {

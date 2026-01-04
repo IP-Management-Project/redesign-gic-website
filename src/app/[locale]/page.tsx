@@ -6,6 +6,7 @@ import { InternshipsSection } from '@/components/sections/InternshipsSection';
 import { EventsSection } from '@/components/sections/EventsSection';
 import { PartnersSection } from '@/components/sections/PartnersSection';
 import { routing } from '@/lib/i18n/routing';
+import { ExplorGICSection } from '@/components/sections/ExplorGICSection';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -16,10 +17,11 @@ export default function HomePage() {
     <>
       <HeroSection />
       <GoalsSection />
+      <ExplorGICSection />
       <AlumniMessagesSection />
       <ProjectsSection />
-      <InternshipsSection />
       <EventsSection />
+      <InternshipsSection />
       <PartnersSection />
     </>
   );
