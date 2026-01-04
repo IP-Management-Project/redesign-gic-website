@@ -44,12 +44,33 @@
   },
   "home": {
     "hero": {
+      "label": "Temps forts du GIC",
       "title": "Ensemble, construire un meilleur avenir pour le Cambodge",
       "description": "Lorem Ipsum est simplement un texte factice de l'industrie de l'impression et de la composition. Lorem Ipsum est le texte factice standard de l'industrie depuis les années 1500, lorsqu'un imprimeur inconnu a pris une galère de type"
     },
     "goals": {
       "title": "Nos objectifs",
       "description": "Notre mission principale est de produire des diplômés hautement qualifiés de l'enseignement de premier cycle et supérieur en informatique. Parallèlement, nous nous concentrons également sur la fourniture d'éthique professionnelle et l'encouragement du patriotisme."
+    },
+    "exploreGIC": {
+      "title": "Découvrez le GIC en quelques minutes",
+      "videoUrl": "https://www.youtube.com/embed/WkctD4PZWyE",
+      "futureStudents": {
+        "title": "Futurs étudiants",
+        "description": "Nous valorisons le plus le professionnalisme, la moralité et le patriotisme."
+      },
+      "academicPrograms": {
+        "title": "Programmes académiques",
+        "description": "Notre programme se concentre sur des bases solides et les nouvelles tendances technologiques qui répondent non seulement aux besoins actuels du marché, mais permettent également aux étudiants de poursuivre leurs études."
+      },
+      "teachingMethodologies": {
+        "title": "Méthodologies d'enseignement",
+        "description": "Il n'y a pas de meilleur moyen de comprendre le GIC qu'en nous rejoignant."
+      },
+      "careerOpportunities": {
+        "title": "Opportunités de carrière",
+        "description": "Nos anciens travaillent dans presque toutes les entreprises technologiques de la ville."
+      }
     }
   },
   "alumniMessages": {
@@ -62,6 +83,7 @@
   },
   "internships": {
     "title": "Où nos étudiants font-ils leur stage?",
+    "description": "Nos étudiants acquièrent une expérience pratique grâce à des stages auprès d'entreprises et d'organisations de premier plan au Cambodge et à l'international.",
     "viewEvents": "Voir tous les événements"
   },
   "events": {
@@ -70,7 +92,8 @@
     "viewAll": "Voir tous les événements"
   },
   "partners": {
-    "title": "Nos partenaires universitaires"
+    "title": "Nos partenaires universitaires",
+    "description": "Nous collaborons avec des universités et des institutions de premier plan dans le monde pour offrir à nos étudiants des opportunités mondiales et une éducation de qualité."
   },
   "footer": {
     "links": {

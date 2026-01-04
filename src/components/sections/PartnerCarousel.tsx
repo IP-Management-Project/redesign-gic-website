@@ -1,59 +1,63 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { Partner } from '@/types/content';
-import { PaginationDots } from '@/components/ui/PaginationDots';
+import { motion } from 'framer-motion';
 
 interface PartnerCarouselProps {
   partners: Partner[];
-  itemsPerPage?: number;
 }
 
 export function PartnerCarousel({
-  partners,
-  itemsPerPage = 4
+  partners
 }: PartnerCarouselProps) {
-  const [currentPage, setCurrentPage] = useState(0);
-  const totalPages = Math.ceil(partners.length / itemsPerPage);
-
-  const currentPartners = partners.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
+  // Duplicate partners for infinite scroll effect
+  const extendedPartners = [...partners, ...partners];
 
   return (
-    <div>
-      <div className="bg-white rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {currentPartners.map((partner) => (
-          <div
-            key={partner.id}
-            className="flex flex-col items-center justify-center"
-          >
-            <div className="relative w-full h-24 mb-4">
+    <div className="w-full">
+      {/* Carousel Container */}
+      <div className="overflow-hidden">
+        <motion.div
+          className="flex gap-12 lg:gap-16 justify-start items-center"
+          initial={{ x: 0 }}
+          animate={{ x: -1500 }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: 'linear',
+            repeatType: 'loop'
+          }}
+        >
+          {extendedPartners.map((partner, index) => (
+            <motion.div
+              key={`${partner.id}-${index}`}
+              className="flex-shrink-0 relative w-32 h-32 lg:w-40 lg:h-40 group hover:scale-110 duration-300"
+              whileHover={{ scale: 1.2 }}
+            >
               <Image
                 src={partner.logo}
                 alt={partner.name}
                 fill
                 className="object-contain"
               />
-            </div>
-            {partner.description && (
-              <p className="text-sm text-gray-600 text-center">
-                {partner.description}
-              </p>
-            )}
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-      {totalPages > 1 && (
-        <div className="mt-6">
-          <PaginationDots
-            total={totalPages}
-            current={currentPage}
-          />
-        </div>
-      )}
+
+      {/* Footer Info */}
+      <motion.div
+        className="mt-12 text-center"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-gray-600 text-sm">
+          Partnering with {partners.length}+ leading universities worldwide
+        </p>
+      </motion.div>
     </div>
   );
 }

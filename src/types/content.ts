@@ -12,6 +12,7 @@ export interface Project {
   description: string;
   image: string;
   deviceType: 'laptop' | 'mobile';
+  slug?: string;
 }
 
 export interface Event {

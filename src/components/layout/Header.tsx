@@ -29,10 +29,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-start justify-between py-4">
+        <div className="flex items-center justify-between py-4 gap-8">
           <GICLogo />
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center flex-1 justify-center">
             <Navigation openDropdown={openNavDropdown} setOpenDropdown={handleNavDropdownOpen} />
+          </div>
+          <div className="hidden md:flex items-center gap-4">
             <LanguageSelector isOpen={isLangOpen} setIsOpen={handleLangOpen} />
           </div>
           <div className="md:hidden">

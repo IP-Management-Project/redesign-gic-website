@@ -1,15 +1,19 @@
+"use client";
+
 import { cn } from '@/utils/cn';
 
 interface PaginationDotsProps {
   total: number;
   current: number;
   className?: string;
+  onSelect?: (index: number) => void;
 }
 
 export function PaginationDots({
   total,
   current,
-  className
+  className,
+  onSelect
 }: PaginationDotsProps) {
   return (
     <div className={cn('flex gap-2 justify-center', className)}>
@@ -22,7 +26,10 @@ export function PaginationDots({
               ? 'bg-blue-600'
               : 'bg-gray-300 hover:bg-gray-400'
           )}
-          aria-label={`Go to page ${index + 1}`}
+          type="button"
+          aria-label={`Go to slide ${index + 1}`}
+          aria-current={index === current}
+          onClick={() => onSelect?.(index)}
         />
       ))}
     </div>
