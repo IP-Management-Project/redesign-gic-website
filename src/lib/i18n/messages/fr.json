@@ -2,11 +2,45 @@
   "nav": {
     "home": "Accueil",
     "about": "À propos de GIC",
-    "program": "Programme",
+    "program": "Programmes",
     "research": "Recherche",
     "calendar": "Calendrier",
     "project": "Projet",
-    "facultyStaff": "Faculté et Personnel"
+    "facultyStaff": "Faculté et Personnel",
+    "aboutSub": {
+      "whoWeAre": "Qui sommes-nous?",
+      "ourMissions": "Nos missions",
+      "ourVisions": "Nos visions",
+      "ourService": "Notre service"
+    },
+    "programSub": {
+      "assosiate": "Associé",
+      "engineer": "Ingénieur",
+      "master": "Master",
+      "doctor": "Doctorat"
+    },
+    "researchSub": {
+      "laboratory": "Laboratoire",
+      "publications": "Publications",
+      "softwareTools": "Logiciels et outils"
+    },
+    "projectSub": {
+      "incubationCenter": "Centre d'incubation",
+      "erasmusAlien": "Erasmus + KA2 ALIEN",
+      "erasmusMontus": "Erasmus + KA2 MONTUS",
+      "erasmusHitihe": "Erasmus + KA2 HITIHE",
+      "others": "Autres"
+    },
+    "calendarSub": {
+      "academicCalendar": "Calendrier académique",
+      "seminarEvent": "Séminaire/Événement",
+      "timetable": "Emploi du temps"
+    },
+    "facultyStaffSub": {
+      "staff": "Personnel",
+      "staffMobility": "Mobilité/Renforcement des capacités du personnel",
+      "guestLecturer": "Conférencier/Chercheur invité"
+    }
   },
   "home": {
     "hero": {

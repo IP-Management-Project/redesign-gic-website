@@ -2,11 +2,45 @@
   "nav": {
     "home": "ទំព័រដើម",
     "about": "អំពី GIC",
-    "program": "កម្មវិធី",
+    "program": "កម្មវិធីសិក្សា",
     "research": "ការស្រាវជ្រាវ",
     "calendar": "ប្រតិទិន",
     "project": "គម្រោង",
-    "facultyStaff": "គ្រូបង្រៀន និងបុគ្គលិក"
+    "facultyStaff": "គ្រូបង្រៀន និងបុគ្គលិក",
+    "aboutSub": {
+      "whoWeAre": "យើងជានរណា?",
+      "ourMissions": "បេសកកម្មរបស់យើង",
+      "ourVisions": "ចក្ខុវិស័យរបស់យើង",
+      "ourService": "សេវាកម្មរបស់យើង"
+    },
+    "programSub": {
+      "assosiate": "សមាជិក",
+      "engineer": "វិស្វករ",
+      "master": "អនុបណ្ឌិត",
+      "doctor": "ឧបាធ្យាយ"
+    },
+    "researchSub": {
+      "laboratory": "មន្ទីរពិសោធន៍",
+      "publications": "ការបោះពុម្ពផ្សាយ",
+      "softwareTools": "កម្មវិធី និងឧបករណ៍"
+    },
+    "projectSub": {
+      "incubationCenter": "មជ្ឈមណ្ឌលភ្ញៀវ",
+      "erasmusAlien": "Erasmus + KA2 ALIEN",
+      "erasmusMontus": "Erasmus + KA2 MONTUS",
+      "erasmusHitihe": "Erasmus + KA2 HITIHE",
+      "others": "ផ្សេងៗ"
+    },
+    "calendarSub": {
+      "academicCalendar": "ប្រតិទិនសិក្សា",
+      "seminarEvent": "សិក្ខាសាលា/ព្រឹត្តិការណ៍",
+      "timetable": "កាលវិភាគ"
+    },
+    "facultyStaffSub": {
+      "staff": "បុគ្គលិក",
+      "staffMobility": "ការចល័ត/ការកសាងសមត្ថភាពបុគ្គលិក",
+      "guestLecturer": "សាស្ត្រាចារ្យ/អ្នកស្រាវជ្រាវភ្ញៀវ"
+    }
   },
   "home": {
     "hero": {
