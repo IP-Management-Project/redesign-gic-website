@@ -33,7 +33,7 @@ export default async function ResearchProjectPage({
         <Link as={NextLink} href={localizeHref(locale, "/faculty-staff")}>
           {page.links.team}
         </Link>
-        <Link as={NextLink} href={localizeHref(locale, "/student-life/student-projects")}>
+        <Link as={NextLink} href={localizeHref(locale, "/student/student-projects")}>
           {page.links.studentProjects}
         </Link>
       </div>

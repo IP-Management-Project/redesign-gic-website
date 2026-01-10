@@ -91,7 +91,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         { label: "Program", href: "/program" },
         { label: "Research", href: "/research" },
         { label: "Faculty & Staff", href: "/faculty-staff" },
-        { label: "Student Life", href: "/student-life" },
+        { label: "Student", href: "/student" },
         { label: "News & Events", href: "/news-events" },
         { label: "About", href: "/about" },
       ],
@@ -99,7 +99,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         { label: "Program", href: "/program" },
         { label: "Research", href: "/research" },
         { label: "Faculty & Staff", href: "/faculty-staff" },
-        { label: "Student Life", href: "/student-life" },
+        { label: "Student", href: "/student" },
         { label: "News & Events", href: "/news-events" },
         { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
@@ -119,7 +119,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         "Global Innovation Center for engineering education, research, and student life.",
       ctas: {
         primary: { label: "Explore Programs", href: "/program" },
-        secondary: { label: "Student Life", href: "/student-life" },
+        secondary: { label: "Student", href: "/student" },
       },
       highlights: [
         {
@@ -213,15 +213,15 @@ const contentByLocale: Record<Locale, SiteContent> = {
         ],
       },
       studentLife: {
-        title: "Student Life",
+        title: "Student",
         description:
           "Exchange opportunities, student projects, testimonials, and campus experiences.",
         cards: [
-          { label: "Exchange", href: "/student-life/exchange" },
-          { label: "Testimonials", href: "/student-life/testimonials" },
-          { label: "Student Projects", href: "/student-life/student-projects" },
-          { label: "Clubs & Communities", href: "/student-life/clubs-communities" },
-          { label: "Gallery", href: "/student-life/gallery" },
+          { label: "Exchange", href: "/student/exchange" },
+          { label: "Testimonials", href: "/student/testimonials" },
+          { label: "Student Projects", href: "/student/student-projects" },
+          { label: "Clubs & Communities", href: "/student/clubs-communities" },
+          { label: "Gallery", href: "/student/gallery" },
         ],
       },
     },
@@ -258,7 +258,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         { label: "កម្មវិធី", href: "/program" },
         { label: "ស្រាវជ្រាវ", href: "/research" },
         { label: "គ្រូបង្រៀន និងបុគ្គលិក", href: "/faculty-staff" },
-        { label: "ជីវិតនិស្សិត", href: "/student-life" },
+        { label: "និស្សិត", href: "/student" },
         { label: "ព័ត៌មាន និងព្រឹត្តិការណ៍", href: "/news-events" },
         { label: "អំពីយើង", href: "/about" },
       ],
@@ -266,7 +266,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         { label: "កម្មវិធី", href: "/program" },
         { label: "ស្រាវជ្រាវ", href: "/research" },
         { label: "គ្រូបង្រៀន និងបុគ្គលិក", href: "/faculty-staff" },
-        { label: "ជីវិតនិស្សិត", href: "/student-life" },
+        { label: "និស្សិត", href: "/student" },
         { label: "ព័ត៌មាន និងព្រឹត្តិការណ៍", href: "/news-events" },
         { label: "អំពីយើង", href: "/about" },
         { label: "ទំនាក់ទំនង", href: "/contact" },
@@ -286,7 +286,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         "មជ្ឈមណ្ឌលនវានុវត្តន៍សកល សម្រាប់ការអប់រំវិស្វកម្ម ការស្រាវជ្រាវ និងជីវិតនិស្សិត។",
       ctas: {
         primary: { label: "ស្វែងរកកម្មវិធី", href: "/program" },
-        secondary: { label: "ជីវិតនិស្សិត", href: "/student-life" },
+        secondary: { label: "និស្សិត", href: "/student" },
       },
       highlights: [
         {
@@ -380,15 +380,15 @@ const contentByLocale: Record<Locale, SiteContent> = {
         ],
       },
       studentLife: {
-        title: "ជីវិតនិស្សិត",
+        title: "និស្សិត",
         description:
           "ឱកាសផ្លាស់ប្តូរ គម្រោងនិស្សិត សក្ខីកម្ម និងបទពិសោធន៍ក្នុងមហាវិទ្យាល័យ។",
         cards: [
-          { label: "ការផ្លាស់ប្តូរ", href: "/student-life/exchange" },
-          { label: "សក្ខីកម្ម", href: "/student-life/testimonials" },
-          { label: "គម្រោងនិស្សិត", href: "/student-life/student-projects" },
-          { label: "ក្លឹប និងសហគមន៍", href: "/student-life/clubs-communities" },
-          { label: "វិចិត្រសាល", href: "/student-life/gallery" },
+          { label: "ការផ្លាស់ប្តូរ", href: "/student/exchange" },
+          { label: "សក្ខីកម្ម", href: "/student/testimonials" },
+          { label: "គម្រោងនិស្សិត", href: "/student/student-projects" },
+          { label: "ក្លឹប និងសហគមន៍", href: "/student/clubs-communities" },
+          { label: "វិចិត្រសាល", href: "/student/gallery" },
         ],
       },
     },
