@@ -29,7 +29,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
         <Link as={NextLink} href={localizeHref(locale, "/research/publications")}>
           {page.links.publications}
         </Link>
-        <Link as={NextLink} href={localizeHref(locale, "/student-life/student-projects")}>
+        <Link as={NextLink} href={localizeHref(locale, "/student/student-projects")}>
           {page.links.studentProjects}
         </Link>
       </div>

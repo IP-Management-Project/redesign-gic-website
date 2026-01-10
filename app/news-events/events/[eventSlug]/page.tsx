@@ -26,7 +26,7 @@ export default async function EventPage({ params }: EventPageProps) {
         <Link as={NextLink} href={localizeHref(locale, "/news-events/calendar")}>
           {page.links.calendar}
         </Link>
-        <Link as={NextLink} href={localizeHref(locale, "/student-life")}>
+        <Link as={NextLink} href={localizeHref(locale, "/student")}>
           {page.links.studentLife}
         </Link>
       </div>

@@ -31,7 +31,7 @@ export default async function TestimonialPage({ params }: TestimonialPageProps) 
         <Link as={NextLink} href={localizeHref(locale, "/research/labs")}>
           {page.links.lab}
         </Link>
-        <Link as={NextLink} href={localizeHref(locale, "/student-life/student-projects")}>
+        <Link as={NextLink} href={localizeHref(locale, "/student/student-projects")}>
           {page.links.studentProjects}
         </Link>
       </div>
