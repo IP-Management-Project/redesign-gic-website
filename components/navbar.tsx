@@ -15,9 +15,8 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import { getSiteContent } from "@/content/site-content";
-import { localizeHref } from "@/lib/i18n";
+import { localeLabels, locales, localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
-import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
 
@@ -52,7 +51,19 @@ export const Navbar = async () => {
           <div className="flex flex-wrap items-center justify-between gap-3 py-2 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <span className="text-default-500">{content.topBar.languageLabel}</span>
-              <LanguageSwitch currentLocale={locale} />
+              <div className="flex items-center gap-2">
+                {locales.map((language) => (
+                  <Link
+                    key={language}
+                    as={NextLink}
+                    className="text-default-600 hover:text-primary"
+                    href={localizeHref(language, "/")}
+                    size="sm"
+                  >
+                    {localeLabels[language]}
+                  </Link>
+                ))}
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-4">
