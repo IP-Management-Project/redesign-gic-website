@@ -1,13 +1,16 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function VisionPage() {
+export default async function VisionPage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.about.vision;
+
   return (
     <div>
-      <h1 className={title()}>Vision</h1>
+      <h1 className={title()}>{page.title}</h1>
       <p className={subtitle({ class: "mt-4" })}>
-        Build a globally connected engineering department that empowers students
-        with real-world experience, research excellence, and industry-ready
-        skills.
+        {page.description}
       </p>
     </div>
   );

@@ -2,26 +2,32 @@ import { Link } from "@heroui/link";
 import NextLink from "next/link";
 
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { localizeHref } from "@/lib/i18n";
+import { getLocale } from "@/lib/server-locale";
 
 type EventPageProps = {
   params: { eventSlug: string };
 };
 
-export default function EventPage({ params }: EventPageProps) {
+export default async function EventPage({ params }: EventPageProps) {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.newsEvents.eventDetail;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
         <h1 className={title()}>{params.eventSlug}</h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Event details, agenda, and related resources.
+          {page.description}
         </p>
       </div>
       <div className="flex flex-wrap gap-4 text-sm">
-        <Link as={NextLink} href="/news-events/calendar">
-          View calendar
+        <Link as={NextLink} href={localizeHref(locale, "/news-events/calendar")}>
+          {page.links.calendar}
         </Link>
-        <Link as={NextLink} href="/student-life">
-          Student life
+        <Link as={NextLink} href={localizeHref(locale, "/student-life")}>
+          {page.links.studentLife}
         </Link>
       </div>
     </section>

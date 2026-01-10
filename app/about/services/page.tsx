@@ -1,12 +1,16 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.about.services;
+
   return (
     <div>
-      <h1 className={title()}>Services</h1>
+      <h1 className={title()}>{page.title}</h1>
       <p className={subtitle({ class: "mt-4" })}>
-        GIC supports advising, partnerships, and innovation services that help
-        students, faculty, and industry collaborators thrive.
+        {page.description}
       </p>
     </div>
   );

@@ -2,22 +2,28 @@ import { Link } from "@heroui/link";
 import NextLink from "next/link";
 
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { localizeHref } from "@/lib/i18n";
+import { getLocale } from "@/lib/server-locale";
 
-export default function TestimonialsPage() {
+export default async function TestimonialsPage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.studentLife.testimonials;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>Testimonials</h1>
+        <h1 className={title()}>{page.title}</h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Stories from students, alumni, and exchange participants.
+          {page.description}
         </p>
       </div>
       <Link
         as={NextLink}
         className="text-sm text-default-600 hover:text-primary"
-        href="/student-life/testimonials/featured-student"
+        href={localizeHref(locale, page.featured.href)}
       >
-        Read a featured testimonial
+        {page.featured.label}
       </Link>
     </section>
   );
