@@ -1,24 +1,29 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "GIC Engineering",
+  description:
+    "Global Innovation Center for engineering education, research, and student life.",
   navItems: [
     {
-      label: "Home",
-      href: "/",
+      label: "Program",
+      href: "/program",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Research",
+      href: "/research",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Faculty & Staff",
+      href: "/faculty-staff",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: "Student Life",
+      href: "/student-life",
+    },
+    {
+      label: "News & Events",
+      href: "/news-events",
     },
     {
       label: "About",
@@ -27,43 +32,71 @@ export const siteConfig = {
   ],
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: "Program",
+      href: "/program",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "Research",
+      href: "/research",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "Faculty & Staff",
+      href: "/faculty-staff",
     },
     {
-      label: "Team",
-      href: "/team",
+      label: "Student Life",
+      href: "/student-life",
+    },
+    {
+      label: "News & Events",
+      href: "/news-events",
+    },
+    {
+      label: "About",
+      href: "/about",
+    },
+    {
+      label: "Contact",
+      href: "/contact",
+    },
+    {
+      label: "Apply",
+      href: "/apply",
     },
     {
       label: "Calendar",
-      href: "/calendar",
+      href: "/news-events/calendar",
     },
     {
-      label: "Settings",
-      href: "/settings",
+      label: "Publications",
+      href: "/research/publications",
+    },
+  ],
+  utilityLinks: [
+    {
+      label: "Apply",
+      href: "/apply",
     },
     {
-      label: "Help & Feedback",
-      href: "/help-feedback",
+      label: "Calendar",
+      href: "/news-events/calendar",
     },
     {
-      label: "Logout",
-      href: "/logout",
+      label: "Publications",
+      href: "/research/publications",
+    },
+  ],
+  languages: [
+    {
+      label: "EN",
+      href: "/en",
+    },
+    {
+      label: "KH",
+      href: "/km",
     },
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
+    contactEmail: "info@gic.example",
   },
 };

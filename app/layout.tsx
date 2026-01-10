@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
+import NextLink from "next/link";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
@@ -47,16 +48,21 @@ export default function RootLayout({
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://heroui.com?utm_source=next-app-template"
-                title="heroui.com homepage"
-              >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">HeroUI</p>
-              </Link>
+            <footer className="w-full border-t border-default-200/70 py-6">
+              <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-6 text-sm text-default-600 md:flex-row">
+                <p>© {new Date().getFullYear()} GIC Engineering.</p>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link as={NextLink} href="/contact">
+                    Contact
+                  </Link>
+                  <Link as={NextLink} href="/apply">
+                    Apply
+                  </Link>
+                  <Link as={NextLink} href="/news-events/calendar">
+                    Calendar
+                  </Link>
+                </div>
+              </div>
             </footer>
           </div>
         </Providers>
