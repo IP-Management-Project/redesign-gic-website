@@ -1,18 +1,23 @@
 import { title, subtitle } from "@/components/primitives";
 
-import { siteConfig } from "@/config/site";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getLocale();
+  const content = getSiteContent(locale);
+  const page = content.contact;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>Contact</h1>
+        <h1 className={title()}>{page.title}</h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Reach out to our team for admissions, partnerships, or media requests.
+          {page.description}
         </p>
       </div>
       <div className="text-sm text-default-600">
-        Email: {siteConfig.links.contactEmail}
+        {page.emailLabel}: {page.email}
       </div>
     </section>
   );

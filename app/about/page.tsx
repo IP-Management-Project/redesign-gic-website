@@ -2,22 +2,28 @@ import { Link } from "@heroui/link";
 import NextLink from "next/link";
 
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { localizeHref } from "@/lib/i18n";
+import { getLocale } from "@/lib/server-locale";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const locale = await getLocale();
+  const content = getSiteContent(locale);
+  const page = content.pages.about;
+
   return (
     <div>
-      <h1 className={title()}>About GIC</h1>
+      <h1 className={title()}>{page.title}</h1>
       <p className={subtitle({ class: "mt-4" })}>
-        Learn more about our mission, vision, and the services that support our
-        community.
+        {page.description}
       </p>
       <div className="mt-6 flex flex-wrap gap-4 text-sm text-default-600">
-        {[
-          { label: "Mission", href: "/about/mission" },
-          { label: "Vision", href: "/about/vision" },
-          { label: "Services", href: "/about/services" },
-        ].map((link) => (
-          <Link key={link.href} as={NextLink} href={link.href}>
+        {page.links?.map((link) => (
+          <Link
+            key={link.href}
+            as={NextLink}
+            href={localizeHref(locale, link.href)}
+          >
             {link.label}
           </Link>
         ))}
