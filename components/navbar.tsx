@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -12,16 +14,18 @@ import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 import { getSiteContent } from "@/content/site-content";
-import { localeLabels, locales, localizeHref } from "@/lib/i18n";
-import { getLocale } from "@/lib/server-locale";
+import { defaultLocale, localeLabels, locales, localizeHref, stripLocaleFromPathname } from "@/lib/i18n";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
 
-export const Navbar = async () => {
-  const locale = await getLocale();
+export const Navbar = () => {
+  const pathname = usePathname() ?? "/";
+  const { locale: routeLocale, pathname: basePath } = stripLocaleFromPathname(pathname);
+  const locale = routeLocale ?? defaultLocale;
   const content = getSiteContent(locale);
   const searchInput = (
     <Input
@@ -57,7 +61,7 @@ export const Navbar = async () => {
                     key={language}
                     as={NextLink}
                     className="text-default-600 hover:text-primary"
-                    href={localizeHref(language, "/")}
+                    href={localizeHref(language, basePath)}
                     size="sm"
                   >
                     {localeLabels[language]}
