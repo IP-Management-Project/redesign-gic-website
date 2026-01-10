@@ -1,12 +1,17 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function StudentLifeGalleryPage() {
+export default async function StudentLifeGalleryPage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.studentLife.gallery;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>Gallery</h1>
+        <h1 className={title()}>{page.title}</h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Photos and videos from labs, events, and student projects.
+          {page.description}
         </p>
       </div>
     </section>

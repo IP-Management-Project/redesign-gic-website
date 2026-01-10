@@ -1,12 +1,16 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function MissionPage() {
+export default async function MissionPage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.about.mission;
+
   return (
     <div>
-      <h1 className={title()}>Mission</h1>
+      <h1 className={title()}>{page.title}</h1>
       <p className={subtitle({ class: "mt-4" })}>
-        Advance engineering education and research that serve Cambodia and the
-        region through innovation, collaboration, and student success.
+        {page.description}
       </p>
     </div>
   );

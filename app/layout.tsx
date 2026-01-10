@@ -9,6 +9,9 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import { getSiteContent } from "@/content/site-content";
+import { localizeHref } from "@/lib/i18n";
+import { getLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
   title: {
@@ -28,13 +31,20 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const content = getSiteContent(locale);
+  const copyrightNotice = content.footer.copyright.replace(
+    "{year}",
+    new Date().getFullYear().toString(),
+  );
+
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang={locale}>
       <head />
       <body
         className={clsx(
@@ -50,17 +60,17 @@ export default function RootLayout({
             </main>
             <footer className="w-full border-t border-default-200/70 py-6">
               <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-6 text-sm text-default-600 md:flex-row">
-                <p>© {new Date().getFullYear()} GIC Engineering.</p>
+                <p>{copyrightNotice}</p>
                 <div className="flex flex-wrap items-center gap-4">
-                  <Link as={NextLink} href="/contact">
-                    Contact
-                  </Link>
-                  <Link as={NextLink} href="/apply">
-                    Apply
-                  </Link>
-                  <Link as={NextLink} href="/news-events/calendar">
-                    Calendar
-                  </Link>
+                  {content.footer.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      as={NextLink}
+                      href={localizeHref(locale, link.href)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </footer>

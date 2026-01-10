@@ -1,18 +1,25 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
 type DegreeAdmissionsPageProps = {
   params: { degreeSlug: string };
 };
 
-export default function DegreeAdmissionsPage({
+export default async function DegreeAdmissionsPage({
   params,
 }: DegreeAdmissionsPageProps) {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.program.degreeAdmissions;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>Admissions: {params.degreeSlug}</h1>
+        <h1 className={title()}>
+          {page.titlePrefix}: {params.degreeSlug}
+        </h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Requirements, deadlines, and application guidance for this degree.
+          {page.description}
         </p>
       </div>
     </section>

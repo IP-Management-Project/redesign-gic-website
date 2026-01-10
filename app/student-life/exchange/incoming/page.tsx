@@ -1,13 +1,17 @@
 import { title, subtitle } from "@/components/primitives";
+import { getSiteContent } from "@/content/site-content";
+import { getLocale } from "@/lib/server-locale";
 
-export default function IncomingExchangePage() {
+export default async function IncomingExchangePage() {
+  const locale = await getLocale();
+  const page = getSiteContent(locale).subpages.studentLife.incoming;
+
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>Incoming Exchange</h1>
+        <h1 className={title()}>{page.title}</h1>
         <p className={subtitle({ class: "mt-4" })}>
-          Information for international students joining GIC for a semester or
-          year.
+          {page.description}
         </p>
       </div>
     </section>
