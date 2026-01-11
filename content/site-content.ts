@@ -161,6 +161,85 @@ type PageContent = {
   cards?: LinkItem[];
 };
 
+type DegreeDetailContent = {
+  titleSuffix: string;
+  description: string;
+  links: {
+    curriculum: string;
+    admissions: string;
+    relatedLabs: string;
+  };
+};
+
+type DegreePrefixContent = {
+  titlePrefix: string;
+  description: string;
+};
+
+type StudentProjectDetailContent = {
+  description: string;
+  links: {
+    program: string;
+    faculty: string;
+    lab: string;
+  };
+};
+
+type TestimonialDetailContent = {
+  titlePrefix: string;
+  description: string;
+  links: {
+    program: string;
+    lab: string;
+    studentProjects: string;
+  };
+};
+
+type PersonDetailContent = {
+  description: string;
+  links: {
+    projects: string;
+    publications: string;
+    studentProjects: string;
+  };
+};
+
+type LabDetailContent = {
+  titleSuffix: string;
+  description: string;
+  links: {
+    team: string;
+    projects: string;
+    publications: string;
+  };
+};
+
+type ResearchProjectDetailContent = {
+  titleSuffix: string;
+  description: string;
+  links: {
+    lab: string;
+    team: string;
+    studentProjects: string;
+  };
+};
+
+type NewsPostDetailContent = {
+  description: string;
+  links: {
+    research: string;
+    events: string;
+  };
+};
+
+type EventDetailContent = {
+  description: string;
+  links: {
+    calendar: string;
+    studentLife: string;
+  };
+};
+
 type ContactContent = {
   title: string;
   description: string;
@@ -192,6 +271,58 @@ type SiteContent = {
     program: PageContent;
     research: PageContent;
     studentLife: PageContent;
+  };
+  subpages: {
+    about: {
+      mission: PageContent;
+      vision: PageContent;
+      services: PageContent;
+    };
+    program: {
+      degrees: PageContent;
+      careers: PageContent;
+      faq: PageContent;
+      scholarships: PageContent;
+      degreeDetail: DegreeDetailContent;
+      degreeAdmissions: DegreePrefixContent;
+      degreeCurriculum: DegreePrefixContent;
+    };
+    studentLife: {
+      exchange: {
+        title: string;
+        description: string;
+      };
+      exchangeLinks: LinkItem[];
+      incoming: PageContent;
+      outgoing: PageContent;
+      gallery: PageContent;
+      studentProjects: PageContent;
+      studentProjectDetail: StudentProjectDetailContent;
+      testimonials: PageContent;
+      testimonialDetail: TestimonialDetailContent;
+      clubs: PageContent;
+    };
+    facultyStaff: {
+      staff: PageContent;
+      mobility: PageContent;
+      invitedProfessors: PageContent;
+      personDetail: PersonDetailContent;
+    };
+    research: {
+      labs: PageContent;
+      projects: PageContent;
+      publications: PageContent;
+      tools: PageContent;
+      labDetail: LabDetailContent;
+      projectDetail: ResearchProjectDetailContent;
+    };
+    newsEvents: {
+      news: PageContent;
+      events: PageContent;
+      calendar: PageContent;
+      newsPost: NewsPostDetailContent;
+      eventDetail: EventDetailContent;
+    };
   };
   contact: ContactContent;
   footer: {
@@ -561,6 +692,233 @@ const contentByLocale: Record<Locale, SiteContent> = {
           { label: "Clubs & Communities", href: "/student/clubs-communities" },
           { label: "Gallery", href: "/student/gallery" },
         ],
+      },
+    },
+    subpages: {
+      about: {
+        mission: {
+          title: "Our Mission",
+          description:
+            "Deliver world-class engineering education that powers Cambodia's digital future.",
+        },
+        vision: {
+          title: "Our Vision",
+          description:
+            "Be the leading hub for innovation, research, and global partnerships in Southeast Asia.",
+        },
+        services: {
+          title: "Student Services",
+          description:
+            "Academic advising, career support, and wellness services that help students thrive.",
+        },
+      },
+      program: {
+        degrees: {
+          title: "Degree Programs",
+          description:
+            "Explore undergraduate and graduate pathways designed for industry-ready engineers.",
+          cards: [
+            { label: "Software Engineering", href: "/program/degrees/software-engineering" },
+            { label: "Data Science", href: "/program/degrees/data-science" },
+            { label: "Network & Systems", href: "/program/degrees/network-systems" },
+            { label: "Cybersecurity", href: "/program/degrees/cybersecurity" },
+          ],
+        },
+        careers: {
+          title: "Careers & Outcomes",
+          description:
+            "See where GIC graduates work and how our industry partners support hiring.",
+        },
+        faq: {
+          title: "Program FAQ",
+          description:
+            "Find answers about admissions, tuition, and program requirements.",
+        },
+        scholarships: {
+          title: "Scholarships",
+          description:
+            "Financial support options for high-achieving and underrepresented students.",
+        },
+        degreeDetail: {
+          titleSuffix: "Degree Overview",
+          description:
+            "Curriculum highlights, faculty support, and lab opportunities for this degree.",
+          links: {
+            curriculum: "View curriculum",
+            admissions: "Admissions requirements",
+            relatedLabs: "Related labs",
+          },
+        },
+        degreeAdmissions: {
+          titlePrefix: "Admissions",
+          description:
+            "Eligibility, timeline, and required documents for this degree.",
+        },
+        degreeCurriculum: {
+          titlePrefix: "Curriculum",
+          description:
+            "Core courses, specialization tracks, and capstone expectations.",
+        },
+      },
+      studentLife: {
+        exchange: {
+          title: "Student Exchange",
+          description:
+            "International mobility opportunities with partner universities.",
+        },
+        exchangeLinks: [
+          { label: "Incoming exchange", href: "/student/exchange/incoming" },
+          { label: "Outgoing exchange", href: "/student/exchange/outgoing" },
+        ],
+        incoming: {
+          title: "Incoming Exchange",
+          description:
+            "Information for visiting students joining GIC for a semester or year.",
+        },
+        outgoing: {
+          title: "Outgoing Exchange",
+          description:
+            "Prepare for study abroad with partner institutions in Europe and Asia.",
+        },
+        gallery: {
+          title: "Student Life Gallery",
+          description: "Snapshots from campus events, labs, and student projects.",
+        },
+        studentProjects: {
+          title: "Student Projects",
+          description:
+            "Capstone work and innovation challenges led by GIC students.",
+        },
+        studentProjectDetail: {
+          description:
+            "Project highlights, mentors, and outcomes from this student initiative.",
+          links: {
+            program: "Program overview",
+            faculty: "Faculty mentors",
+            lab: "Related labs",
+          },
+        },
+        testimonials: {
+          title: "Student Testimonials",
+          description:
+            "Hear from students and alumni about their GIC experience.",
+        },
+        testimonialDetail: {
+          titlePrefix: "Testimonial",
+          description:
+            "A closer look at student journeys, achievements, and career outcomes.",
+          links: {
+            program: "Explore programs",
+            lab: "Research labs",
+            studentProjects: "Student projects",
+          },
+        },
+        clubs: {
+          title: "Clubs & Communities",
+          description:
+            "Join technical clubs, entrepreneurship groups, and community initiatives.",
+        },
+      },
+      facultyStaff: {
+        staff: {
+          title: "Faculty Directory",
+          description:
+            "Meet the professors and instructors leading our academic programs.",
+        },
+        mobility: {
+          title: "Faculty Mobility",
+          description:
+            "International teaching exchanges and visiting scholar opportunities.",
+        },
+        invitedProfessors: {
+          title: "Invited Professors",
+          description:
+            "Guest faculty bringing global expertise to GIC classrooms and labs.",
+        },
+        personDetail: {
+          description:
+            "Profile, research focus, and mentorship offerings for this faculty member.",
+          links: {
+            projects: "Research projects",
+            publications: "Publications",
+            studentProjects: "Student projects",
+          },
+        },
+      },
+      research: {
+        labs: {
+          title: "Research Labs",
+          description:
+            "Discover the labs advancing AI, data science, and digital infrastructure.",
+        },
+        projects: {
+          title: "Research Projects",
+          description:
+            "Applied research initiatives led by faculty, students, and partners.",
+        },
+        publications: {
+          title: "Publications",
+          description:
+            "Peer-reviewed papers, reports, and conference contributions.",
+        },
+        tools: {
+          title: "Research Tools",
+          description:
+            "Open-source tools and datasets developed by the GIC research community.",
+        },
+        labDetail: {
+          titleSuffix: "Lab",
+          description:
+            "Research focus areas, active projects, and collaborations for this lab.",
+          links: {
+            team: "Lab team",
+            projects: "Lab projects",
+            publications: "Lab publications",
+          },
+        },
+        projectDetail: {
+          titleSuffix: "Project",
+          description:
+            "Goals, impact, and partners supporting this research project.",
+          links: {
+            lab: "Related lab",
+            team: "Research team",
+            studentProjects: "Student projects",
+          },
+        },
+      },
+      newsEvents: {
+        news: {
+          title: "News",
+          description:
+            "Announcements and highlights from the GIC community.",
+        },
+        events: {
+          title: "Events",
+          description:
+            "Workshops, seminars, and key dates on the GIC calendar.",
+        },
+        calendar: {
+          title: "Academic Calendar",
+          description:
+            "Important dates for admissions, semesters, and campus activities.",
+        },
+        newsPost: {
+          description:
+            "Full story with details, highlights, and related resources.",
+          links: {
+            research: "Research updates",
+            events: "Upcoming events",
+          },
+        },
+        eventDetail: {
+          description:
+            "Event details, speakers, and how to participate.",
+          links: {
+            calendar: "View calendar",
+            studentLife: "Student life",
+          },
+        },
       },
     },
     contact: {
@@ -934,6 +1292,230 @@ const contentByLocale: Record<Locale, SiteContent> = {
           { label: "ក្លឹប និងសហគមន៍", href: "/student/clubs-communities" },
           { label: "វិចិត្រសាល", href: "/student/gallery" },
         ],
+      },
+    },
+    subpages: {
+      about: {
+        mission: {
+          title: "បេសកកម្ម",
+          description:
+            "ផ្តល់ការអប់រំវិស្វកម្មគុណភាពខ្ពស់ ដើម្បីជំរុញអនាគតឌីជីថលកម្ពុជា។",
+        },
+        vision: {
+          title: "ចក្ខុវិស័យ",
+          description:
+            "ក្លាយជាគោលការណ៍នវានុវត្តន៍ ការស្រាវជ្រាវ និងដៃគូអន្តរជាតិឈានមុខ។",
+        },
+        services: {
+          title: "សេវាកម្មសម្រាប់និស្សិត",
+          description:
+            "ការណែនាំអប់រំ ការគាំទ្រអាជីព និងសុខុមាលភាពសិស្ស។",
+        },
+      },
+      program: {
+        degrees: {
+          title: "មុខវិជ្ជា",
+          description:
+            "ស្វែងយល់អំពីកម្មវិធីបរិញ្ញា និងបណ្ឌិតសម្រាប់វិស្វករជំនាន់ថ្មី។",
+          cards: [
+            { label: "វិស្វកម្ម Software", href: "/program/degrees/software-engineering" },
+            { label: "វិទ្យាសាស្ត្រទិន្នន័យ", href: "/program/degrees/data-science" },
+            { label: "បណ្ដាញ និងប្រព័ន្ធ", href: "/program/degrees/network-systems" },
+            { label: "សុវត្ថិភាពបណ្ដាញ", href: "/program/degrees/cybersecurity" },
+          ],
+        },
+        careers: {
+          title: "អាជីព និងលទ្ធផល",
+          description:
+            "ស្វែងយល់អំពីការងាររបស់សិស្សបញ្ចប់ និងដៃគូឧស្សាហកម្ម។",
+        },
+        faq: {
+          title: "សំណួរញឹកញាប់",
+          description:
+            "ចម្លើយអំពីការចូលរៀន ថ្លៃសិក្សា និងលក្ខខណ្ឌកម្មវិធី។",
+        },
+        scholarships: {
+          title: "អាហារូបករណ៍",
+          description:
+            "ជម្រើសគាំទ្រហិរញ្ញវត្ថុសម្រាប់សិស្សមានសមត្ថភាពខ្ពស់។",
+        },
+        degreeDetail: {
+          titleSuffix: "ព័ត៌មានកម្មវិធី",
+          description:
+            "ចំណុចសំខាន់ៗនៃមុខវិជ្ជា និងឱកាសក្នុងមន្ទីរពិសោធន៍។",
+          links: {
+            curriculum: "មើលមុខវិជ្ជា",
+            admissions: "លក្ខខណ្ឌចូលរៀន",
+            relatedLabs: "មន្ទីរពិសោធន៍ពាក់ព័ន្ធ",
+          },
+        },
+        degreeAdmissions: {
+          titlePrefix: "ការចូលរៀន",
+          description:
+            "លក្ខខណ្ឌ និងឯកសារដែលត្រូវការសម្រាប់មុខវិជ្ជានេះ។",
+        },
+        degreeCurriculum: {
+          titlePrefix: "មុខវិជ្ជា",
+          description:
+            "មេរៀនស្នូល និងផ្លូវជំនាញសម្រាប់មុខវិជ្ជានេះ។",
+        },
+      },
+      studentLife: {
+        exchange: {
+          title: "កម្មវិធីផ្លាស់ប្តូរ",
+          description:
+            "ឱកាសផ្លាស់ប្តូរអន្តរជាតិជាមួយស្ថាប័នដៃគូ។",
+        },
+        exchangeLinks: [
+          { label: "ការផ្លាស់ប្តូរចូល", href: "/student/exchange/incoming" },
+          { label: "ការផ្លាស់ប្តូរចេញ", href: "/student/exchange/outgoing" },
+        ],
+        incoming: {
+          title: "ការផ្លាស់ប្តូរចូល",
+          description:
+            "ព័ត៌មានសម្រាប់និស្សិតអន្តរជាតិដែលមកសិក្សានៅ GIC។",
+        },
+        outgoing: {
+          title: "ការផ្លាស់ប្តូរចេញ",
+          description:
+            "ត្រៀមខ្លួនសម្រាប់ការសិក្សាក្រៅប្រទេសជាមួយដៃគូ។",
+        },
+        gallery: {
+          title: "វិចិត្រសាលជីវិតនិស្សិត",
+          description: "រូបភាពពីព្រឹត្តិការណ៍ ការសិក្សា និងគម្រោងនិស្សិត។",
+        },
+        studentProjects: {
+          title: "គម្រោងនិស្សិត",
+          description:
+            "គម្រោងស្រាវជ្រាវ និងនវានុវត្តន៍ដែលដឹកនាំដោយនិស្សិត។",
+        },
+        studentProjectDetail: {
+          description:
+            "ការសង្ខេបគម្រោង មគ្គុទេសក៍ និងលទ្ធផលសម្រេចបាន។",
+          links: {
+            program: "មើលកម្មវិធី",
+            faculty: "គ្រូបង្រៀន",
+            lab: "មន្ទីរពិសោធន៍",
+          },
+        },
+        testimonials: {
+          title: "សក្ខីកម្ម",
+          description:
+            "សម្លេងពីនិស្សិត និងអតីតនិស្សិតអំពីបទពិសោធន៍នៅ GIC។",
+        },
+        testimonialDetail: {
+          titlePrefix: "សក្ខីកម្ម",
+          description:
+            "បទពិសោធន៍ផ្ទាល់ពីនិស្សិត និងជោគជ័យក្នុងអាជីព។",
+          links: {
+            program: "កម្មវិធីសិក្សា",
+            lab: "មន្ទីរពិសោធន៍",
+            studentProjects: "គម្រោងនិស្សិត",
+          },
+        },
+        clubs: {
+          title: "ក្លឹប និងសហគមន៍",
+          description:
+            "ចូលរួមក្លឹបបច្ចេកវិទ្យា ក្រុមសង្គម និងសហគមន៍ច្នៃប្រឌិត។",
+        },
+      },
+      facultyStaff: {
+        staff: {
+          title: "បញ្ជីគ្រូបង្រៀន",
+          description:
+            "ស្គាល់គ្រូបង្រៀន និងអ្នកបង្ហាត់ដែលដឹកនាំកម្មវិធីសិក្សា។",
+        },
+        mobility: {
+          title: "ការផ្លាស់ប្តូរគ្រូបង្រៀន",
+          description:
+            "កម្មវិធីអន្តរជាតិសម្រាប់គ្រូបង្រៀន និងការបណ្តុះបណ្តាល។",
+        },
+        invitedProfessors: {
+          title: "សាស្ត្រាចារ្យអញ្ជើញ",
+          description:
+            "អ្នកជំនាញអន្តរជាតិចូលរួមបង្រៀន និងណែនាំការស្រាវជ្រាវ។",
+        },
+        personDetail: {
+          description:
+            "ព័ត៌មានគ្រូបង្រៀន ការស្រាវជ្រាវ និងការណែនាំសិស្ស។",
+          links: {
+            projects: "គម្រោងស្រាវជ្រាវ",
+            publications: "ការបោះពុម្ពផ្សាយ",
+            studentProjects: "គម្រោងនិស្សិត",
+          },
+        },
+      },
+      research: {
+        labs: {
+          title: "មន្ទីរពិសោធន៍",
+          description:
+            "មន្ទីរពិសោធន៍ដែលដឹកនាំការស្រាវជ្រាវ AI និងទិន្នន័យ។",
+        },
+        projects: {
+          title: "គម្រោងស្រាវជ្រាវ",
+          description:
+            "គម្រោងអនុវត្តដែលដឹកនាំដោយគ្រូបង្រៀន និងនិស្សិត។",
+        },
+        publications: {
+          title: "ការបោះពុម្ពផ្សាយ",
+          description:
+            "អត្ថបទវិទ្យាសាស្ត្រ និងសេចក្ដីរាយការណ៍ជាប្រចាំ។",
+        },
+        tools: {
+          title: "ឧបករណ៍ស្រាវជ្រាវ",
+          description:
+            "ឧបករណ៍ និងទិន្នន័យបើកចំហពីសហគមន៍ស្រាវជ្រាវ GIC។",
+        },
+        labDetail: {
+          titleSuffix: "មន្ទីរពិសោធន៍",
+          description:
+            "ចំណុចផ្តោត ការសហការណ៍ និងគម្រោងសកម្មរបស់មន្ទីរពិសោធន៍។",
+          links: {
+            team: "ក្រុមមន្ទីរពិសោធន៍",
+            projects: "គម្រោង",
+            publications: "ការបោះពុម្ពផ្សាយ",
+          },
+        },
+        projectDetail: {
+          titleSuffix: "គម្រោង",
+          description:
+            "គោលបំណង និងឥទ្ធិពលនៃគម្រោងស្រាវជ្រាវនេះ។",
+          links: {
+            lab: "មន្ទីរពិសោធន៍ពាក់ព័ន្ធ",
+            team: "ក្រុមស្រាវជ្រាវ",
+            studentProjects: "គម្រោងនិស្សិត",
+          },
+        },
+      },
+      newsEvents: {
+        news: {
+          title: "ព័ត៌មាន",
+          description: "ព័ត៌មានថ្មីៗពីសហគមន៍ GIC។",
+        },
+        events: {
+          title: "ព្រឹត្តិការណ៍",
+          description: "សិក្ខាសាលា កម្មវិធី និងកាលបរិច្ឆេទសំខាន់ៗ។",
+        },
+        calendar: {
+          title: "ប្រតិទិនសិក្សា",
+          description: "កាលបរិច្ឆេទសំខាន់ៗសម្រាប់ឆ្នាំសិក្សា។",
+        },
+        newsPost: {
+          description:
+            "ព័ត៌មានលម្អិត និងធនធានពាក់ព័ន្ធនឹងប្រកាសនេះ។",
+          links: {
+            research: "ព័ត៌មានស្រាវជ្រាវ",
+            events: "ព្រឹត្តិការណ៍បន្ទាប់",
+          },
+        },
+        eventDetail: {
+          description:
+            "ព័ត៌មានព្រឹត្តិការណ៍ អ្នកនិយាយ និងវិធីចូលរួម។",
+          links: {
+            calendar: "មើលប្រតិទិន",
+            studentLife: "ជីវិតនិស្សិត",
+          },
+        },
       },
     },
     contact: {
