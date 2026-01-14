@@ -1,408 +1,407 @@
-import { button as buttonStyles } from "@heroui/theme";
-import { Link } from "@heroui/link";
+"use client";
+
+import React from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import NextLink from "next/link";
 
-import { getSiteContent } from "@/content/site-content";
-import { title, subtitle } from "@/components/primitives";
-import { localizeHref } from "@/lib/i18n";
-import { getLocale } from "@/lib/server-locale";
+import { Link } from "@heroui/link";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Divider } from "@heroui/divider";
+import { Image } from "@heroui/image";
+import { Avatar } from "@heroui/avatar";
+import { Terminal, Cpu, ArrowRight, Code } from "lucide-react";
+import HeroSection from "@/components/landing/hero";
+import StatsSection from "@/components/landing/stats";
+import PillarsSection from "@/components/landing/pillar";
+import PartnerSection from "@/components/landing/partner";
+import FacultySlideshow from "@/components/landing/lecturers";
+import FacultySlideshowFull from "@/components/landing/lecturers";
+import CareersSection from "@/components/landing/carrers";
+import EventsSlideshow from "@/components/landing/event";
+import PressReleaseSlideshow from "@/components/landing/event";
+import FinalCTA from "@/components/landing/cta";
+import ResearchShowcase from "@/components/landing/research-showcase";
+/**
+ * NOTES (professional polish)
+ * - Cleaner spacing + typographic rhythm
+ * - Reduced “neon / gimmick” effects; keeps subtle brand gradients
+ * - Consistent section headers, max widths, and subdued backgrounds
+ * - Adds University Partners section (logos + partner pathways)
+ * - Removes dynamic Tailwind class `bg-${color}` (won’t compile in production)
+ */
 
-export default async function Home() {
-  const locale = await getLocale();
-  const content = getSiteContent(locale);
+const dict = {
+  t: {
+    facultyKicker: "Our Expertise",
+    facultyTitle: "Meet Our Distinguished Faculty",
+  },
+  event: {
+    newsKicker: "Media Center",
+    newsTitle: "Latest News & Events",
+  },
+  carrer: {
+    careersKicker: "Industry & Careers",
+    careersTitle: "Where our students go",
+  },
+  stats: {
+    statsKicker: "Our Department in Numbers",
+    statsTitle: "Driving Innovation Since 2005",
+    statsDesc: "A look at the milestones that define our commitment to engineering excellence and student success.",
+  },
+  research: {
+    researchKicker: "Research & Innovation",
+    researchTitle: "Transforming Theory into Technology",
+    researchDesc: "Our department leads innovation in Khmer NLP, Secure Systems, and Data Analytics.",
+  },
+  pillars: {
+    pillarsKicker: "Educational Framework",
+    pillarsTitle: "Three Pillars of Excellence",
+    pillarsDesc: "Our programs are designed to take you from foundational engineering to high-level research and professional leadership.",
+  },
+  partnersKicker: "Global Footprint",
+  partnersTitle: "International Cooperation",
+  partnersDesc: "GIC maintains deep-rooted ties with leading technical institutes worldwide to foster academic mobility and cutting-edge research.",
+};
 
+// 2. Mock University Data (Excluding Thailand)
+// These are typical partners for ITC / GIC department
+const universityPartners = [
+  {
+    name: "INSA Lyon",
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Logo_INSA_Lyon.svg"
+  },
+  {
+    name: "Tokyo Institute of Technology",
+    src: "https://upload.wikimedia.org/wikipedia/en/b/b3/Tokyo_Institute_of_Technology_logo.svg"
+  },
+  {
+    name: "Korea University",
+    src: "https://upload.wikimedia.org/wikipedia/en/a/a1/Korea_University_logo.svg"
+  },
+  {
+    name: "UTC (Université de Technologie de Compiègne)",
+    src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_UTC.svg"
+  },
+  {
+    name: "Kyoto University",
+    src: "https://upload.wikimedia.org/wikipedia/en/1/1b/Kyoto_University_logo.svg"
+  },
+  {
+    name: "Polytech Group",
+    src: "https://upload.wikimedia.org/wikipedia/fr/4/4e/Logo_R%C3%A9seau_Polytech.svg"
+  },
+];
+const section = "py-20 md:py-28";
+const container = "max-w-7xl mx-auto px-6";
+const headingKicker =
+  "text-xs font-bold uppercase tracking-[0.35em] text-default-400";
+
+export function SectionHeader({
+  kicker,
+  titleText,
+  desc,
+  align = "left",
+}: {
+  kicker: string;
+  titleText: string;
+  desc?: string;
+  align?: "left" | "center";
+}) {
   return (
-    <div className="flex flex-col gap-16 py-8 md:py-12">
-      <section className="flex flex-col items-center justify-center gap-4 text-center">
-        <div className="inline-block max-w-3xl">
-          <span className={title({ color: "blue" })}>{content.home.heroTitle}</span>
-          <div className={subtitle({ class: "mt-4" })}>{content.home.heroSubtitle}</div>
-        </div>
+    <div className={align === "center" ? "text-center" : ""}>
+      <div className={headingKicker}>{kicker}</div>
+      <h2 className="mt-4 text-3xl md:text-5xl font-black tracking-tight">
+        {titleText}
+      </h2>
+      {desc ? (
+        <p className="mt-5 text-default-500 text-base md:text-lg max-w-2xl mx-auto">
+          {desc}
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            as={NextLink}
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href={localizeHref(locale, content.home.ctas.primary.href)}
-          >
-            {content.home.ctas.primary.label}
-          </Link>
-          <Link
-            as={NextLink}
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={localizeHref(locale, content.home.ctas.secondary.href)}
-          >
-            {content.home.ctas.secondary.label}
-          </Link>
+function StatCard({
+  label,
+  value,
+  helper,
+}: {
+  label: string;
+  value: string;
+  helper: string;
+}) {
+  return (
+    <Card className="border-default-200 shadow-sm">
+      <CardBody className="p-8">
+        <div className="text-4xl font-black tracking-tight text-foreground">
+          {value}
         </div>
+        <div className="mt-3 text-sm font-bold uppercase tracking-wider text-default-500">
+          {label}
+        </div>
+        <div className="mt-2 text-sm text-default-500">{helper}</div>
+      </CardBody>
+    </Card>
+  );
+}
 
-        <div className="grid w-full max-w-4xl gap-6 pt-8 md:grid-cols-3">
-          {content.home.highlights.map((card) => (
-            <Link
-              key={card.title}
-              as={NextLink}
-              className="rounded-2xl border border-default-200/70 bg-background px-6 py-5 text-left shadow-sm transition hover:border-primary"
-              href={localizeHref(locale, card.href)}
-            >
-              <h2 className="text-lg font-semibold">{card.title}</h2>
-              <p className="mt-2 text-sm text-default-600">{card.description}</p>
-            </Link>
-          ))}
+function PillarCard({
+  index,
+  title,
+  desc,
+}: {
+  index: number;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <Card className="border-default-200 shadow-sm hover:shadow-md transition-shadow">
+      <CardBody className="p-10">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center font-black text-primary">
+            {index}
+          </div>
+          <div className="text-xl font-bold">{title}</div>
         </div>
-      </section>
+        <p className="text-default-500 leading-relaxed">{desc}</p>
+      </CardBody>
+    </Card>
+  );
+}
 
-      <section className="rounded-3xl border border-default-200/70 bg-default-50/60 px-6 py-8">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-          <h2 className="text-center text-2xl font-semibold">
-            {content.home.numbersTitle}
-          </h2>
-          <div className="grid gap-6 md:grid-cols-4">
-            {content.home.numbers.map((item) => (
-              <div key={item.label} className="text-center">
-                <p className="text-sm text-default-500">{item.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-primary">{item.value}</p>
-                <p className="mt-2 text-sm text-default-600">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+function PartnerLogo({
+  name,
+  src,
+}: {
+  name: string;
+  src: string;
+}) {
+  return (
+    <div className="flex items-center justify-center rounded-2xl border border-default-200 bg-background p-6 hover:bg-default-50 transition-colors">
+      {/* Using Image (HeroUI) for consistency */}
+      <Image
+        src={src}
+        alt={`${name} logo`}
+        className="object-contain h-10 w-auto"
+      />
+    </div>
+  );
+}
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <h2 className="text-2xl font-semibold">{content.home.pillarsTitle}</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          {content.home.pillars.map((pillar) => (
-            <div
-              key={pillar.title}
-              className="rounded-2xl border border-default-200/70 bg-background px-6 py-5 shadow-sm"
-            >
-              <h3 className="text-lg font-semibold">{pillar.title}</h3>
-              <p className="mt-2 text-sm text-default-600">{pillar.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.research.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.research.description}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {content.home.research.labs.map((lab) => (
-            <div
-              key={lab.title}
-              className="rounded-2xl border border-default-200/70 bg-background px-6 py-5"
-            >
-              <h3 className="text-lg font-semibold">{lab.title}</h3>
-              <p className="mt-2 text-sm text-default-600">{lab.description}</p>
-            </div>
-          ))}
-          <div className="rounded-2xl border border-default-200/70 bg-default-50/60 px-6 py-5">
-            <p className="text-sm font-semibold text-primary">
-              {content.home.research.spotlight.title}
-            </p>
-            <p className="mt-2 text-sm text-default-600">
-              {content.home.research.spotlight.description}
-            </p>
-            <Link
-              as={NextLink}
-              className="mt-4 inline-flex text-sm font-semibold text-primary"
-              href={localizeHref(locale, content.home.research.spotlight.href)}
-            >
-              {content.home.research.spotlight.linkLabel}
-            </Link>
-          </div>
-        </div>
-        <div>
-          <Link
-            as={NextLink}
-            className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}
-            href={localizeHref(locale, content.home.research.cta.href)}
-          >
-            {content.home.research.cta.label}
-          </Link>
-        </div>
-      </section>
+const stagger = {
+  animate: { transition: { staggerChildren: 0.1 } },
+};
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.journey.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.journey.description}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-lg font-semibold">
-              {content.home.journey.mobilityTitle}
-            </h3>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {content.home.journey.mobility.map((location) => (
-                <span
-                  key={location}
-                  className="rounded-full border border-default-200 px-3 py-1 text-xs text-default-600"
-                >
-                  {location}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-lg font-semibold">
-              {content.home.journey.internshipsTitle}
-            </h3>
-            <ul className="mt-3 space-y-2 text-sm text-default-600">
-              {content.home.journey.internships.map((company) => (
-                <li key={company}>{company}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-lg font-semibold">
-              {content.home.journey.studentLifeTitle}
-            </h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {content.home.journey.studentLife.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    as={NextLink}
-                    className="text-primary"
-                    href={localizeHref(locale, item.href)}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+export default function Home({ params }: { params: { locale: string } }) {
+  const locale = params?.locale === "km" ? "km" : "en";
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.partnerships.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.partnerships.description}</p>
-        </div>
-        <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-          <div className="flex flex-wrap gap-3 text-sm text-default-500">
-            {content.home.partnerships.logos.map((logo) => (
-              <span
-                key={logo}
-                className="rounded-full border border-default-200 bg-default-100/60 px-4 py-2 uppercase tracking-wide"
-              >
-                {logo}
-              </span>
-            ))}
-          </div>
-          <div className="mt-6 grid gap-3 text-sm text-default-600 md:grid-cols-2">
-            <p className="md:col-span-2 text-sm font-semibold text-default-500">
-              {content.home.partnerships.careersTitle}
-            </p>
-            {content.home.partnerships.careers.map((career) => (
-              <div
-                key={career}
-                className="rounded-xl border border-default-200/70 bg-default-50/60 px-4 py-3"
-              >
-                {career}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  const t = {
+    en: {
+      chip: "France–Cambodia Academic Partnership",
+      heroTitle1: "A University-Grade Hub for",
+      heroTitle2: "Digital Engineering & Research",
+      heroSubtitle:
+        "A modern, internationally aligned department preparing engineers and innovators through rigorous academics, applied research, and industry collaboration.",
+      cta1: "Explore Programs",
+      cta2: "Research & Labs",
+      trust: "Accredited pathways • Global mobility • Industry-ready curriculum",
+      statsKicker: "Department at a glance",
+      statsTitle: "Outcomes that speak",
+      statsDesc:
+        "Built on strong teaching, active labs, and partnerships across academia and industry.",
+      pillarsKicker: "Academics",
+      pillarsTitle: "Programs designed for impact",
+      pillarsDesc:
+        "Clear pathways from undergraduate engineering to graduate research and professional upskilling.",
+      researchKicker: "Research & Innovation",
+      researchTitle: "Labs advancing Cambodia’s digital future",
+      researchDesc:
+        "Language tech, AI, systems, and cybersecurity—focused on real deployments and measurable outcomes.",
+      partnersKicker: "University partners",
+      partnersTitle: "International university network",
+      partnersDesc:
+        "Collaborations that enable exchanges, dual-degree pathways, joint supervision, and lab internships.",
+      facultyKicker: "Faculty",
+      facultyTitle: "Experienced, research-active mentors",
+      mobilityKicker: "Mobility",
+      mobilityTitle: "International Mobility Hub",
+      careersKicker: "Industry",
+      careersTitle: "Career hub & partners",
+      eventsKicker: "Admissions",
+      eventsTitle: "Upcoming events & deadlines",
+      finalTitle: "Ready to shape the future?",
+      finalDesc:
+        "Join a community built for excellence—where education meets research and international opportunity.",
+      apply: "Apply now",
+      footerNote:
+        "Russian Blvd, Phnom Penh, Cambodia. World-class engineering education with global standards.",
+    },
+    km: {
+      chip: "ភាពជាដៃគូអាណាព្យាបាល កម្ពុជា–បារាំង",
+      heroTitle1: "មជ្ឈមណ្ឌលស្តង់ដារសាកលវិទ្យាល័យសម្រាប់",
+      heroTitle2: "វិស្វកម្មឌីជីថល និងស្រាវជ្រាវ",
+      heroSubtitle:
+        "ផ្នែកសិក្សាទំនើបដែលផ្គូផ្គងស្តង់ដារអន្តរជាតិ ដើម្បីបណ្តុះវិស្វករ និងអ្នកច្នៃប្រឌិតតាមរយៈការសិក្សាគង់វង្ស ស្រាវជ្រាវអនុវត្ត និងសហការណ៍ឧស្សាហកម្ម។",
+      cta1: "ស្វែងយល់កម្មវិធីសិក្សា",
+      cta2: "ស្រាវជ្រាវ & មន្ទីរពិសោធន៍",
+      trust: "ផ្លូវសិក្សាស្តង់ដារ • ការផ្លាស់ប្តូរអន្តរជាតិ • មេរៀនត្រៀមការងារ",
+      statsKicker: "ទិដ្ឋភាពទូទៅ",
+      statsTitle: "លទ្ធផលដែលបញ្ជាក់",
+      statsDesc:
+        "ផ្អែកលើការបង្រៀនរឹងមាំ មន្ទីរពិសោធន៍សកម្ម និងដៃគូអប់រំ/ឧស្សាហកម្ម។",
+      pillarsKicker: "វិស័យសិក្សា",
+      pillarsTitle: "កម្មវិធីសិក្សាដែលមានអត្ថប្រយោជន៍",
+      pillarsDesc:
+        "ផ្លូវច្បាស់លាស់ពីបរិញ្ញាបត្រវិស្វកម្ម ទៅអនុបណ្ឌិត/បណ្ឌិត និងវគ្គវិជ្ជាជីវៈ។",
+      researchKicker: "ស្រាវជ្រាវ & ច្នៃប្រឌិត",
+      researchTitle: "មន្ទីរពិសោធន៍ដឹកនាំអនាគតឌីជីថលកម្ពុជា",
+      researchDesc:
+        "បច្ចេកវិទ្យាភាសា AI ប្រព័ន្ធ និងសន្តិសុខ—ផ្តោតលើការអនុវត្តពិត។",
+      partnersKicker: "សាកលវិទ្យាល័យដៃគូ",
+      partnersTitle: "បណ្តាញសាកលវិទ្យាល័យអន្តរជាតិ",
+      partnersDesc:
+        "សហការណ៍សម្រាប់ប្តូរនិស្សិត បរិញ្ញាបត្ររួម ការណែនាំស្រាវជ្រាវ និងអនុវត្តការងារមន្ទីរពិសោធន៍។",
+      facultyKicker: "គ្រូបង្រៀន",
+      facultyTitle: "អ្នកណែនាំមានបទពិសោធន៍",
+      mobilityKicker: "អន្តរជាតិ",
+      mobilityTitle: "មជ្ឈមណ្ឌលចល័តភាពអន្តរជាតិ",
+      careersKicker: "ឧស្សាហកម្ម",
+      careersTitle: "មជ្ឈមណ្ឌលអាជីព & ដៃគូ",
+      eventsKicker: "ការចូលរៀន",
+      eventsTitle: "ព្រឹត្តិការណ៍ & កាលកំណត់ខាងមុខ",
+      finalTitle: "ត្រៀមបង្កើតអនាគត?",
+      finalDesc:
+        "ចូលរួមសហគមន៍ដែលផ្អែកលើគុណភាព—ការសិក្សាប្រកបដោយស្រាវជ្រាវ និងឱកាសអន្តរជាតិ។",
+      apply: "ដាក់ពាក្យ",
+      footerNote:
+        "Russian Blvd, ភ្នំពេញ, កម្ពុជា។ ការអប់រំវិស្វកម្មស្តង់ដារអន្តរជាតិ។",
+    },
+  }[locale];
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.events.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.events.description}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {content.home.events.items.map((item) => (
-            <Link
-              key={item.title}
-              as={NextLink}
-              className="rounded-2xl border border-default-200/70 bg-background px-6 py-5 transition hover:border-primary"
-              href={localizeHref(locale, item.href)}
-            >
-              <p className="text-xs uppercase tracking-wide text-default-500">
-                {item.date}
-              </p>
-              <h3 className="mt-2 text-lg font-semibold">{item.title}</h3>
-              <p className="mt-2 text-sm text-default-600">{item.description}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+  // Replace with your real partner logos (assets or public URLs).
+  // Avoid random external URLs in production if you can.
+  const universityPartners = [
+  {
+    name: "INP Toulouse",
+    src: "https://gic.itc.edu.kh/storage/partner2/June2019/ytMunojNDCf9kr9eTj81.png",
+    url: "https://www.inp-toulouse.fr/en/index.html"
+  },
+  {
+    name: "INSA Lyon",
+    src: "https://gic.itc.edu.kh/storage/partner2/September2019/jds0Jf9YMh9LBFRQGh2H.jpg",
+    url: "https://www.insa-lyon.fr/en/"
+  },
+  {
+    name: "UTC Compiègne",
+    src: "https://gic.itc.edu.kh/storage/partner2/June2019/I5w9XZwVkjVoOWDe5Hwo.PNG",
+    url: "https://www.utc.fr/en/"
+  },
+  {
+    name: "Polytech",
+    src: "https://gic.itc.edu.kh/storage/partner2/June2019/wSGFlxRo9PeNI8KlxBSv.png",
+    url: "https://www.polytech-reseau.org/en/"
+  },
+  {
+    name: "INSA Lyon",
+    src: "https://gic.itc.edu.kh/storage/partner2/September2019/jds0Jf9YMh9LBFRQGh2H.jpg",
+    url: "https://www.insa-lyon.fr/en/"
+  },
+  {
+    name: "UTC Compiègne",
+    src: "https://gic.itc.edu.kh/storage/partner2/June2019/I5w9XZwVkjVoOWDe5Hwo.PNG",
+    url: "https://www.utc.fr/en/"
+  },
+  {
+    name: "Polytech",
+    src: "https://gic.itc.edu.kh/storage/partner2/June2019/wSGFlxRo9PeNI8KlxBSv.png",
+    url: "https://www.polytech-reseau.org/en/"
+  },
+];
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-100, 100], [10, -10]);
+  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
 
-      <section
-        className="relative overflow-hidden rounded-3xl border border-default-200/70 bg-cover bg-center px-8 py-14 text-white"
-        style={{ backgroundImage: "url('/images/itc-campus.svg')" }}
-      >
-        <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
-        <div className="relative z-10 mx-auto flex max-w-5xl flex-col gap-4">
-          <span className="w-fit rounded-full bg-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide">
-            {content.home.prestigeHero.badge}
-          </span>
-          <h2 className="text-3xl font-semibold">{content.home.prestigeHero.title}</h2>
-          <p className="max-w-2xl text-sm text-white/80">
-            {content.home.prestigeHero.subtitle}
-          </p>
-        </div>
-      </section>
+  function handleMouse(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    x.set(event.clientX - rect.left - rect.width / 2);
+    y.set(event.clientY - rect.top - rect.height / 2);
+  }
+  return (
+    <div className="relative overflow-hidden bg-background">
+      {/* subtle background */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-32 right-[-10%] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute top-[20%] left-[-12%] h-[420px] w-[420px] rounded-full bg-blue-600/5 blur-[110px]" />
+      </div>
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.faculty.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.faculty.description}</p>
-        </div>
-        <div className="rounded-2xl border border-default-200/70 bg-default-50/60 px-6 py-5 text-sm text-default-600">
-          {content.home.faculty.stat}
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {content.home.faculty.spotlight.map((member) => (
-            <div
-              key={member.name}
-              className="min-w-[240px] rounded-2xl border border-default-200/70 bg-background px-5 py-4"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                {member.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((part) => part[0])
-                  .join("")}
-              </div>
-              <h3 className="mt-4 text-base font-semibold">{member.name}</h3>
-              <p className="text-xs text-default-500">{member.degree}</p>
-              <p className="mt-2 text-sm text-default-600">{member.focus}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* HERO */}
+      <HeroSection t={''} />
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.mobilityHub.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.mobilityHub.description}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-lg font-semibold">
-              {content.home.mobilityHub.inboundTitle}
-            </h3>
-            <p className="mt-2 text-sm text-default-600">{content.home.mobilityHub.inbound}</p>
-          </div>
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-lg font-semibold">
-              {content.home.mobilityHub.outboundTitle}
-            </h3>
-            <div className="mt-3 flex flex-wrap gap-2 text-sm text-default-600">
-              {content.home.mobilityHub.outbound.map((school) => (
-                <span
-                  key={school}
-                  className="rounded-full border border-default-200 px-3 py-1"
-                >
-                  {school}
-                </span>
-              ))}
-            </div>
-            <p className="mt-3 text-sm text-default-600">
-              {content.home.mobilityHub.dualDegree}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* STATS */}
+      <StatsSection
+        t={dict.stats}
+        section="my-20"
+        container="max-w-7xl mx-auto px-6"
+      />
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold">{content.home.partnerWall.title}</h2>
-          <p className="mt-2 text-default-600">{content.home.partnerWall.caption}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-default-500">
-              {content.home.partnerWall.academicTitle}
-            </h3>
-            <div className="mt-3 flex flex-wrap gap-2 text-sm text-default-600">
-              {content.home.partnerWall.academic.map((partner) => (
-                <span
-                  key={partner}
-                  className="rounded-full border border-default-200 px-3 py-1"
-                >
-                  {partner}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-default-200/70 bg-background px-6 py-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-default-500">
-              {content.home.partnerWall.industryTitle}
-            </h3>
-            <div className="mt-3 flex flex-wrap gap-2 text-sm text-default-600">
-              {content.home.partnerWall.industry.map((partner) => (
-                <span
-                  key={partner}
-                  className="rounded-full border border-default-200 px-3 py-1"
-                >
-                  {partner}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* PROGRAM PILLARS */}
+      <PillarsSection
+        t={dict.pillars}
+        section="mb-20 " // Optional vertical spacing
+        container="max-w-7xl mx-auto px-6" // Standard container
+      />
 
-      <section className="rounded-3xl border border-default-200/70 bg-default-50/60 px-6 py-10">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 md:flex-row md:justify-between">
-          <div className="max-w-sm space-y-3">
-            <h2 className="text-2xl font-semibold">{content.home.homeFooter.title}</h2>
-            <p className="text-sm text-default-600">{content.home.homeFooter.address}</p>
-            <div className="space-y-1 text-sm text-default-600">
-              {content.home.homeFooter.emails.map((email) => (
-                <p key={email}>{email}</p>
-              ))}
-              <p>{content.home.homeFooter.phone}</p>
-            </div>
-            <div className="flex gap-4 text-sm font-semibold text-primary">
-              {content.home.homeFooter.socials.map((social) => (
-                <Link
-                  key={social.label}
-                  as={NextLink}
-                  href={social.href}
-                  className="hover:underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {social.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="grid flex-1 gap-6 md:grid-cols-3">
-            {content.home.homeFooter.quickLinks.map((group) => (
-              <div key={group.title}>
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-default-500">
-                  {group.title}
-                </h3>
-                <ul className="mt-3 space-y-2 text-sm">
-                  {group.links.map((item) => (
-                    <li key={item.label}>
-                      <Link
-                        as={NextLink}
-                        className="text-default-600 hover:text-primary"
-                        href={localizeHref(locale, item.href)}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* FACULTY (kept, but cleaner) */}
+      <FacultySlideshowFull
+        t={dict.t}
+        section="mb-20"
+        container="max-w-7xl mx-auto px-6"
+      />
+
+      {/* NEW: UNIVERSITY PARTNERS */}
+      <PartnerSection
+        t={dict}
+        universityPartners={universityPartners}
+        section="mb-20"
+        container="max-w-7xl"
+      />
+
+      {/* CAREERS / PARTNERS (more restrained) */}
+      <CareersSection
+        t={dict.carrer}
+        section="bg-red-500" // Vertical margin
+        container="max-w-7xl mx-auto px-6" // Standard container width
+      />
+
+      {/* RESEARCH (professional bento but calmer) */}
+      <ResearchShowcase
+        t={dict.research}
+        section="mb- 0"
+        container="max-w-7xl mx-auto px-6"
+      />
+
+      {/* EVENTS */}
+      <PressReleaseSlideshow
+        t={dict.event}
+        section=""
+        container="max-w-7xl mx-auto px-6"
+      />
+
+      {/* FINAL CTA */}
+      <FinalCTA
+        t={t}
+        container="max-w-7xl pb-10 mx-auto px-6"
+      />
+
     </div>
   );
 }

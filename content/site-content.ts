@@ -124,9 +124,18 @@ type HomeFooterContent = {
     links: LinkItem[];
   }[];
 };
-
+type MainNavItem = {
+  label: string;
+  href: string;
+  children?: NavigationChildren[];
+}
+type NavigationChildren = {
+  label: string;
+  href: string;
+  desc?: string;
+}
 type Navigation = {
-  primary: LinkItem[];
+  primary: MainNavItem[];
   menu: LinkItem[];
   utility: LinkItem[];
 };
@@ -346,20 +355,61 @@ const contentByLocale: Record<Locale, SiteContent> = {
     },
     navigation: {
       primary: [
-        { label: "Program", href: "/program" },
-        { label: "Research", href: "/research" },
-        { label: "Faculty & Staff", href: "/faculty-staff" },
-        { label: "Student", href: "/student" },
-        { label: "News & Events", href: "/news-events" },
-        { label: "About", href: "/about" },
+        {
+          label: "About GIC",
+          href: "/about",
+          children: [
+            { label: "History of GIC", href: "/about/history", desc: "Discover our journey since 2005" },
+            { label: "Mission & Vision", href: "/about", desc: "Our core values and future goals" },
+            { label: "Our Services", href: "/services", desc: "Get in touch with our department" },
+            { label: "Faculty & Staff", href: "/faculty-staff", desc: "Get in touch with our department"},
+          ]
+        },
+        {
+          label: "Programs",
+          href: "/program",
+          children: [
+            { label: "Engineering degree", href: "/program/engineering-degree", desc: "Discover our journey since 2005" },
+            { label: "International Program", href: "/program/international-program", desc: "Our core values and future goals" },
+            { label: "Associate degree", href: "/program/associate-degree", desc: "Get in touch with our department" },
+            { label: "Master degree", href: "/program/master-degree", desc: "Get in touch with our department" }
+          ]
+        },
+        {
+          label: "Research",
+          href: "/research",
+          children: [
+            { label: "Laboratory", href: "/research/laboratory", desc: "Discover our journey since 2005" },
+            { label: "Publications", href: "/research/publications", desc: "Our core values and future goals" },
+            { label: "Software & Tools", href: "/research/software-tools", desc: "Get in touch with our department" },
+          ]
+        },
+        {
+          label: "Project",
+          href: "/student",
+          children: [
+            { label: "Incubation", href: "/project/incubation", desc: "Discover our journey since 2005" },
+            { label: "Erasmus + KA2 ALIEN", href: "/project/erasmus-alien", desc: "Our core values and future goals" },
+            { label: "HITIHE Project", href: "/project/hithihe-project", desc: "Get in touch with our department" },
+          ]
+        },
+        {
+          label: "News & Events",
+          href: "/news-events",
+          children: [
+            { label: "Academic Calendar", href: "/calendar", desc: "Discover our journey since 2005" },
+            { label: "Seminar & Events", href: "/seminar", desc: "Our core values and future goals" },
+            { label: "Timetable", href: "/timetable", desc: "Get in touch with our department" },
+          ]
+        },
       ],
       menu: [
+        { label: "About", href: "/about" },
         { label: "Program", href: "/program" },
         { label: "Research", href: "/research" },
         { label: "Faculty & Staff", href: "/faculty-staff" },
         { label: "Student", href: "/student" },
         { label: "News & Events", href: "/news-events" },
-        { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
         { label: "Apply", href: "/apply" },
         { label: "Calendar", href: "/news-events/calendar" },

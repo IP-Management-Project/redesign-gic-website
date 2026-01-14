@@ -8,10 +8,11 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
+import GicNavbar from "@/components/navbar";
 import { getSiteContent } from "@/content/site-content";
 import { localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
+import GicFooter from "@/components/footer";
 
 export const metadata: Metadata = {
   title: {
@@ -54,26 +55,93 @@ export default async function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+            {/* <Navbar /> */}
+            <GicNavbar content={content}/>
+            <main className="containe r mx -auto max -w-7xl pt -16 px- 6 flex-grow">
               {children}
             </main>
-            <footer className="w-full border-t border-default-200/70 py-6">
-              <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-6 text-sm text-default-600 md:flex-row">
-                <p>{copyrightNotice}</p>
-                <div className="flex flex-wrap items-center gap-4">
-                  {content.footer.links.map((link) => (
-                    <Link
-                      key={link.href}
-                      as={NextLink}
-                      href={localizeHref(locale, link.href)}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </footer>
+            <GicFooter content={content} />
+                  {/* <footer className="border-t border-default-100 bg-default-100/30">
+                    <div className={`${container} py-16 grid grid-cols-1 md:grid-cols-4 gap-10`}>
+                      <div className="md:col-span-2 space-y-5">
+                        <div className="text-2xl font-black text-primary">GIC • ITC</div>
+                        <p className="text-default-500 max-w-md text-sm leading-relaxed">
+                          {t.footerNote}
+                        </p>
+                        <div className="flex gap-6 text-sm font-bold text-default-400 uppercase tracking-widest">
+                          <Link href="#" className="text-default-400 hover:text-primary">
+                            Facebook
+                          </Link>
+                          <Link href="#" className="text-default-400 hover:text-primary">
+                            LinkedIn
+                          </Link>
+                          <Link href="#" className="text-default-400 hover:text-primary">
+                            GitHub
+                          </Link>
+                        </div>
+                      </div>
+            
+                      <div className="grid grid-cols-2 md:col-span-2 gap-8">
+                        <div className="space-y-3">
+                          <div className="text-xs font-black uppercase tracking-[0.2em] text-default-400">
+                            Programs
+                          </div>
+                          <ul className="space-y-2 text-sm font-medium text-default-600">
+                            <li>
+                              <Link as={NextLink} href="/program">
+                                Undergraduate
+                              </Link>
+                            </li>
+                            <li>
+                              <Link as={NextLink} href="/program/master">
+                                Master & PhD
+                              </Link>
+                            </li>
+                            <li>
+                              <Link as={NextLink} href="/apply">
+                                Admission
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
+            
+                        <div className="space-y-3">
+                          <div className="text-xs font-black uppercase tracking-[0.2em] text-default-400">
+                            Resources
+                          </div>
+                          <ul className="space-y-2 text-sm font-medium text-default-600">
+                            <li>
+                              <Link as={NextLink} href="/research">
+                                Research Labs
+                              </Link>
+                            </li>
+                            <li>
+                              <Link as={NextLink} href="/news-events/calendar">
+                                Academic Calendar
+                              </Link>
+                            </li>
+                            <li>
+                              <Link as={NextLink} href="/faculty-staff">
+                                Faculty Directory
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+            
+                    <div className={`${container} pb-10`}>
+                      <Divider />
+                      <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-default-400 font-medium">
+                        <div>© 2026 GIC - Institute of Technology of Cambodia. All rights reserved.</div>
+                        <div className="flex gap-8">
+                          <div>info@gic.itc.edu.kh</div>
+                          <div>+855 23 880 370</div>
+                        </div>
+                      </div>
+                    </div>
+                  </footer>
+             */}
           </div>
         </Providers>
       </body>
