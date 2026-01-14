@@ -283,11 +283,16 @@ type SiteContent = {
   };
   subpages: {
     about: {
+      history: PageContent;
       mission: PageContent;
       vision: PageContent;
       services: PageContent;
     };
     program: {
+      engineeringDegree: PageContent;
+      internationalProgram: PageContent;
+      associateDegree: PageContent;
+      masterDegree: PageContent;
       degrees: PageContent;
       careers: PageContent;
       faq: PageContent;
@@ -318,17 +323,26 @@ type SiteContent = {
       personDetail: PersonDetailContent;
     };
     research: {
+      laboratory: PageContent;
       labs: PageContent;
       projects: PageContent;
       publications: PageContent;
+      softwareTools: PageContent;
       tools: PageContent;
       labDetail: LabDetailContent;
       projectDetail: ResearchProjectDetailContent;
+    };
+    project: {
+      incubation: PageContent;
+      erasmusAlien: PageContent;
+      hithiheProject: PageContent;
     };
     newsEvents: {
       news: PageContent;
       events: PageContent;
       calendar: PageContent;
+      seminar: PageContent;
+      timetable: PageContent;
       newsPost: NewsPostDetailContent;
       eventDetail: EventDetailContent;
     };
@@ -359,47 +373,47 @@ const contentByLocale: Record<Locale, SiteContent> = {
           label: "About GIC",
           href: "/about",
           children: [
-            { label: "History of GIC", href: "/about/history", desc: "Discover our journey since 2005" },
-            { label: "Mission & Vision", href: "/about", desc: "Our core values and future goals" },
-            { label: "Our Services", href: "/services", desc: "Get in touch with our department" },
-            { label: "Faculty & Staff", href: "/faculty-staff", desc: "Get in touch with our department"},
+            { label: "History of GIC", href: "/about/history", desc: "Explore the milestones that shaped GIC since its founding." },
+            { label: "Mission & Vision", href: "/about", desc: "Learn about our purpose, values, and long-term direction." },
+            { label: "Our Services", href: "/services", desc: "Discover the student services and support resources we offer." },
+            { label: "Faculty & Staff", href: "/faculty-staff", desc: "Meet the faculty leaders and staff supporting the community."},
           ]
         },
         {
           label: "Programs",
           href: "/program",
           children: [
-            { label: "Engineering degree", href: "/program/engineering-degree", desc: "Discover our journey since 2005" },
-            { label: "International Program", href: "/program/international-program", desc: "Our core values and future goals" },
-            { label: "Associate degree", href: "/program/associate-degree", desc: "Get in touch with our department" },
-            { label: "Master degree", href: "/program/master-degree", desc: "Get in touch with our department" }
+            { label: "Engineering degree", href: "/program/engineering-degree", desc: "Explore the undergraduate engineering curriculum and tracks." },
+            { label: "International Program", href: "/program/international-program", desc: "See global exchange, dual-degree, and mobility opportunities." },
+            { label: "Associate degree", href: "/program/associate-degree", desc: "Review the two-year associate pathway and transfer options." },
+            { label: "Master degree", href: "/program/master-degree", desc: "Learn about graduate-level study and research pathways." }
           ]
         },
         {
           label: "Research",
           href: "/research",
           children: [
-            { label: "Laboratory", href: "/research/laboratory", desc: "Discover our journey since 2005" },
-            { label: "Publications", href: "/research/publications", desc: "Our core values and future goals" },
-            { label: "Software & Tools", href: "/research/software-tools", desc: "Get in touch with our department" },
+            { label: "Laboratory", href: "/research/laboratory", desc: "Visit the labs and facilities advancing applied research." },
+            { label: "Publications", href: "/research/publications", desc: "Browse peer-reviewed papers, reports, and conference work." },
+            { label: "Software & Tools", href: "/research/software-tools", desc: "Explore open-source tools, datasets, and research platforms." },
           ]
         },
         {
           label: "Project",
           href: "/student",
           children: [
-            { label: "Incubation", href: "/project/incubation", desc: "Discover our journey since 2005" },
-            { label: "Erasmus + KA2 ALIEN", href: "/project/erasmus-alien", desc: "Our core values and future goals" },
-            { label: "HITIHE Project", href: "/project/hithihe-project", desc: "Get in touch with our department" },
+            { label: "Incubation", href: "/project/incubation", desc: "Support for startups and student-led innovation initiatives." },
+            { label: "Erasmus + KA2 ALIEN", href: "/project/erasmus-alien", desc: "International collaboration project highlights and outcomes." },
+            { label: "HITIHE Project", href: "/project/hithihe-project", desc: "High-impact teaching initiatives and higher education projects." },
           ]
         },
         {
           label: "News & Events",
           href: "/news-events",
           children: [
-            { label: "Academic Calendar", href: "/calendar", desc: "Discover our journey since 2005" },
-            { label: "Seminar & Events", href: "/seminar", desc: "Our core values and future goals" },
-            { label: "Timetable", href: "/timetable", desc: "Get in touch with our department" },
+            { label: "Academic Calendar", href: "/calendar", desc: "Important academic dates, deadlines, and key milestones." },
+            { label: "Seminar & Events", href: "/seminar", desc: "Upcoming seminars, talks, and community events." },
+            { label: "Timetable", href: "/timetable", desc: "Class schedules and weekly timetables for students." },
           ]
         },
       ],
@@ -746,6 +760,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
     },
     subpages: {
       about: {
+        history: {
+          title: "History of GIC",
+          description:
+            "Milestones and achievements from the founding of GIC to today.",
+        },
         mission: {
           title: "Our Mission",
           description:
@@ -763,6 +782,26 @@ const contentByLocale: Record<Locale, SiteContent> = {
         },
       },
       program: {
+        engineeringDegree: {
+          title: "Engineering Degree",
+          description:
+            "Undergraduate engineering curriculum with specialization tracks and applied learning.",
+        },
+        internationalProgram: {
+          title: "International Program",
+          description:
+            "Global exchanges, dual-degree options, and international mobility pathways.",
+        },
+        associateDegree: {
+          title: "Associate Degree",
+          description:
+            "A two-year pathway designed for foundational engineering skills and transfer readiness.",
+        },
+        masterDegree: {
+          title: "Master Degree",
+          description:
+            "Graduate-level programs focused on research, innovation, and advanced practice.",
+        },
         degrees: {
           title: "Degree Programs",
           description:
@@ -896,6 +935,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
         },
       },
       research: {
+        laboratory: {
+          title: "Laboratory",
+          description:
+            "Explore the labs and facilities that power research and innovation.",
+        },
         labs: {
           title: "Research Labs",
           description:
@@ -910,6 +954,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "Publications",
           description:
             "Peer-reviewed papers, reports, and conference contributions.",
+        },
+        softwareTools: {
+          title: "Software & Tools",
+          description:
+            "Open-source tools, datasets, and platforms built by GIC researchers.",
         },
         tools: {
           title: "Research Tools",
@@ -937,6 +986,23 @@ const contentByLocale: Record<Locale, SiteContent> = {
           },
         },
       },
+      project: {
+        incubation: {
+          title: "Incubation",
+          description:
+            "Startup incubation support, mentorship, and resources for innovators.",
+        },
+        erasmusAlien: {
+          title: "Erasmus + KA2 ALIEN",
+          description:
+            "International collaboration projects strengthening innovation and learning.",
+        },
+        hithiheProject: {
+          title: "HITIHE Project",
+          description:
+            "High-impact teaching initiatives for higher education transformation.",
+        },
+      },
       newsEvents: {
         news: {
           title: "News",
@@ -952,6 +1018,16 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "Academic Calendar",
           description:
             "Important dates for admissions, semesters, and campus activities.",
+        },
+        seminar: {
+          title: "Seminar & Events",
+          description:
+            "Upcoming seminars, talks, and events across the GIC community.",
+        },
+        timetable: {
+          title: "Timetable",
+          description:
+            "Class schedules, weekly timetables, and key session times.",
         },
         newsPost: {
           description:
@@ -1346,6 +1422,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
     },
     subpages: {
       about: {
+        history: {
+          title: "ប្រវត្តិ GIC",
+          description:
+            "ដំណាក់កាលសំខាន់ៗ និងសមិទ្ធផលរបស់ GIC តាំងពីការបង្កើតរហូតមកដល់ពេលនេះ។",
+        },
         mission: {
           title: "បេសកកម្ម",
           description:
@@ -1363,6 +1444,26 @@ const contentByLocale: Record<Locale, SiteContent> = {
         },
       },
       program: {
+        engineeringDegree: {
+          title: "បរិញ្ញាវិស្វកម្ម",
+          description:
+            "កម្មវិធីបរិញ្ញាវិស្វកម្មជាមួយផ្លូវជំនាញ និងការអនុវត្តជាក់ស្តែង។",
+        },
+        internationalProgram: {
+          title: "កម្មវិធីអន្តរជាតិ",
+          description:
+            "ការផ្លាស់ប្តូរអន្តរជាតិ និងជម្រើសបរិញ្ញាទ្វេជាមួយដៃគូ។",
+        },
+        associateDegree: {
+          title: "បរិញ្ញារង",
+          description:
+            "ផ្លូវរយៈពេលពីរឆ្នាំ សម្រាប់ជំនាញមូលដ្ឋាន និងការបន្តសិក្សា។",
+        },
+        masterDegree: {
+          title: "បរិញ្ញាអនុបណ្ឌិត",
+          description:
+            "កម្មវិធីអនុបណ្ឌិតផ្តោតលើស្រាវជ្រាវ និងការអនុវត្តកម្រិតខ្ពស់។",
+        },
         degrees: {
           title: "មុខវិជ្ជា",
           description:
@@ -1496,6 +1597,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
         },
       },
       research: {
+        laboratory: {
+          title: "មន្ទីរពិសោធន៍",
+          description:
+            "មន្ទីរពិសោធន៍ និងបរិក្ខារសម្រាប់ស្រាវជ្រាវ និងនវានុវត្តន៍។",
+        },
         labs: {
           title: "មន្ទីរពិសោធន៍",
           description:
@@ -1510,6 +1616,11 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "ការបោះពុម្ពផ្សាយ",
           description:
             "អត្ថបទវិទ្យាសាស្ត្រ និងសេចក្ដីរាយការណ៍ជាប្រចាំ។",
+        },
+        softwareTools: {
+          title: "កម្មវិធី និងឧបករណ៍",
+          description:
+            "ឧបករណ៍បើកចំហ ទិន្នន័យ និងវេទិកាដែលបង្កើតដោយអ្នកស្រាវជ្រាវ GIC។",
         },
         tools: {
           title: "ឧបករណ៍ស្រាវជ្រាវ",
@@ -1537,6 +1648,23 @@ const contentByLocale: Record<Locale, SiteContent> = {
           },
         },
       },
+      project: {
+        incubation: {
+          title: "ការបណ្តុះបណ្តាលគម្រោង",
+          description:
+            "ការគាំទ្រការបង្កើតសហគ្រាស និងដំណោះស្រាយច្នៃប្រឌិត។",
+        },
+        erasmusAlien: {
+          title: "Erasmus + KA2 ALIEN",
+          description:
+            "គម្រោងសហការអន្តរជាតិសម្រាប់ការច្នៃប្រឌិត និងការសិក្សា។",
+        },
+        hithiheProject: {
+          title: "គម្រោង HITIHE",
+          description:
+            "គម្រោងបង្កើនគុណភាពបង្រៀន និងការអប់រំកម្រិតខ្ពស់។",
+        },
+      },
       newsEvents: {
         news: {
           title: "ព័ត៌មាន",
@@ -1549,6 +1677,14 @@ const contentByLocale: Record<Locale, SiteContent> = {
         calendar: {
           title: "ប្រតិទិនសិក្សា",
           description: "កាលបរិច្ឆេទសំខាន់ៗសម្រាប់ឆ្នាំសិក្សា។",
+        },
+        seminar: {
+          title: "សិក្ខាសាលា និងព្រឹត្តិការណ៍",
+          description: "សិក្ខាសាលា ការពិភាក្សា និងព្រឹត្តិការណ៍ជាប្រចាំ។",
+        },
+        timetable: {
+          title: "កាលវិភាគ",
+          description: "កាលវិភាគមេរៀន និងពេលវេលាសិក្សាសំខាន់ៗ។",
         },
         newsPost: {
           description:
