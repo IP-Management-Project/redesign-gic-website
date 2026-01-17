@@ -7,7 +7,6 @@ import clsx from "clsx";
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
 import GicNavbar from "@/components/navbar";
 import { getSiteContent } from "@/content/site-content";
 import { localizeHref } from "@/lib/i18n";
@@ -50,7 +49,6 @@ export default async function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
