@@ -22,8 +22,35 @@ import {
   ShieldCheck,
   Server
 } from "lucide-react";
+import { useServicesData } from "@/hooks/useServicesData";
 
 export default function ServicesPage() {
+  const { data } = useServicesData();
+  const capabilities = data?.capabilities ?? [];
+  const mainServices = data?.mainServices ?? [];
+  const serverSpecs = data?.serverSpecs ?? [];
+  const capabilityIcons = {
+    globe: <Globe className="text-blue-600" />,
+    search: <Search className="text-blue-600" />,
+    code: <Code2 className="text-blue-600" />,
+    cpu: <Cpu className="text-gray-400" />,
+  };
+  const serviceIcons = {
+    search: <Search size={24} />,
+    chart: <BarChart3 size={24} />,
+    scan: <ScanFace size={24} />,
+    users: <Users size={24} />,
+    cpu: <Cpu size={24} />,
+    database: <Database size={24} />,
+    layout: <Layout size={24} />,
+    video: <Video size={24} />,
+  };
+  const serverIcons = {
+    storage: <HardDrive size={16} />,
+    compute: <Network size={16} />,
+    security: <Lock size={16} />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -31,40 +58,9 @@ export default function ServicesPage() {
     transition: { duration: 0.6 }
   };
 
-  const capabilities = [
-    {
-      title: "Social Contribution",
-      desc: "We are willing to work in projects that contribute to the development of the country.",
-      icon: <Globe className="text-blue-600" />
-    },
-    {
-      title: "Research Capability",
-      desc: "As an education institution, we have a very strong research capability working on local and international scales.",
-      icon: <Search className="text-blue-600" />
-    },
-    {
-      title: "Development Skill",
-      desc: "Specialized tools, clean code, and effective methodology. We are open to learning and mastering new technology.",
-      icon: <Code2 className="text-blue-600" />
-    },
-    {
-      title: "Powerful Computing Unit",
-      desc: "Coming soon... Advanced infrastructure to support high-performance data processing.",
-      icon: <Cpu className="text-gray-400" />,
-      isSoon: true
-    }
-  ];
 
-  const mainServices = [
-    { title: "Research Project", icon: <Search size={24} />, href: "/research" },
-    { title: "Supply Chain Management", icon: <BarChart3 size={24} />, href: "/services/supply-chain" },
-    { title: "Biometric Facial Attendance", icon: <ScanFace size={24} />, href: "/services/biometric" },
-    { title: "IT Consultant", icon: <Users size={24} />, href: "/services/consultant" },
-    { title: "High-Performance Computing", icon: <Cpu size={24} />, href: "/services/hpc" },
-    { title: "Database Analysis & Design", icon: <Database size={24} />, href: "/services/database" },
-    { title: "System Design & Development", icon: <Layout size={24} />, href: "/services/dev" },
-    { title: "E-learning Service", icon: <Video size={24} />, href: "/services/elearning" },
-  ];
+
+
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 pb-24">
@@ -94,7 +90,7 @@ export default function ServicesPage() {
                 className="p-8 rounded-[2rem] bg-gray-50 dark:bg-zinc-900/50 border border-transparent hover:border-blue-600/20 transition-all group"
               >
                 <div className="w-12 h-12 rounded-xl bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  {cap.icon}
+                  {capabilityIcons[cap.icon]}
                 </div>
                 <h3 className="text-xl font-black mb-3 flex items-center gap-2">
                   {cap.title}
@@ -126,7 +122,7 @@ export default function ServicesPage() {
                 className="group relative h-48 p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-500/50 transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div className="text-blue-500 group-hover:scale-110 transition-transform origin-left">
-                  {service.icon}
+                  {serviceIcons[service.icon]}
                 </div>
                 <div>
                   <h4 className="text-white font-bold tracking-tight mb-2">{service.title}</h4>
@@ -208,14 +204,10 @@ export default function ServicesPage() {
 
                 {/* Server Specs Grid */}
                 <div className="space-y-4">
-                  {[
-                    { label: "Storage Capacity", val: "500TB NVMe", icon: <HardDrive size={16} /> },
-                    { label: "Compute Power", val: "High-Performance HPC", icon: <Network size={16} /> },
-                    { label: "Security Protocol", val: "Hardware Encryption", icon: <Lock size={16} /> },
-                  ].map((spec, i) => (
+                  {serverSpecs.map((spec, i) => (
                     <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 group hover:bg-blue-600/10 transition-colors">
                       <div className="flex items-center gap-3 text-zinc-400 group-hover:text-blue-500 transition-colors">
-                        {spec.icon}
+                        {serverIcons[spec.icon]}
                         <span className="text-xs font-bold">{spec.label}</span>
                       </div>
                       <span className="text-xs font-black text-white uppercase">{spec.val}</span>

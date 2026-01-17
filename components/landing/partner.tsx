@@ -6,6 +6,7 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Globe, GraduationCap, Microscope, PlaneTakeoff } from "lucide-react";
 import PathwayCard from "../pathway-card";
+import { usePartnerRegionsData } from "@/hooks/usePartnerRegionsData";
 
 // 1. Interfaces
 interface PartnerSectionProps {
@@ -21,8 +22,7 @@ interface PartnerSectionProps {
 
 // 2. Main Component
 export default function PartnerSection({ t, universityPartners, section = "", container = "" }: PartnerSectionProps) {
-  // Exclude Thailand from the regional list
-  const regions = ["France", "Japan", "Korea"];
+  const { data: regions = [] } = usePartnerRegionsData();
 
   return (
     <section className={`${section} relative bg-background`}>
@@ -167,4 +167,3 @@ export default function PartnerSection({ t, universityPartners, section = "", co
     </section>
   );
 }
-

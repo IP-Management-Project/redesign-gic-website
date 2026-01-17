@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import { Card, CardBody } from "@heroui/card";
-import { Chip } from "@heroui/chip"; // If you have Chip, otherwise use a div
 import { SectionHeader } from "@/components/landing/section-header";
+import { useCareersSectionData } from "@/hooks/useCareersSectionData";
 
 type CareersSectionProps = {
   t: {
@@ -13,14 +15,9 @@ type CareersSectionProps = {
 };
 
 export default function CareersSection({ t, section, container }: CareersSectionProps) {
-  const partners = ["Smart", "Huawei", "ABA Bank", "BRED Bank", "TotalEnergies", "Wing"];
-  
-  const roles = [
-    { title: "DevOps Engineer", growth: "+25%", color: "text-blue-500" },
-    { title: "Full-Stack Developer", growth: "+40%", color: "text-emerald-500" },
-    { title: "Data Scientist", growth: "+32%", color: "text-purple-500" },
-    { title: "Cybersecurity Analyst", growth: "+18%", color: "text-red-500" },
-  ];
+  const { data } = useCareersSectionData();
+  const partners = data?.partners ?? [];
+  const roles = data?.roles ?? [];
 
   return (
     <section className={`${section} bg-zinc-950 py-20 text-white border-t border-white/5`}>

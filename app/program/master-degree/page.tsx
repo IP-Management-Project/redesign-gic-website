@@ -18,63 +18,26 @@ import {
 import { Button } from "@heroui/button";
 import { Card } from "@heroui/card";
 import { Divider } from "@heroui/divider";
-import { CurriculumData, CurriculumSection } from "@/components/cirriculumn";
+import { CurriculumSection } from "@/components/cirriculumn";
+import { useMasterDegreeData } from "@/hooks/useMasterDegreeData";
 
 export default function MasterDegreePage() {
+  const { data } = useMasterDegreeData();
+  const masterCurriculum = data?.curriculum;
+  const courseTypes = data?.courseTypes ?? [];
+  const careerTags = data?.careerTags ?? [];
+  const iconMap = {
+    brain: <BrainCircuit />,
+    cpu: <Cpu />,
+    search: <Search />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.6 }
   };
-
-  const MASTER_DATA: CurriculumData = {
-    "Semester I": [
-      { subject: "Advanced Algorithms and Data Structures", code: "MSC101", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-      { subject: "Object-Oriented Programming", code: "MSC102", hC: 16, hTD: 16, hTP: 16, credit: 2.0 },
-      { subject: "Calculus for Machine Learning", code: "MSC103", hC: 16, hTD: 0, hTP: 0, credit: 1.0 },
-      { subject: "Probability and Mathematical Statistics", code: "MSC104", hC: 32, hTD: 16, hTP: 0, credit: 3.0 },
-      { subject: "Discrete Mathematics", code: "MSC105", hC: 16, hTD: 0, hTP: 0, credit: 1.0 },
-      { subject: "Artificial Intelligence", code: "MSC106", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-      { subject: "Scientific Communication", code: "MSC107", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-    ],
-    "Semester II": [
-      { subject: "Neural Network and Deep Learning", code: "MSC201", hC: 32, hTD: 0, hTP: 32, credit: 4.0 },
-      { subject: "Machine Learning", code: "MSC202", hC: 32, hTD: 0, hTP: 16, credit: 3.0 },
-      { subject: "Computer Vision", code: "MSC203", hC: 32, hTD: 0, hTP: 16, credit: 3.0 },
-      { subject: "Natural Language Processing", code: "MSC204", hC: 32, hTD: 0, hTP: 16, credit: 3.0 },
-      { subject: "Data Mining", code: "MSC205", hC: 32, hTD: 0, hTP: 16, credit: 3.0 },
-      { subject: "Information Security", code: "MSC206", hC: 16, hTD: 0, hTP: 16, credit: 2.0 },
-    ],
-    "Semester III": [
-      { subject: "Research Methodology", code: "MSC301", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-      { subject: "Project Management for Researching", code: "MSC302", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-      { subject: "IT Project Management", code: "MSC303", hC: 16, hTD: 16, hTP: 0, credit: 1.5 },
-      { subject: "Entrepreneurship", code: "MSC304", hC: 32, hTD: 0, hTP: 0, credit: 2.0 },
-      { subject: "Cloud Computing", code: "MSC305", hC: 16, hTD: 0, hTP: 16, credit: 1.5 },
-    ],
-    "Semester IV": [
-      { subject: "Master Thesis / Final Research", code: "MSC401", hC: 0, hTD: 0, hTP: 0, credit: 20.0 },
-    ]
-  };
-
-  const courseTypes = [
-    {
-      title: "Core Courses",
-      icon: <BrainCircuit />,
-      courses: ["Advanced Algorithms", "Object-Oriented Programming", "Calculus for Machine Learning", "Discrete Mathematics", "Artificial Intelligence"]
-    },
-    {
-      title: "Specialized Courses",
-      icon: <Cpu />,
-      courses: ["Neural Network and Deep Learning", "Machine Learning", "Computer Vision", "Natural Language Processing", "Data Mining", "Information Security"]
-    },
-    {
-      title: "Research & Electives",
-      icon: <Search />,
-      courses: ["Scientific Communication", "Research Methodology", "IT Project Management", "Entrepreneurship", "Cloud Computing"]
-    }
-  ];
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans">
@@ -128,7 +91,7 @@ export default function MasterDegreePage() {
                 </p>
                 <Divider className="bg-white/10 mb-6" />
                 <div className="flex flex-wrap gap-2">
-                  {["Researcher", "AI Developer", "System Architect", "Security Consultant"].map(tag => (
+                  {careerTags.map(tag => (
                     <span key={tag} className="px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold uppercase tracking-widest">{tag}</span>
                   ))}
                 </div>
@@ -150,7 +113,7 @@ export default function MasterDegreePage() {
             {courseTypes.map((type, i) => (
               <motion.div key={i} {...fadeIn} className="p-10 rounded-[2.5rem] bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 shadow-sm">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center mb-6">
-                  {type.icon}
+                  {iconMap[type.icon]}
                 </div>
                 <h4 className="text-xl font-black mb-6">{type.title}</h4>
                 <ul className="space-y-3">
@@ -216,7 +179,7 @@ export default function MasterDegreePage() {
       <CurriculumSection
         title="Master's Program Curriculum"
         description="A specialized 54-credit path focusing on AI, Deep Learning, and Advanced Research Methodology. All courses are delivered in English."
-        data={MASTER_DATA}
+        data={masterCurriculum}
       />
       {/* 5. CONTACT FOOTER */}
       <section className="py-24 border-t border-gray-100 dark:border-zinc-900">

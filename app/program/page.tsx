@@ -6,39 +6,16 @@ import { GraduationCap, Globe, Cpu, BookOpen, ArrowRight } from "lucide-react";
 import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
 import Link from "next/link";
-
-const programs = [
-  {
-    title: "Engineering Degree",
-    slug: "engineering-degree",
-    icon: <Cpu className="text-[#26304d]" />,
-    desc: "3-year specialized track (Year 3 - Year 5) focusing on ICT and Electrical systems.",
-    tags: ["STEM", "Innovation", "HPC Access"]
-  },
-  {
-    title: "Associate Degree",
-    slug: "associate-degree",
-    icon: <BookOpen className="text-[#26304d]" />,
-    desc: "A 2-year foundation in technical engineering and leadership development.",
-    tags: ["Technical Skills", "Career Ready"]
-  },
-  {
-    title: "Master's Program",
-    slug: "master-degree",
-    icon: <GraduationCap className="text-[#26304d]" />,
-    desc: "Advanced research and R&D in AI, Khmer NLP, and Cybersecurity.",
-    tags: ["Research", "Deep Tech"]
-  },
-  {
-    title: "International Program",
-    slug: "international-program",
-    icon: <Globe className="text-[#26304d]" />,
-    desc: "Cross-border academic collaboration through the ASEAN Cyber University.",
-    tags: ["ASEAN", "Global Reach"]
-  }
-];
+import { useProgramsData } from "@/hooks/useProgramsData";
 
 export default function ProgramPage() {
+  const { data: programs = [] } = useProgramsData();
+  const iconMap = {
+    cpu: <Cpu className="text-[#26304d]" />,
+    book: <BookOpen className="text-[#26304d]" />,
+    cap: <GraduationCap className="text-[#26304d]" />,
+    globe: <Globe className="text-[#26304d]" />,
+  };
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -75,7 +52,7 @@ export default function ProgramPage() {
                 <Card className="p-10 rounded-[3rem] bg-white dark:bg-zinc-900 border border-[#76879d]/30 hover:border-[#26304d] shadow-none hover:shadow-2xl hover:shadow-[#26304d]/10 transition-all group h-full">
                   <div className="flex justify-between items-start mb-8">
                     <div className="w-16 h-16 rounded-2xl bg-[#76879d]/10 flex items-center justify-center group-hover:text-white transition-colors">
-                      {program.icon}
+                      {iconMap[program.icon]}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {program.tags.map(tag => (

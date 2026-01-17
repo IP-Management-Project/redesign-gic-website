@@ -16,27 +16,15 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Tabs, Tab } from "@heroui/tabs";
-
-// 1. DATA FROM INSTITUTIONAL CALENDAR
-const months = [
-  "August", "September", "October", "November", "December", 
-  "January", "February", "March", "April", "May", "June", "July"
-];
-
-const calendarEvents = [
-  { month: "August", title: "Concours (Entrance Exam)", type: "Exam", date: "Aug 20-22", cite: 3 },
-  { month: "September", title: "Jury de Septembre", type: "Admin", date: "Sep 04-12", cite: 3 },
-  { month: "October", title: "Rentrée Scolaire", type: "Academic", date: "Oct 16", cite: 3 },
-  { month: "October", title: "Fête des Morts (Pchum Ben)", type: "Holiday", date: "Oct", cite: 3 },
-  { month: "November", title: "Fête des Eaux (Water Festival)", type: "Holiday", date: "Nov", cite: 3 },
-  { month: "January", title: "Examen de Fin Semestre", type: "Exam", date: "Jan", cite: 3 },
-  { month: "February", title: "CEVU / GEVU Councils", type: "Admin", date: "Feb", cite: 3 },
-  { month: "June", title: "Fin Semestre (Final Exams)", type: "Exam", date: "Jun", cite: 3 },
-  { month: "July", title: "Semaine de Rattrapage", type: "Academic", date: "Jul", cite: 3 },
-];
+import { useAcademicCalendarData } from "@/hooks/useAcademicCalendarData";
+import type { CalendarEvent } from "@/hooks/useAcademicCalendarData";
 
 export default function AcademicCalendar() {
   const [viewMode, setViewMode] = useState<"timeline" | "grid">("grid");
+  const { data } = useAcademicCalendarData();
+  const months = data?.months ?? [];
+  const calendarEvents = data?.events ?? [];
+  const glossary = data?.glossary ?? [];
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 py-24">
@@ -105,18 +93,12 @@ export default function AcademicCalendar() {
         <div className="mt-20 p-10 rounded-[3rem] bg-zinc-900 text-white border border-white/5">
            <h3 className="text-2xl font-black mb-8">Calendar Glossary</h3>
            <div className="grid md:grid-cols-3 gap-8">
-              <div>
-                <h4 className="text-blue-500 font-black uppercase text-xs tracking-widest mb-2">Concours</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">The competitive national entrance examination period held annually in August.</p>
-              </div>
-              <div>
-                <h4 className="text-blue-500 font-black uppercase text-xs tracking-widest mb-2">CEVU / GEVU</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Institutional councils (Conseil de l'Enseignement et de la Vie Universitaire) that manage academic life.</p>
-              </div>
-              <div>
-                <h4 className="text-blue-500 font-black uppercase text-xs tracking-widest mb-2">Rattrapage</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Dedicated remedial weeks (Semaine de rattrapage) usually scheduled in July for students to catch up.</p>
-              </div>
+              {glossary.map((item) => (
+                <div key={item.term}>
+                  <h4 className="text-blue-500 font-black uppercase text-xs tracking-widest mb-2">{item.term}</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+                </div>
+              ))}
            </div>
         </div>
       </div>
@@ -127,7 +109,7 @@ export default function AcademicCalendar() {
 // --------------------------------------------------------------------------------
 // MONTH GRID CARD
 // --------------------------------------------------------------------------------
-function MonthCard({ month, events }: { month: string, events: any[] }) {
+function MonthCard({ month, events }: { month: string; events: CalendarEvent[] }) {
   return (
     <Card className="p-6 rounded-[2rem] bg-gray-50 dark:bg-zinc-900 border border-divider shadow-none flex flex-col h-64 hover:border-blue-600/30 transition-all">
       <h3 className="text-lg font-black mb-4 border-b border-divider pb-2">{month}</h3>
@@ -156,7 +138,7 @@ function MonthCard({ month, events }: { month: string, events: any[] }) {
 // --------------------------------------------------------------------------------
 // TIMELINE LIST ITEM
 // --------------------------------------------------------------------------------
-function TimelineItem({ event }: { event: any }) {
+function TimelineItem({ event }: { event: CalendarEvent }) {
   return (
     <Card className="p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-divider shadow-none hover:shadow-xl hover:shadow-blue-600/5 transition-all">
       <div className="flex flex-col md:flex-row items-center gap-8">

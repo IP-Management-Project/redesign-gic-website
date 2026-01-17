@@ -3,14 +3,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { 
-  Code2, 
   Bot, 
   Globe, 
   Home, 
   Zap, 
   ScanFace, 
   FileSearch, 
-  Smartphone,
   Github,
   User,
   Star
@@ -18,65 +16,19 @@ import {
 import { Card } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
-
-const studentTools = [
-  {
-    title: "MultiSocialLive",
-    author: "GIC Developers (Codera)",
-    lecturer: "Department Faculty",
-    desc: "A unified social media CMS allowing creators to manage Facebook, TikTok, and Instagram from a single dashboard with automated approval workflows.",
-    tags: ["Next.js", "NestJS", "API Integration"],
-    icon: <Globe className="text-blue-500" />,
-    status: "R&D Product"
-  },
-  {
-    title: "Rent House Management System",
-    author: "Final Year Thesis Project",
-    lecturer: "Thesis Committee",
-    desc: "A comprehensive platform for landlords to manage tenants, lease agreements, and automated billing cycles for local rental markets.",
-    tags: ["React", "PostgreSQL", "System Design"],
-    icon: <Home className="text-emerald-500" />,
-    status: "Thesis Project"
-  },
-  {
-    title: "Codera AI Assistant",
-    author: "Codera Team",
-    lecturer: "Mr. VALY Dona",
-    desc: "An intelligent digital employee that handles CRM ticket routing and basic resolution using Natural Language Understanding.",
-    tags: ["AI", "NLU", "Python"],
-    icon: <Bot className="text-purple-500" />,
-    status: "Beta"
-  },
-  {
-    title: "Kaoh Kantheay Sustainable Grid",
-    author: "Sustainable Energy Group",
-    lecturer: "Energy Engineering Dept",
-    desc: "A simulation tool for designing a sustainable electricity supply system using hybrid renewable sources for Kaoh Kantheay Island.",
-    tags: ["Modeling", "Energy Efficiency", "Load Estimation"],
-    icon: <Zap className="text-amber-500" />,
-    status: "Lab Project"
-  },
-  {
-    title: "Khmer OCR Tool",
-    author: "Khmer NLP Lab Students",
-    lecturer: "Mr. VALY Dona",
-    desc: "An advanced Optical Character Recognition engine specifically tuned for the complex ligatures and scripts of the Khmer language.",
-    tags: ["Deep Learning", "Computer Vision", "NLP"],
-    icon: <FileSearch className="text-red-500" />,
-    status: "Active Research"
-  },
-  {
-    title: "Biometric Attendance System",
-    author: "GIC Systems Group",
-    lecturer: "Infrastructure Team",
-    desc: "A facial recognition platform for automated student attendance tracking, integrated with on-campus physical server nodes.",
-    tags: ["Biometrics", "C++", "Security"],
-    icon: <ScanFace className="text-indigo-500" />,
-    status: "Deployment"
-  }
-];
+import { useResearchToolsData } from "@/hooks/useResearchToolsData";
 
 export default function StudentShowcase() {
+  const { data: studentTools = [] } = useResearchToolsData();
+  const iconMap = {
+    globe: <Globe className="text-blue-500" />,
+    home: <Home className="text-emerald-500" />,
+    bot: <Bot className="text-purple-500" />,
+    zap: <Zap className="text-amber-500" />,
+    file: <FileSearch className="text-red-500" />,
+    scan: <ScanFace className="text-indigo-500" />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -112,7 +64,7 @@ export default function StudentShowcase() {
                 <div>
                   <div className="flex justify-between items-start mb-8">
                     <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                      {tool.icon}
+                      {iconMap[tool.icon]}
                     </div>
                     <Chip variant="flat" size="sm" className="font-bold text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-none">
                       {tool.status}

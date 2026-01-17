@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Avatar } from "@heroui/avatar";
@@ -5,6 +7,7 @@ import { Divider } from "@heroui/divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay, FreeMode } from "swiper/modules";
 import { SectionHeader } from "@/components/landing/section-header";
+import { useFacultySlideshowData } from "@/hooks/useFacultySlideshowData";
 
 // Import Swiper styles
 import "swiper/css";
@@ -25,50 +28,7 @@ export default function FacultySlideshowFull({
   section,
   container,
 }: FacultySlideshowProps) {
-  const faculty = [
-    {
-      name: "Mr. Heng Rathpisey",
-      degree: "Master of Engineering - MEng, Information Technology, Universitas Gadjah Mada (UGM)",
-      focus: "Cloud Computing",
-      portrait: "/lecturers/lec-pisey.png",
-      uniLogo: "https://www.eduopinions.com/universities/universities-in-indonesia/gadjah-mada-university/",
-    },
-    {
-      name: "Dr. Lina Chea",
-      degree: "PhD, INSA Lyon",
-      focus: "Cybersecurity & Privacy Engineering",
-      portrait: "/lecturers/lec-pisey.png",
-      uniLogo: "/images/logos/insa-lyon-white.png",
-    },
-    {
-      name: "Dr. Vannak Chen",
-      degree: "PhD, UTC Compiègne",
-      focus: "Smart Systems & IoT Infrastructure",
-      portrait: "/lecturers/lec-pisey.png",
-      uniLogo: "/images/logos/utc-white.png",
-    },
-    {
-      name: "Dr. Sokha Dara",
-      degree: "PhD, INP Toulouse",
-      focus: "AI for Khmer Language & NLP",
-      portrait: "/lecturers/lec-pisey.png",
-      uniLogo: "/images/logos/inp-toulouse-white.png",
-    },
-    {
-      name: "Dr. Lina Chea",
-      degree: "PhD, INSA Lyon",
-      focus: "Cybersecurity & Privacy Engineering",
-      portrait: "/images/faculty/lina-portrait.jpg",
-      uniLogo: "/images/logos/insa-lyon-white.png",
-    },
-    {
-      name: "Dr. Vannak Chen",
-      degree: "PhD, UTC Compiègne",
-      focus: "Smart Systems & IoT Infrastructure",
-      portrait: "/images/faculty/vannak-portrait.jpg",
-      uniLogo: "/images/logos/utc-white.png",
-    }
-  ];
+  const { data: faculty = [] } = useFacultySlideshowData();
 
   return (
     <section className={`${section} bg-zi nc-950`}>

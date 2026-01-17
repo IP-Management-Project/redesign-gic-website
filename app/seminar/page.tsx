@@ -10,77 +10,28 @@ import {
   Mic2, 
   MapPin, 
   ArrowUpRight,
-  ChevronRight,
-  Users
+  ChevronRight
 } from "lucide-react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
+import { useSeminarEventsData } from "@/hooks/useSeminarEventsData";
 
 export default function EventsPage() {
+  const { data: events = [] } = useSeminarEventsData();
+  const iconMap = {
+    shield: <ShieldCheck />,
+    trophy: <Trophy />,
+    clock: <Clock />,
+    rocket: <Rocket />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.6 }
   };
-
-  const events = [
-    { 
-      date: "17 Jan", 
-      title: "Cybersecurity Sharing Session", 
-      type: "Talk", 
-      icon: <ShieldCheck />, 
-      desc: "Expert-led discussion on current threat landscapes and defense strategies.",
-      status: "Starting Soon",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
-    },
-    { 
-      date: "03 Apr", 
-      title: "Huawei ICT Competition APAC 2025", 
-      type: "Competition", 
-      icon: <Trophy />, 
-      desc: "Regional competition focusing on network, cloud, and computing excellence.",
-      status: "Registration Open",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800"
-    },
-    { 
-      date: "01 Sep", 
-      title: "GIC Vacation Crash Course 2025", 
-      type: "Workshop", 
-      icon: <Clock />, 
-      desc: "Intensive training program during summer break to sharpen core coding skills.",
-      status: "Planning",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800"
-    },
-    { 
-      date: "07 Sep", 
-      title: "HITIHE & WikiTropica Launch", 
-      type: "Event", 
-      icon: <Rocket />, 
-      desc: "Official launching ceremony of the HITIHE and WikiTropica innovation platforms.",
-      status: "Upcoming",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
-    },
-    { 
-      date: "01 Sep", 
-      title: "GIC Vacation Crash Course 2025", 
-      type: "Workshop", 
-      icon: <Clock />, 
-      desc: "Intensive training program during summer break to sharpen core coding skills.",
-      status: "Planning",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800"
-    },
-    { 
-      date: "07 Sep", 
-      title: "HITIHE & WikiTropica Launch", 
-      type: "Event", 
-      icon: <Rocket />, 
-      desc: "Official launching ceremony of the HITIHE and WikiTropica innovation platforms.",
-      status: "Upcoming",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
-    }
-  ];
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans">
@@ -109,7 +60,7 @@ export default function EventsPage() {
                 {/* Image Side */}
                 <div className="relative h-64 md:h-full">
                     <img 
-                      src={events[0].image} 
+                      src={events[0]?.image} 
                       className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60" 
                       alt="Cybersecurity"
                     />
@@ -121,13 +72,13 @@ export default function EventsPage() {
                 <div className="p-10 md:p-16 flex flex-col justify-center">
                     <div className="flex items-center gap-4 mb-6">
                         <Chip color="primary" variant="flat" className="font-bold bg-blue-600 text-white uppercase text-[10px]">Featured Event</Chip>
-                        <span className="text-blue-400 font-bold text-sm tracking-widest">{events[0].date}</span>
+                        <span className="text-blue-400 font-bold text-sm tracking-widest">{events[0]?.date}</span>
                     </div>
                     <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 leading-tight">
-                        {events[0].title}
+                        {events[0]?.title}
                     </h2>
                     <p className="text-slate-400 mb-10 text-lg leading-relaxed">
-                        {events[0].desc}
+                        {events[0]?.desc}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Button className="bg-white text-zinc-950 font-black h-14 px-10 rounded-2xl">
@@ -168,7 +119,7 @@ export default function EventsPage() {
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-2xl font-black tracking-tighter text-blue-600">{event.date}</span>
                             <div className="p-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-slate-400">
-                                {event.icon}
+                                {iconMap[event.icon]}
                             </div>
                         </div>
                         <h3 className="text-xl font-black mb-3 tracking-tight group-hover:text-blue-600 transition-colors h-14 line-clamp-2">

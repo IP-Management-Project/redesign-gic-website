@@ -17,21 +17,19 @@ import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
 import AdmissionSection from "@/components/admission";
 import { CurriculumSection } from "@/components/cirriculumn";
+import { useInternationalProgramData } from "@/hooks/useInternationalProgramData";
 
 export default function InternationalProgramPage() {
+  const { data } = useInternationalProgramData();
+  const partners = data?.partners ?? [];
+  const mobilityHighlights = data?.mobilityHighlights ?? [];
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.6 }
   };
-
-  const partners = [
-    { name: "INSA Lyon", location: "Lyon, France", focus: "Master & PhD tracks" },
-    { name: "INP Toulouse", location: "Toulouse, France", focus: "Joint-supervision" },
-    { name: "UTC Compiègne", location: "Compiègne, France", focus: "Software Architecture" },
-    { name: "Polytech Network", location: "France-wide", focus: "Specialized Labs" },
-  ];
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans">
@@ -95,7 +93,7 @@ export default function InternationalProgramPage() {
                 allowing students to earn degrees recognized both in Cambodia and Europe.
               </p>
               <ul className="space-y-3">
-                {["Dual-degree paths with France", "International research tracks", "French & English language mastery"].map(item => (
+                {mobilityHighlights.map((item) => (
                   <li key={item} className="flex items-center gap-2 text-sm font-bold">
                     <CheckCircle2 size={16} className="text-blue-200" /> {item}
                   </li>
