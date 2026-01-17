@@ -17,21 +17,23 @@ import {
   Search,
   ShieldCheck
 } from "lucide-react";
+import { useVisionPointsData } from "@/hooks/useVisionPointsData";
 
 export default function MissionVisionPage() {
+  const { data: visionPoints = [] } = useVisionPointsData();
+  const visionIcons = {
+    users: <Users size={20} />,
+    trending: <TrendingUp size={20} />,
+    globe: <Globe size={20} />,
+    lightbulb: <Lightbulb size={20} />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.6 }
   };
-
-  const visionPoints = [
-    { text: "Actively participate in human resource development in ICT", icon: <Users size={20} /> },
-    { text: "Contribute in the development of related domains", icon: <TrendingUp size={20} /> },
-    { text: "Contribute in the development of higher education of the country", icon: <Globe size={20} /> },
-    { text: "Conduct fruitful research that meet the needs of the country", icon: <Lightbulb size={20} /> },
-  ];
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-blue-100">
@@ -133,7 +135,7 @@ export default function MissionVisionPage() {
               {visionPoints.map((point, i) => (
                 <div key={i} className="p-10 rounded-[2.5rem] bg-gray-50 dark:bg-zinc-900/50 border border-transparent hover:border-blue-600/20 transition-all group">
                   <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
-                    {point.icon}
+                    {visionIcons[point.icon]}
                   </div>
                   <p className="text-lg font-black text-slate-900 dark:text-white leading-tight">
                     {point.text}

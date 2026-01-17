@@ -16,39 +16,16 @@ import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
-
-// 1. DATA STRUCTURE FOR FILTERING
-const academicYears = ["Year 3", "Year 4", "Year 5", "Master 1", "Master 2"];
-const semesters = ["Semester I", "Semester II"];
-
-type SessionType = "C" | "TD" | "TP";
-
-type TimetableSession = {
-  day: string;
-  time: string;
-  subject: string;
-  type: SessionType;
-  lecturer: string;
-  code?: string;
-  group?: string;
-};
-
-type TimetableData = Record<string, Record<string, TimetableSession[]>>;
-
-// Example dynamic data reflecting the provided image
-const timetableData: TimetableData = {
-  "Year 3": {
-    "Semester I": [
-      { day: "Lundi", time: "7h00 - 8h55", subject: "Statistique", type: "C", lecturer: "PHOK Ponna", code: "snk2rpb" },
-      { day: "Mardi", time: "7h00 - 8h55", subject: "Anglais", type: "C", lecturer: "TBD", code: "9c3yiph" },
-      { day: "Mardi", time: "13h00 - 14h55", subject: "Algorithms & Programming I", type: "C", lecturer: "BOU Channa", code: "yjdxx1g" },
-      { day: "Jeudi", time: "9h10 - 11h05", subject: "Combinational & Sequential Logic I", type: "C", lecturer: "HENG Rathpisey", code: "skje0zr" },
-      { day: "Vendredi", time: "13h00 - 14h55", subject: "Combinational & Sequential Logic I", type: "TP", lecturer: "HENG Rathpisey", group: "Group A" },
-    ]
-  }
-};
+import { useTimetableData } from "@/hooks/useTimetableData";
+import type { SessionType, TimetableSession } from "@/hooks/useTimetableData";
 
 export default function TimetableHub() {
+  const { data } = useTimetableData();
+  const academicYears = data?.academicYears ?? [];
+  const semesters = data?.semesters ?? [];
+  const timetableData = data?.timetable ?? {};
+  const days = data?.days ?? [];
+  const legendItems = data?.legend ?? [];
   const [year, setYear] = useState("Year 3");
   const [semester, setSemester] = useState("Semester I");
 
@@ -99,7 +76,7 @@ export default function TimetableHub() {
 
         {/* TIMETABLE GRID */}
         <div className="grid lg:grid-cols-5 gap-4">
-          {["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"].map((day) => (
+          {days.map((day) => (
             <div key={day} className="flex flex-col gap-4">
               <div className="text-center p-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">
                 {day}
@@ -121,9 +98,9 @@ export default function TimetableHub() {
         {/* LEGEND & DOWNLOAD */}
         <div className="mt-16 flex flex-col md:flex-row justify-between items-center gap-8 p-10 rounded-[3rem] bg-gray-50 dark:bg-zinc-900 border border-divider">
           <div className="flex flex-wrap gap-6">
-            <LegendItem color="bg-blue-600" label="Cours (Lecture)" />
-            <LegendItem color="bg-amber-500" label="Travaux Dirigés (Tutorial)" />
-            <LegendItem color="bg-emerald-500" label="Travaux Pratiques (Lab)" />
+            {legendItems.map((item) => (
+              <LegendItem key={item.label} color={item.color} label={item.label} />
+            ))}
           </div>
           <Button color="primary" className="font-black h-14 px-10 rounded-2xl" startContent={<Download size={18} />}>
             EXPORT SCHEDULE PDF

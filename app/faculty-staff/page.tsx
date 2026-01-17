@@ -17,50 +17,18 @@ import {
 import { Card } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
-
-// 1. COMPLETE DATA STRUCTURE
-const facultyData = {
-  management: [
-    {
-      name: "Head Dep",
-      role: "Head of the Department",
-      degree: "Information Technology, Ph.D.",
-      portrait: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800",
-      uniLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c3/ITC_Logo.svg/1200px-ITC_Logo.svg.png",
-      focus: "Institutional leadership and strategic development of GIC."
-    },
-    {
-      name: "Vice Head",
-      role: "Vice-Head of Department",
-      degree: "Software Engineering, Master",
-      portrait: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
-      uniLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c3/ITC_Logo.svg/1200px-ITC_Logo.svg.png",
-      focus: "Overseeing academic programs and department infrastructure."
-    },
-  ],
-  lecturers: [
-    { name: "Lecturer", role: "Coordinator", degree: "International Program, Coordinator", portrait: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Managing international cooperation and joint-degree programs." },
-    { name: "Lecturer", role: "Lecturer", degree: "Cloud Computing, Lecturer", portrait: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=400", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Specializing in distributed systems and network architecture." },
-    { name: "Lecturer", role: "Lecturer", degree: "Artificial Intelligence, Lecturer", portrait: "https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=400", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Researching machine learning models for Khmer language." },
-    { name: "Lecturer", role: "Lecturer", degree: "Cybersecurity, Lecturer", portrait: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Focusing on secure software lifecycles and encryption." },
-    { name: "Lecturer", role: "Lecturer", degree: "Web Technologies, Lecturer", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Modern web frameworks and scalable frontend design." },
-    { name: "TOUCH Sereysethy", role: "Lecturer", degree: "Mobile Development, Lecturer", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "iOS and Android native application development." },
-    { name: "NOU Sotheany", role: "Lecturer", degree: "Software Quality, Lecturer", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Testing methodologies and software maintenance." },
-  ],
-  researchers: [
-    { name: "VALY Dona", role: "Researcher", degree: "NLP Specialist, Researcher", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Advancing Khmer Natural Language Processing." },
-    { name: "KONG Phutphalla", role: "Researcher", degree: "Computer Vision, Researcher", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Optical Character Recognition (OCR) for Khmer script." },
-    { name: "SOK Kimheng", role: "Researcher", degree: "Data Science, Researcher", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Data analysis and predictive modeling." },
-  ],
-  staff: [
-    { name: "SRIN Sreyneth", role: "Administrator", degree: "Administration, Staff", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Department operations and student coordination." },
-    { name: "SREY Sokhom", role: "Developer", degree: "Contents, Developer", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "E-learning platform content development." },
-    { name: "CHOM Sreylam", role: "Developer", degree: "Contents, Developer", portrait: "", uniLogo: "https://itc.edu.kh/wp-content/uploads/2021/08/logo-itc.png", focus: "Multimedia assets and educational tools." },
-  ]
-};
+import { useFacultyStaffData } from "@/hooks/useFacultyStaffData";
+import type { FacultyStaffData, FacultyStaffMember } from "@/hooks/useFacultyStaffData";
 
 export default function FacultyPage() {
   const [viewMode, setViewMode] = useState<"portrait" | "hierarchy">("portrait");
+  const { data: facultyData } = useFacultyStaffData();
+  const safeFacultyData: FacultyStaffData = facultyData ?? {
+    management: [],
+    lecturers: [],
+    researchers: [],
+    staff: [],
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 py-24 transition-colors duration-500">
@@ -97,10 +65,10 @@ export default function FacultyPage() {
               className="space-y-12"
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {facultyData.management.map((leader) => <ExecutiveCard key={leader.name} leader={leader} />)}
+                {safeFacultyData.management.map((leader) => <ExecutiveCard key={leader.name} leader={leader} />)}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-12">
-                {[...facultyData.lecturers, ...facultyData.researchers, ...facultyData.staff].map((prof) => (
+                {[...safeFacultyData.lecturers, ...safeFacultyData.researchers, ...safeFacultyData.staff].map((prof) => (
                   <PortraitCard key={prof.name} prof={prof} />
                 ))}
               </div>
@@ -113,7 +81,7 @@ export default function FacultyPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="overflow-x-auto py-12"
             >
-              <HierarchyView data={facultyData} />
+              <HierarchyView data={safeFacultyData} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -125,7 +93,7 @@ export default function FacultyPage() {
 // --------------------------------------------------------------------------------
 // HIERARCHY VIEW LOGIC
 // --------------------------------------------------------------------------------
-function HierarchyView({ data }: { data: any }) {
+function HierarchyView({ data }: { data: FacultyStaffData }) {
   return (
     <div className="flex flex-col items-center min-w-[1200px]">
       {/* Management Root */}
@@ -180,7 +148,7 @@ function HierarchyView({ data }: { data: any }) {
   );
 }
 
-function HierarchyNode({ name, role, color = "blue" }: any) {
+function HierarchyNode({ name, role, color = "blue" }: { name: string; role: string; color?: "blue" | "purple" | "emerald" }) {
   const colors: any = {
     blue: "border-blue-500/20 text-blue-600 bg-blue-50/50",
     purple: "border-purple-500/20 text-purple-600 bg-purple-50/50",
@@ -198,7 +166,7 @@ function HierarchyNode({ name, role, color = "blue" }: any) {
 // CARDS (Portrait & Executive)
 // --------------------------------------------------------------------------------
 
-function ExecutiveCard({ leader }: { leader: any }) {
+function ExecutiveCard({ leader }: { leader: FacultyStaffMember }) {
   return (
     <Card className="group relative h-[450px] w-full border border-divider overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-none hover:shadow-2xl hover:shadow-blue-600/10 transition-all duration-500">
       <div className="flex h-full flex-col md:flex-row">
@@ -227,7 +195,7 @@ function ExecutiveCard({ leader }: { leader: any }) {
   );
 }
 
-function PortraitCard({ prof }: { prof: any }) {
+function PortraitCard({ prof }: { prof: FacultyStaffMember }) {
   return (
     <Card className="group relative h-[600px] w-full border-none overflow-hidden bg-zinc-900 rounded-3xl">
       {prof.portrait ? (

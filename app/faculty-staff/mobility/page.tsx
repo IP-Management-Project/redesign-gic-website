@@ -11,36 +11,18 @@ import {
   Globe,
   ChevronRight
 } from "lucide-react";
-
-// 1. DATA STRUCTURE
-const facultyData = {
-  management: [
-    { name: "LAY Heng", role: "Head of the Department", spec: "Ph.D. in Computer Science", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400" },
-    { name: "SEAK Leng", role: "Vice-Head of the Department", spec: "Master of Software Engineering", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400" },
-  ],
-  lecturers: [
-    { name: "PICH Reatrey", role: "Coordinator of International Program", spec: "Data Science Specialist" },
-    { name: "Tongsreng Tal", role: "Lecturer", spec: "Cloud Infrastructure" },
-    { name: "CHHUO Vanna", role: "Lecturer", spec: "Artificial Intelligence" },
-    { name: "YOU Vanndy", role: "Lecturer", spec: "Network Security" },
-    { name: "BOU Channa", role: "Lecturer", spec: "Web Development" },
-    { name: "TOUCH Sereysethy", role: "Lecturer", spec: "Mobile Computing" },
-    { name: "NOU Sotheany", role: "Lecturer", spec: "Software Architecture" },
-  ],
-  researchers: [
-    { name: "VALY Dona", role: "Researcher", spec: "Natural Language Processing" },
-    { name: "KONG Phutphalla", role: "Researcher", spec: "Image Processing & OCR" },
-    { name: "SOK Kimheng", role: "Researcher", spec: "Machine Learning" },
-  ],
-  staff: [
-    { name: "SRIN Sreyneth", role: "Administrator", spec: "Department Management" },
-    { name: "SREY Sokhom", role: "Contents Developer", spec: "E-Learning Specialist" },
-    { name: "CHOM Sreylam", role: "Contents Developer", spec: "Multimedia Design" },
-  ]
-};
+import { useFacultyMobilityData } from "@/hooks/useFacultyMobilityData";
+import type { FacultyMobilityData, FacultyPerson } from "@/hooks/useFacultyMobilityData";
 
 export default function FacultyPage() {
   const [viewMode, setViewMode] = useState<"portrait" | "hierarchy">("portrait");
+  const { data: facultyData } = useFacultyMobilityData();
+  const safeFacultyData: FacultyMobilityData = facultyData ?? {
+    management: [],
+    lecturers: [],
+    researchers: [],
+    staff: [],
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 py-20 transition-colors duration-500">
@@ -86,7 +68,7 @@ export default function FacultyPage() {
               {/* MANAGEMENT PORTRAITS */}
               <section>
                 <div className="grid md:grid-cols-2 gap-8">
-                  {facultyData.management.map((person) => (
+                  {safeFacultyData.management.map((person) => (
                     <PortraitCard key={person.name} person={person} featured />
                   ))}
                 </div>
@@ -94,7 +76,7 @@ export default function FacultyPage() {
 
               {/* LECTURERS & OTHERS */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[...facultyData.lecturers, ...facultyData.researchers, ...facultyData.staff].map((person) => (
+                {[...safeFacultyData.lecturers, ...safeFacultyData.researchers, ...safeFacultyData.staff].map((person) => (
                   <PortraitCard key={person.name} person={person} />
                 ))}
               </div>
@@ -107,7 +89,7 @@ export default function FacultyPage() {
               exit={{ opacity: 0, scale: 0.98 }}
               className="relative py-10 overflow-x-auto"
             >
-              <HierarchyView data={facultyData} />
+              <HierarchyView data={safeFacultyData} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -117,7 +99,7 @@ export default function FacultyPage() {
 }
 
 // 2. PORTRAIT CARD COMPONENT
-function PortraitCard({ person, featured = false }: { person: any; featured?: boolean }) {
+function PortraitCard({ person, featured = false }: { person: FacultyPerson; featured?: boolean }) {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -156,7 +138,7 @@ function PortraitCard({ person, featured = false }: { person: any; featured?: bo
 }
 
 // 3. HIERARCHY TREE VIEW
-function HierarchyView({ data }: { data: any }) {
+function HierarchyView({ data }: { data: FacultyMobilityData }) {
   return (
     <div className="flex flex-col items-center gap-12 min-w-[1000px]">
       {/* HEAD UNIT */}
@@ -205,7 +187,7 @@ function HierarchyView({ data }: { data: any }) {
   );
 }
 
-function HierarchyNode({ name, role, isHead = false, small = false }: any) {
+function HierarchyNode({ name, role, isHead = false, small = false }: { name: string; role: string; isHead?: boolean; small?: boolean }) {
   return (
     <div className={`p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 shadow-sm transition-all hover:border-blue-500 text-center ${isHead ? 'w-80 border-blue-500' : 'w-64'}`}>
       <h5 className={`font-black tracking-tight ${small ? 'text-sm' : 'text-lg'}`}>{name}</h5>

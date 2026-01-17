@@ -4,15 +4,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
   Beaker,
-  Cpu,
-  Search,
   Globe,
   Code2,
   Terminal,
   Users,
   Lightbulb,
   ArrowRight,
-  ShieldAlert,
   ArrowUpRight,
   Video,
   Zap,
@@ -23,8 +20,20 @@ import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
+import { useLabsPageData } from "@/hooks/useLabsPageData";
 
 export default function LabsAndClubsPage() {
+  const { data } = useLabsPageData();
+  const projects = data?.projects ?? [];
+  const clubs = data?.clubs ?? [];
+  const researchInterests = data?.researchInterests ?? [];
+  const expectedApplications = data?.expectedApplications ?? [];
+  const clubIcons = {
+    code: <Code2 />,
+    terminal: <Terminal />,
+    lightbulb: <Lightbulb />,
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -32,74 +41,11 @@ export default function LabsAndClubsPage() {
     transition: { duration: 0.6 }
   };
 
-  const projects = [
-    { 
-      title: "L2K Conversion", 
-      topic: "Automatic Latin-to-Khmer based Text Conversation", 
-      funder: "MoEYS Cambodia", 
-      period: "2019 - 2022" 
-    },
-    { 
-      title: "Manuscript Digitization", 
-      topic: "Ancient Manuscript Digitization and Indexation", 
-      funder: "ARES-CCD", 
-      period: "2016 - 2019" 
-    },
-    { 
-      title: "Visual Attention", 
-      topic: "Top-down Approach and Memory Information", 
-      funder: "ARES-CCD", 
-      period: "2017 - 2019" 
-    }
-  ];
 
-  const labs = [
-    {
-      name: "Natural Language Processing (NLP)",
-      desc: "Focusing on Khmer script analysis, OCR, and Machine Translation.",
-      icon: <Globe />,
-      specialization: "AI & Linguistics"
-    },
-    {
-      name: "Data Science & Big Data",
-      desc: "Advanced processing for large-scale datasets and predictive modeling.",
-      icon: <Search />,
-      specialization: "Statistics & Mining"
-    },
-    {
-      name: "Mobile Ecosystems & Security",
-      desc: "Research on iOS/Android security and data mining in mobile environments.",
-      icon: <Cpu />,
-      specialization: "Cybersecurity"
-    },
-    {
-      name: "High-Performance Computing (HPC)",
-      desc: "Managing our physical server center for heavy computational research.",
-      icon: <ShieldAlert />,
-      specialization: "Cloud Sovereignty"
-    },
-  ];
 
-  const clubs = [
-    {
-      name: "Codera Development Club",
-      desc: "A community for full-stack and mobile app enthusiasts to build real-world projects.",
-      icon: <Code2 />,
-      color: "bg-blue-600"
-    },
-    {
-      name: "Cybersecurity Club",
-      desc: "Practicing Capture The Flag (CTF) and ethical hacking to secure future infrastructures.",
-      icon: <Terminal />,
-      color: "bg-zinc-900"
-    },
-    {
-      name: "Innovation Hub",
-      desc: "Focusing on entrepreneurship, startups, and Techno Innovation Challenges.",
-      icon: <Lightbulb />,
-      color: "bg-amber-500"
-    }
-  ];
+
+
+
 
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans">
@@ -165,7 +111,7 @@ export default function LabsAndClubsPage() {
                       </p>
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">Research Interests</h4>
-                        {["Text & Pattern Recognition", "Spoken Language Processing", "Speech Synthesis", "Artificial Intelligence"].map((interest) => (
+                        {researchInterests.map((interest) => (
                           <div key={interest} className="flex items-center gap-3 text-sm font-bold text-zinc-300">
                             <Zap size={14} className="text-blue-500" /> {interest}
                           </div>
@@ -177,7 +123,7 @@ export default function LabsAndClubsPage() {
                       <div className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-sm">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-6 text-center">Expected Applications</h4>
                         <div className="grid grid-cols-2 gap-3">
-                          {["Khmer OCR Tool", "Text to Speech", "Speech Recognition", "Romanization Tool"].map(app => (
+                          {expectedApplications.map((app) => (
                             <div key={app} className="p-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black text-center uppercase tracking-widest hover:bg-blue-600 transition-colors cursor-default">
                               {app}
                             </div>
@@ -284,7 +230,7 @@ export default function LabsAndClubsPage() {
                   className="p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-500/50 transition-all flex flex-col md:flex-row items-center gap-8 group"
                 >
                   <div className={`w-14 h-14 shrink-0 rounded-2xl ${club.color} flex items-center justify-center text-white shadow-lg`}>
-                    {club.icon}
+                    {clubIcons[club.icon]}
                   </div>
                   <div className="flex-grow text-center md:text-left">
                     <h4 className="text-xl font-bold mb-1">{club.name}</h4>

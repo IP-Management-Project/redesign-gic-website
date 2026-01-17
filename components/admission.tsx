@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Trophy, ClipboardCheck } from "lucide-react";
+import { useAdmissionData } from "@/hooks/useAdmissionData";
 
 interface AdmissionSectionProps {
   title?: string;
@@ -13,13 +14,19 @@ interface AdmissionSectionProps {
 }
 
 export default function AdmissionSection({
-  title = "How to Join GIC",
-  description = "Entrance is highly competitive. Every October, high school graduates undergo a rigorous national entrance exam to secure a spot in one of the country's top engineering faculties.",
-  subjects = ["Mathematics", "Physics", "Chemistry", "Logic Reasoning"],
-  scholarshipText = "80 full 5-year scholarships awarded annually by MoEYS & ITC.",
-  selectionText = "Only the top 1,500 students nationwide are eligible for enrollment.",
+  title,
+  description,
+  subjects,
+  scholarshipText,
+  selectionText,
 }: AdmissionSectionProps) {
-  
+  const { data } = useAdmissionData();
+  const resolvedTitle = title ?? data?.title ?? "";
+  const resolvedDescription = description ?? data?.description ?? "";
+  const resolvedSubjects = subjects ?? data?.subjects ?? [];
+  const resolvedScholarshipText = scholarshipText ?? data?.scholarshipText ?? "";
+  const resolvedSelectionText = selectionText ?? data?.selectionText ?? "";
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -35,10 +42,10 @@ export default function AdmissionSection({
           {/* Left Column: Info & Requirements */}
           <motion.div {...fadeIn} className="lg:col-span-5">
             <h2 className="text-4xl font-black tracking-tighter mb-6 text-slate-900 dark:text-white">
-              {title}
+              {resolvedTitle}
             </h2>
             <p className="text-slate-600 dark:text-zinc-400 mb-8 leading-relaxed">
-              {description}
+              {resolvedDescription}
             </p>
 
             <div className="space-y-4">
@@ -48,7 +55,7 @@ export default function AdmissionSection({
                 <div>
                   <h4 className="font-black text-sm uppercase text-slate-900 dark:text-white">Scholarships</h4>
                   <p className="text-xs text-slate-500 dark:text-zinc-400">
-                    {scholarshipText}
+                    {resolvedScholarshipText}
                   </p>
                 </div>
               </div>
@@ -59,7 +66,7 @@ export default function AdmissionSection({
                 <div>
                   <h4 className="font-black text-sm uppercase text-slate-900 dark:text-white">Selection Cap</h4>
                   <p className="text-xs text-slate-500 dark:text-zinc-400">
-                    {selectionText}
+                    {resolvedSelectionText}
                   </p>
                 </div>
               </div>
@@ -71,7 +78,7 @@ export default function AdmissionSection({
             {...fadeIn} 
             className="lg:col-span-7 grid grid-cols-2 gap-4"
           >
-            {subjects.map((subject) => (
+            {resolvedSubjects.map((subject) => (
               <div
                 key={subject}
                 className="p-10 rounded-[2.5rem] bg-slate-900 text-white flex flex-col justify-between h-48 group hover:bg-blue-600 transition-all duration-500 cursor-default shadow-xl shadow-slate-900/10"
