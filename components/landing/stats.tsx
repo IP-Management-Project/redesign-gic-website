@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardBody } from "@heroui/card";
 import { GicDesktopIcon, GicMobileIcon, GicNetworkIcon, GicSatelliteIcon } from "../icons";
+import { useDepartmentNumber } from "@/hooks/useDepartmentNumber";
 
 
 // 1. Interfaces
@@ -26,8 +27,17 @@ interface StatsSectionProps {
   container?: string;
 }
 
+const iconMap = {
+  desktop: GicDesktopIcon,
+  network: GicNetworkIcon,
+  satellite: GicSatelliteIcon,
+  mobile: GicMobileIcon,
+};
+
 // 2. Main Section
 export default function StatsSection({ t, section = "", container = "" }: StatsSectionProps) {
+  const { data: stats = [] } = useDepartmentNumber();
+
   return (
     <section className={`${section} relative`}>
       <div className={`${container} relative z-10 mx-auto px-6`}>
@@ -54,35 +64,21 @@ export default function StatsSection({ t, section = "", container = "" }: StatsS
 
         {/* The Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <StatCard 
-            isFeatured // First one has direct glow
-            label="Established" 
-            value="2005" 
-            helper="Two decades of academic excellence" 
-            icon={<GicDesktopIcon className="w-full h-full" />}
-            accentColor="text-blue-500 dark:text-blue-400"
-          />
-          <StatCard 
-            label="Community" 
-            value="1,200+" 
-            helper="Vibrant network of students and alumni" 
-            icon={<GicNetworkIcon className="w-full h-full" />}
-            accentColor="text-indigo-500 dark:text-indigo-400"
-          />
-          <StatCard 
-            label="Employment" 
-            value="92%" 
-            helper="Hired within 6 months of graduation" 
-            icon={<GicSatelliteIcon className="w-full h-full" />}
-            accentColor="text-cyan-500 dark:text-cyan-400"
-          />
-          <StatCard 
-            label="Research" 
-            value="12 Labs" 
-            helper="Innovative groups driving local tech" 
-            icon={<GicMobileIcon className="w-full h-full" />}
-            accentColor="text-primary"
-          />
+          {stats.map((stat) => {
+            const Icon = iconMap[stat.icon];
+
+            return (
+              <StatCard
+                key={stat.id}
+                isFeatured={stat.isFeatured}
+                label={stat.label}
+                value={stat.value}
+                helper={stat.helper}
+                icon={<Icon className="w-full h-full" />}
+                accentColor={stat.accentColor}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
