@@ -357,8 +357,8 @@ type SiteContent = {
 const contentByLocale: Record<Locale, SiteContent> = {
   en: {
     brand: {
-      name: "GIC Engineering",
-      tagline: "Global Innovation Center",
+      name: "GIC Deparment",
+      tagline: "IT Engineering of ITC",
     },
     description:
       "Global Innovation Center for engineering education, research, and student life.",
@@ -393,7 +393,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
           label: "Research",
           href: "/research",
           children: [
-            { label: "Laboratory", href: "/research/laboratory", desc: "Visit the labs and facilities advancing applied research." },
+            { label: "Laboratory", href: "/research/labs", desc: "Visit the labs and facilities advancing applied research." },
             { label: "Publications", href: "/research/publications", desc: "Browse peer-reviewed papers, reports, and conference work." },
             { label: "Software & Tools", href: "/research/software-tools", desc: "Explore open-source tools, datasets, and research platforms." },
           ]
@@ -430,8 +430,8 @@ const contentByLocale: Record<Locale, SiteContent> = {
         { label: "Publications", href: "/research/publications" },
       ],
       utility: [
-        { label: "Apply", href: "/apply" },
-        { label: "Calendar", href: "/news-events/calendar" },
+        { label: "FAQ", href: "/program/faq" },
+        { label: "Calendar", href: "/calendar" },
         { label: "Publications", href: "/research/publications" },
       ],
     },

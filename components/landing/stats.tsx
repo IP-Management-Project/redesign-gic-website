@@ -3,12 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardBody } from "@heroui/card";
-import { 
-  GicSatellite, 
-  GicMobile, 
-  GicDesktop, 
-  GicNetwork 
-} from "@/lib/GicIcons";
+import { GicDesktopIcon, GicMobileIcon, GicNetworkIcon, GicSatelliteIcon } from "../icons";
+
 
 // 1. Interfaces
 interface StatCardProps {
@@ -63,28 +59,28 @@ export default function StatsSection({ t, section = "", container = "" }: StatsS
             label="Established" 
             value="2005" 
             helper="Two decades of academic excellence" 
-            icon={<GicDesktop className="w-full h-full" />}
+            icon={<GicDesktopIcon className="w-full h-full" />}
             accentColor="text-blue-500 dark:text-blue-400"
           />
           <StatCard 
             label="Community" 
             value="1,200+" 
             helper="Vibrant network of students and alumni" 
-            icon={<GicNetwork className="w-full h-full" />}
+            icon={<GicNetworkIcon className="w-full h-full" />}
             accentColor="text-indigo-500 dark:text-indigo-400"
           />
           <StatCard 
             label="Employment" 
             value="92%" 
             helper="Hired within 6 months of graduation" 
-            icon={<GicSatellite className="w-full h-full" />}
+            icon={<GicSatelliteIcon className="w-full h-full" />}
             accentColor="text-cyan-500 dark:text-cyan-400"
           />
           <StatCard 
             label="Research" 
             value="12 Labs" 
             helper="Innovative groups driving local tech" 
-            icon={<GicMobile className="w-full h-full" />}
+            icon={<GicMobileIcon className="w-full h-full" />}
             accentColor="text-primary"
           />
         </div>

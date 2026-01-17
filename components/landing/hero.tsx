@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { GicSatellite, GicMobile, GicDesktop, GicNetwork } from "@/lib/GicIcons";
+import { GicDesktopIcon, GicMobileIcon, GicNetworkIcon, GicSatelliteIcon } from "../icons";
 
 export default function HeroSection({ t }) {
   const fadeInUp = {
@@ -32,28 +32,28 @@ export default function HeroSection({ t }) {
           transition={{ duration: 5, repeat: Infinity }}
           className="absolute top-[20%] left-[15%] text-blue-500 w-24 h-24"
         >
-          <GicSatellite />
+          <GicSatelliteIcon  size={200}/>
         </motion.div>
         <motion.div 
           animate={{ y: [0, 25, 0], opacity: [0.1, 0.3, 0.1] }} 
           transition={{ duration: 7, repeat: Infinity, delay: 1 }}
           className="absolute bottom-[25%] left-[20%] text-cyan-400 w-16 h-16"
         >
-          <GicMobile />
+          <GicMobileIcon size={200} />
         </motion.div>
         <motion.div 
           animate={{ x: [0, 15, 0], opacity: [0.2, 0.5, 0.2] }} 
           transition={{ duration: 6, repeat: Infinity, delay: 0.5 }}
           className="absolute top-[25%] right-[18%] text-indigo-500 w-28 h-28"
         >
-          <GicDesktop />
+          <GicDesktopIcon size={200}/>
         </motion.div>
         <motion.div 
           animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.3, 0.15] }} 
           transition={{ duration: 8, repeat: Infinity }}
           className="absolute bottom-[20%] right-[15%] text-blue-300 w-32 h-32"
         >
-          <GicNetwork />
+          <GicNetworkIcon size={200}/>
         </motion.div>
       </div>
 

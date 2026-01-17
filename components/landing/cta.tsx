@@ -24,7 +24,7 @@ export default function FinalCTA({ t, container }) {
 
           <div className="relative z-10">
             {/* Eyebrow / Kicker */}
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95 }}
               whileInView={{ scale: 1 }}
               className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-black uppercase tracking-[0.2em] text-primary"
@@ -46,22 +46,13 @@ export default function FinalCTA({ t, container }) {
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
               <Button
                 as={NextLink}
-                href="/apply"
+                href="/program"
                 size="lg"
                 className="bg-foreground text-background font-bold px-12 h-14 rounded-2xl shadow-xl shadow-default-200 dark:shadow-none hover:bg-primary hover:text-white transition-all duration-300 w-full sm:w-auto"
               >
-                {t.apply}
-              </Button>
-
-              <Button
-                as={NextLink}
-                href="/program"
-                size="lg"
-                variant="bordered"
-                className="border-divider text-default-700 dark:text-default-600 font-bold px-12 h-14 rounded-2xl hover:bg-default-100 dark:hover:bg-default-50 transition-all w-full sm:w-auto"
-              >
                 {t.cta1}
               </Button>
+
             </div>
 
             {/* Trust Line & Stats */}

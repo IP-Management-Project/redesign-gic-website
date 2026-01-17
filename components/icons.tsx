@@ -185,3 +185,170 @@ export const SearchIcon = (props: IconSvgProps) => (
     />
   </svg>
 );
+
+export const GicSatelliteIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: any) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    role="presentation"
+    viewBox="0 0 184.66 211.66"
+    width={width || size}
+    height={height || size}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g>
+        {/* Main Body - Using Cool Slate (#76879d) */}
+        <path
+          fill="currentColor"
+          className="text-[#76879d]"
+          d="M160.49,83.1c1.1,20.99-5.81,42.42-21,59.28-30.37,33.72-82.33,36.45-116.05,6.08l-17.9-16.12c-1.56-1.41-1.79-3.77-.52-5.45L99.4,1.63c1.43-1.9,4.18-2.16,5.95-.57l28.06,25.27c16.87,15.19,25.98,35.76,27.08,56.77Z"
+        />
+        {/* Decorative Line - Hidden/None fill per original */}
+        <line fill="none" x1="106.04" y2="126.38" />
+        {/* Base Component - Using Deep Navy (#26304d) for contrast */}
+        <path
+          fill="currentColor"
+          className="text-[#26304d]"
+          d="M148.74,152.93l-32.17,55.72c-.77,1.34.19,3.01,1.74,3.01h64.34c1.54,0,2.51-1.67,1.74-3.01l-32.17-55.72c-.77-1.34-2.7-1.34-3.48,0Z"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const GicDesktopIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: any) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    role="presentation"
+    viewBox="0 0 197.04 208.77"
+    width={width || size}
+    height={height || size}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g>
+        {/* Main Monitor - Cool Slate (#76879d) */}
+        <rect 
+          fill="currentColor" 
+          className="text-[#76879d]" 
+          width="197.04" 
+          height="172.72" 
+          rx="3.56" 
+          ry="3.56"
+        />
+        {/* Stand - Deep Navy (#26304d) */}
+        <rect 
+          fill="currentColor" 
+          className="text-[#26304d]" 
+          x="72.05" 
+          y="180.44" 
+          width="55.61" 
+          height="28.33" 
+          rx="1.75" 
+          ry="1.75"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const GicMobileIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: any) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    role="presentation"
+    viewBox="0 0 90.16 210.52"
+    width={width || size}
+    height={height || size}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g>
+        {/* Main Body - Cool Slate (#76879d) */}
+        <rect 
+          fill="currentColor" 
+          className="text-[#76879d]" 
+          y="48.69" 
+          width="89.81" 
+          height="161.83" 
+          rx="4.45" 
+          ry="4.45"
+        />
+        {/* Top Unit - Deep Navy (#26304d) */}
+        <rect 
+          fill="currentColor" 
+          className="text-[#26304d]" 
+          x="64.64" 
+          width="25.52" 
+          height="30.43" 
+          rx="2.17" 
+          ry="2.17"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const GicNetworkIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: any) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    role="presentation"
+    viewBox="0 0 212.2 279.94"
+    width={width || size}
+    height={height || size}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g>
+        {/* Connectivity Lines - Deep Navy (#26304d) */}
+        <g stroke="currentColor" className="text-[#26304d]" strokeWidth="3" strokeMiterlimit="10">
+          <line x1="120.63" y1="106.75" x2="155.48" y2="47.88" />
+          <line x1="129.48" y1="124.08" x2="161.5" y2="119.25" />
+          <line x1="121.29" y1="140.05" x2="167.05" y2="182.58" />
+          <line x1="90.78" y1="142.83" x2="58.89" y2="188.59" />
+          <line x1="88.93" y1="106.31" x2="69.52" y2="85.05" />
+        </g>
+        {/* Network Nodes - Cool Slate (#76879d) */}
+        <g fill="currentColor" className="text-[#76879d]">
+          <circle cx="41.36" cy="58.15" r="41.36" />
+          <circle cx="162.45" cy="230.18" r="49.75" />
+          <circle cx="40.76" cy="208" r="27.57" />
+          <circle cx="179.23" cy="118.09" r="17.38" />
+          <circle cx="170.24" cy="26.38" r="26.38" />
+          <circle cx="104.9" cy="124.08" r="24.58" />
+        </g>
+      </g>
+    </g>
+  </svg>
+);
