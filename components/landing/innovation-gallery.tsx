@@ -9,7 +9,21 @@ import { Image } from "@heroui/image";
 import { ArrowUpRight, Beaker, ShieldCheck, Database, Zap } from "lucide-react";
 import NextLink from "next/link";
 
-export default function ResearchSection({ t, section = "", container = "" }) {
+type ResearchSectionProps = {
+  t: {
+    researchKicker: string;
+    researchTitle: string;
+    researchDesc: string;
+  };
+  section?: string;
+  container?: string;
+};
+
+export default function ResearchSection({
+  t,
+  section = "",
+  container = "",
+}: ResearchSectionProps) {
   return (
     <section className={`${section} relative py-28 bg-background overflow-hidden`}>
       <div className={`${container} relative z-10 mx-auto px-6`}>

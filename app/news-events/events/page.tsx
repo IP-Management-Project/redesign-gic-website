@@ -9,6 +9,7 @@ import { getLocale } from "@/lib/server-locale";
 export default async function EventsPage() {
   const locale = await getLocale();
   const page = getSiteContent(locale).subpages.newsEvents.events;
+  const featured = page.featured!;
 
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
@@ -21,9 +22,9 @@ export default async function EventsPage() {
       <Link
         as={NextLink}
         className="text-sm text-default-600 hover:text-primary"
-        href={localizeHref(locale, page.featured.href)}
+        href={localizeHref(locale, featured.href)}
       >
-        {page.featured.label}
+        {featured.label}
       </Link>
     </section>
   );

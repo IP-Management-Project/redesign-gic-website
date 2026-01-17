@@ -95,35 +95,6 @@ const universityPartners = [
 ];
 const section = "py-20 md:py-28";
 const container = "max-w-7xl mx-auto px-6";
-const headingKicker =
-  "text-xs font-bold uppercase tracking-[0.35em] text-default-400";
-
-export function SectionHeader({
-  kicker,
-  titleText,
-  desc,
-  align = "left",
-}: {
-  kicker: string;
-  titleText: string;
-  desc?: string;
-  align?: "left" | "center";
-}) {
-  return (
-    <div className={align === "center" ? "text-center" : ""}>
-      <div className={headingKicker}>{kicker}</div>
-      <h2 className="mt-4 text-3xl md:text-5xl font-black tracking-tight">
-        {titleText}
-      </h2>
-      {desc ? (
-        <p className="mt-5 text-default-500 text-base md:text-lg max-w-2xl mx-auto">
-          {desc}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 function StatCard({
   label,
   value,
@@ -200,8 +171,8 @@ const stagger = {
   animate: { transition: { staggerChildren: 0.1 } },
 };
 
-export default function Home({ params }: { params: { locale: string } }) {
-  const locale = params?.locale === "km" ? "km" : "en";
+export default function Home() {
+  const locale = "en";
 
   const t = {
     en: {
@@ -330,7 +301,7 @@ export default function Home({ params }: { params: { locale: string } }) {
   const rotateX = useTransform(y, [-100, 100], [10, -10]);
   const rotateY = useTransform(x, [-100, 100], [-10, 10]);
 
-  function handleMouse(event) {
+  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     x.set(event.clientX - rect.left - rect.width / 2);
     y.set(event.clientY - rect.top - rect.height / 2);
@@ -344,7 +315,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       </div>
 
       {/* HERO */}
-      <HeroSection t={''} />
+      <HeroSection t={t} />
 
       {/* STATS */}
       <StatsSection

@@ -7,10 +7,11 @@ import { localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
 
 type TestimonialPageProps = {
-  params: { testimonialSlug: string };
+  params: Promise<{ testimonialSlug: string }>;
 };
 
 export default async function TestimonialPage({ params }: TestimonialPageProps) {
+  const { testimonialSlug } = await params;
   const locale = await getLocale();
   const page = getSiteContent(locale).subpages.studentLife.testimonialDetail;
 
@@ -18,7 +19,7 @@ export default async function TestimonialPage({ params }: TestimonialPageProps) 
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
         <h1 className={title()}>
-          {page.titlePrefix}: {params.testimonialSlug}
+          {page.titlePrefix}: {testimonialSlug}
         </h1>
         <p className={subtitle({ class: "mt-4" })}>
           {page.description}

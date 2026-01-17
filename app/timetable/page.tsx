@@ -21,8 +21,22 @@ import { Button } from "@heroui/button";
 const academicYears = ["Year 3", "Year 4", "Year 5", "Master 1", "Master 2"];
 const semesters = ["Semester I", "Semester II"];
 
-// Example dynamic data reflecting the provided image 
-const timetableData = {
+type SessionType = "C" | "TD" | "TP";
+
+type TimetableSession = {
+  day: string;
+  time: string;
+  subject: string;
+  type: SessionType;
+  lecturer: string;
+  code?: string;
+  group?: string;
+};
+
+type TimetableData = Record<string, Record<string, TimetableSession[]>>;
+
+// Example dynamic data reflecting the provided image
+const timetableData: TimetableData = {
   "Year 3": {
     "Semester I": [
       { day: "Lundi", time: "7h00 - 8h55", subject: "Statistique", type: "C", lecturer: "PHOK Ponna", code: "snk2rpb" },
@@ -61,7 +75,11 @@ export default function TimetableHub() {
               selectedKeys={[year]}
               onSelectionChange={(keys) => setYear(Array.from(keys)[0] as string)}
             >
-              {academicYears.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+              {academicYears.map((academicYear) => (
+                <SelectItem key={academicYear} textValue={academicYear}>
+                  {academicYear}
+                </SelectItem>
+              ))}
             </Select>
             <Select 
               label="Semester" 
@@ -70,7 +88,11 @@ export default function TimetableHub() {
               selectedKeys={[semester]}
               onSelectionChange={(keys) => setSemester(Array.from(keys)[0] as string)}
             >
-              {semesters.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {semesters.map((term) => (
+                <SelectItem key={term} textValue={term}>
+                  {term}
+                </SelectItem>
+              ))}
             </Select>
           </div>
         </section>
@@ -86,9 +108,9 @@ export default function TimetableHub() {
               <AnimatePresence mode="wait">
                 <div className="space-y-4">
                   {timetableData[year]?.[semester]
-                    ?.filter(e => e.day === day)
-                    .map((session, i) => (
-                      <SessionCard key={i} session={session} />
+                    ?.filter((entry) => entry.day === day)
+                    .map((session, index) => (
+                      <SessionCard key={`${session.subject}-${index}`} session={session} />
                     ))}
                 </div>
               </AnimatePresence>
@@ -112,11 +134,11 @@ export default function TimetableHub() {
   );
 }
 
-function SessionCard({ session }: { session: any }) {
-  const typeColors = {
-    "C": "bg-blue-600",
-    "TD": "bg-amber-500",
-    "TP": "bg-emerald-500"
+function SessionCard({ session }: { session: TimetableSession }) {
+  const typeColors: Record<SessionType, string> = {
+    C: "bg-blue-600",
+    TD: "bg-amber-500",
+    TP: "bg-emerald-500",
   };
 
   return (

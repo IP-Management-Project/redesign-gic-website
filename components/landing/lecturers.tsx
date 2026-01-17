@@ -1,17 +1,30 @@
-import React from 'react';
+import React from "react";
 import { Card, CardBody } from "@heroui/card";
-import { Avatar } from '@heroui/avatar';
-import { Divider } from '@heroui/divider';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay, FreeMode } from 'swiper/modules';
-import { SectionHeader } from '@/app/page';
+import { Avatar } from "@heroui/avatar";
+import { Divider } from "@heroui/divider";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay, FreeMode } from "swiper/modules";
+import { SectionHeader } from "@/components/landing/section-header";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/free-mode';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/free-mode";
 
-export default function FacultySlideshowFull({ t, section, container }) {
+type FacultySlideshowProps = {
+  t: {
+    facultyKicker: string;
+    facultyTitle: string;
+  };
+  section: string;
+  container: string;
+};
+
+export default function FacultySlideshowFull({
+  t,
+  section,
+  container,
+}: FacultySlideshowProps) {
   const faculty = [
     {
       name: "Mr. Heng Rathpisey",
