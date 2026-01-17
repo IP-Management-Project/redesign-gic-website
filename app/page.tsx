@@ -239,7 +239,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       eventsTitle: "Upcoming events & deadlines",
       finalTitle: "Ready to shape the future?",
       finalDesc:
-        "Join a community built for excellence—where education meets research and international opportunity.",
+        "Join a community built for excellence—where education meet research and international opportunity.",
       apply: "Apply now",
       footerNote:
         "Russian Blvd, Phnom Penh, Cambodia. World-class engineering education with global standards.",
