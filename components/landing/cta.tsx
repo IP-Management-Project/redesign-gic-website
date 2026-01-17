@@ -3,7 +3,16 @@ import { Button } from "@heroui/button";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
 
-export default function FinalCTA({ t, container }) {
+type FinalCTAProps = {
+  t: {
+    finalTitle: string;
+    finalDesc: string;
+    cta1: string;
+  };
+  container: string;
+};
+
+export default function FinalCTA({ t, container }: FinalCTAProps) {
   return (
     <section className="py-10 md:py-20 bg-background text-foreground relative overflow-hidden transition-colors duration-500">
       {/* Decorative Background Glows - Adjusted for Theme */}

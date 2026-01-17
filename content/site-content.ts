@@ -168,6 +168,7 @@ type PageContent = {
   description?: string;
   links?: LinkItem[];
   cards?: LinkItem[];
+  featured?: LinkItem;
 };
 
 type DegreeDetailContent = {
@@ -877,6 +878,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "Student Projects",
           description:
             "Capstone work and innovation challenges led by GIC students.",
+          featured: {
+            label: "Read student testimonials",
+            href: "/student/testimonials",
+          },
         },
         studentProjectDetail: {
           description:
@@ -891,6 +896,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "Student Testimonials",
           description:
             "Hear from students and alumni about their GIC experience.",
+          featured: {
+            label: "Explore student projects",
+            href: "/student/student-projects",
+          },
         },
         testimonialDetail: {
           titlePrefix: "Testimonial",
@@ -949,6 +958,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "Research Projects",
           description:
             "Applied research initiatives led by faculty, students, and partners.",
+          featured: {
+            label: "Browse research labs",
+            href: "/research/labs",
+          },
         },
         publications: {
           title: "Publications",
@@ -1008,11 +1021,19 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "News",
           description:
             "Announcements and highlights from the GIC community.",
+          featured: {
+            label: "See upcoming events",
+            href: "/news-events/events",
+          },
         },
         events: {
           title: "Events",
           description:
             "Workshops, seminars, and key dates on the GIC calendar.",
+          featured: {
+            label: "View the academic calendar",
+            href: "/news-events/calendar",
+          },
         },
         calendar: {
           title: "Academic Calendar",
@@ -1539,6 +1560,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "គម្រោងនិស្សិត",
           description:
             "គម្រោងស្រាវជ្រាវ និងនវានុវត្តន៍ដែលដឹកនាំដោយនិស្សិត។",
+          featured: {
+            label: "អានសក្ខីកម្មនិស្សិត",
+            href: "/student/testimonials",
+          },
         },
         studentProjectDetail: {
           description:
@@ -1553,6 +1578,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "សក្ខីកម្ម",
           description:
             "សម្លេងពីនិស្សិត និងអតីតនិស្សិតអំពីបទពិសោធន៍នៅ GIC។",
+          featured: {
+            label: "មើលគម្រោងនិស្សិត",
+            href: "/student/student-projects",
+          },
         },
         testimonialDetail: {
           titlePrefix: "សក្ខីកម្ម",
@@ -1611,6 +1640,10 @@ const contentByLocale: Record<Locale, SiteContent> = {
           title: "គម្រោងស្រាវជ្រាវ",
           description:
             "គម្រោងអនុវត្តដែលដឹកនាំដោយគ្រូបង្រៀន និងនិស្សិត។",
+          featured: {
+            label: "មើលមន្ទីរពិសោធន៍",
+            href: "/research/labs",
+          },
         },
         publications: {
           title: "ការបោះពុម្ពផ្សាយ",
@@ -1669,10 +1702,18 @@ const contentByLocale: Record<Locale, SiteContent> = {
         news: {
           title: "ព័ត៌មាន",
           description: "ព័ត៌មានថ្មីៗពីសហគមន៍ GIC។",
+          featured: {
+            label: "មើលព្រឹត្តិការណ៍ថ្មីៗ",
+            href: "/news-events/events",
+          },
         },
         events: {
           title: "ព្រឹត្តិការណ៍",
           description: "សិក្ខាសាលា កម្មវិធី និងកាលបរិច្ឆេទសំខាន់ៗ។",
+          featured: {
+            label: "មើលប្រតិទិនសិក្សា",
+            href: "/news-events/calendar",
+          },
         },
         calendar: {
           title: "ប្រតិទិនសិក្សា",

@@ -5,10 +5,14 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import NextLink from "next/link";
-import { SectionHeader } from "@/app/page";
+import { SectionHeader } from "@/components/landing/section-header";
 
 interface ResearchShowcaseProps {
-  t: any;
+  t: {
+    researchKicker: string;
+    researchTitle: string;
+    researchDesc: string;
+  };
   section: string;
   container: string;
 }

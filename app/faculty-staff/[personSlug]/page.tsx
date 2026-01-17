@@ -7,17 +7,18 @@ import { localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
 
 type PersonPageProps = {
-  params: { personSlug: string };
+  params: Promise<{ personSlug: string }>;
 };
 
 export default async function PersonPage({ params }: PersonPageProps) {
+  const { personSlug } = await params;
   const locale = await getLocale();
   const page = getSiteContent(locale).subpages.facultyStaff.personDetail;
 
   return (
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
-        <h1 className={title()}>{params.personSlug}</h1>
+        <h1 className={title()}>{personSlug}</h1>
         <p className={subtitle({ class: "mt-4" })}>
           {page.description}
         </p>

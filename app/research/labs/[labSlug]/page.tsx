@@ -7,10 +7,11 @@ import { localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
 
 type LabPageProps = {
-  params: { labSlug: string };
+  params: Promise<{ labSlug: string }>;
 };
 
 export default async function LabPage({ params }: LabPageProps) {
+  const { labSlug } = await params;
   const locale = await getLocale();
   const page = getSiteContent(locale).subpages.research.labDetail;
 
@@ -18,7 +19,7 @@ export default async function LabPage({ params }: LabPageProps) {
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
         <h1 className={title()}>
-          {params.labSlug} {page.titleSuffix}
+          {labSlug} {page.titleSuffix}
         </h1>
         <p className={subtitle({ class: "mt-4" })}>
           {page.description}

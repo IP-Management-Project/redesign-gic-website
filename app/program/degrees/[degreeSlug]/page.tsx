@@ -7,10 +7,11 @@ import { localizeHref } from "@/lib/i18n";
 import { getLocale } from "@/lib/server-locale";
 
 type DegreePageProps = {
-  params: { degreeSlug: string };
+  params: Promise<{ degreeSlug: string }>;
 };
 
 export default async function DegreePage({ params }: DegreePageProps) {
+  const { degreeSlug } = await params;
   const locale = await getLocale();
   const page = getSiteContent(locale).subpages.program.degreeDetail;
 
@@ -18,7 +19,7 @@ export default async function DegreePage({ params }: DegreePageProps) {
     <section className="flex flex-col gap-6 py-8 md:py-10">
       <div>
         <h1 className={title()}>
-          {params.degreeSlug} {page.titleSuffix}
+          {degreeSlug} {page.titleSuffix}
         </h1>
         <p className={subtitle({ class: "mt-4" })}>
           {page.description}
@@ -30,7 +31,7 @@ export default async function DegreePage({ params }: DegreePageProps) {
           className="text-default-600 hover:text-primary"
           href={localizeHref(
             locale,
-            `/program/degrees/${params.degreeSlug}/curriculum`,
+            `/program/degrees/${degreeSlug}/curriculum`,
           )}
         >
           {page.links.curriculum}
@@ -40,7 +41,7 @@ export default async function DegreePage({ params }: DegreePageProps) {
           className="text-default-600 hover:text-primary"
           href={localizeHref(
             locale,
-            `/program/degrees/${params.degreeSlug}/admissions`,
+            `/program/degrees/${degreeSlug}/admissions`,
           )}
         >
           {page.links.admissions}

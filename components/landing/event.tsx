@@ -1,19 +1,32 @@
-import React from 'react';
+import React from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Divider } from '@heroui/divider';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay, Navigation } from 'swiper/modules';
+import { Divider } from "@heroui/divider";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import NextLink from "next/link";
-import { SectionHeader } from '@/app/page';
+import { SectionHeader } from "@/components/landing/section-header";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
-export default function PressReleaseSlideshow({ t, section, container }) {
+type PressReleaseSlideshowProps = {
+  t: {
+    newsKicker: string;
+    newsTitle: string;
+  };
+  section: string;
+  container: string;
+};
+
+export default function PressReleaseSlideshow({
+  t,
+  section,
+  container,
+}: PressReleaseSlideshowProps) {
   const news = [
     {
       title: "ITC Partnership with European Research Labs",

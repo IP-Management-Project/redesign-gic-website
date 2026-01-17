@@ -2,7 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import { GicDesktopIcon, GicMobileIcon, GicNetworkIcon, GicSatelliteIcon } from "../icons";
 
-export default function HeroSection({ t }) {
+type HeroSectionProps = {
+  t: {
+    heroTitle1: string;
+    heroTitle2: string;
+  };
+};
+
+export default function HeroSection({ t }: HeroSectionProps) {
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },
     animate: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } },

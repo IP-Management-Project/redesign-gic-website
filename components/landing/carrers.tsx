@@ -1,9 +1,18 @@
-import React from 'react';
+import React from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip"; // If you have Chip, otherwise use a div
-import { SectionHeader } from '@/app/page';
+import { SectionHeader } from "@/components/landing/section-header";
 
-export default function CareersSection({ t, section, container }) {
+type CareersSectionProps = {
+  t: {
+    careersKicker: string;
+    careersTitle: string;
+  };
+  section: string;
+  container: string;
+};
+
+export default function CareersSection({ t, section, container }: CareersSectionProps) {
   const partners = ["Smart", "Huawei", "ABA Bank", "BRED Bank", "TotalEnergies", "Wing"];
   
   const roles = [
