@@ -1,0 +1,75 @@
+{
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs": {
+    "id": 52280,
+    "files": [
+      "static/chunks/8213a2eb.ccd62b69790d17f0.js",
+      "static/chunks/5376.04a3d57f5f04927f.js"
+    ]
+  },
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs-component-countdown": {
+    "id": 3975,
+    "files": [
+      "static/chunks/3975.131d92a92ae7f44a.js"
+    ]
+  },
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs-custom-code": {
+    "id": 73297,
+    "files": [
+      "static/chunks/3297.b31b4c1d61dce7b9.js"
+    ]
+  },
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs-plugin-forms": {
+    "id": 4239,
+    "files": [
+      "static/chunks/4239.0af2c5b3f6a1b0e0.js"
+    ]
+  },
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs-preset-webpage": {
+    "id": 90757,
+    "files": [
+      "static/chunks/757.f72c5a0202c9400a.js"
+    ]
+  },
+  "app/admin/edit/[id]/EditorClient.tsx -> grapesjs-tooltip": {
+    "id": 86837,
+    "files": [
+      "static/chunks/6837.04c3f70c4439e53d.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-EGL3KBB2.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-IWMNIPIV.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-NW7HJLND.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-Z57F4COC.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  },
+  "node_modules/@heroui/ripple/dist/chunk-UIQI3AYJ.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  },
+  "node_modules/@heroui/tooltip/dist/chunk-AUA5GDXN.mjs -> @heroui/dom-animation": {
+    "id": 56869,
+    "files": [
+      "static/chunks/6869.635d13e1e138c591.js"
+    ]
+  }
+}
