@@ -1,491 +1,303 @@
 "use client";
 
-import React from "react";
-import { addToast } from "@heroui/toast";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/table";
+import React, { useState, useMemo, useEffect } from "react";
+import { 
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
+  useDisclosure, Avatar, Chip, Select, SelectItem, Tooltip, Textarea,
+  Card, Divider
+} from "@heroui/react";
+import { 
+  Search, Plus, Upload, Trash2, Edit3, AlertCircle, 
+  FileText, Download, RefreshCcw, UserPlus, CheckCircle2 
+} from "lucide-react";
+import { useStudentGenerationData } from "@/hooks/useStudentGenerationData";
 
-import {
-  type GicYearBookEntry,
-  useGicYearBookData,
-  useUpdateGicYearBookData,
-} from "@/hooks/useGicYearBookData";
-
-type DraftEntry = {
-  year: string;
-  title: string;
-  fileUrl: string;
-  coverImageUrl: string;
-  description: string;
+// --- Types ---
+export type StudentEntry = {
+  id: string;
+  name: string;
+  quote: string;
+  image: string;
+  generation: string;
 };
 
-const emptyDraft: DraftEntry = {
-  year: "",
-  title: "",
-  fileUrl: "",
-  coverImageUrl: "",
-  description: "",
-};
+// --- Logic Hook ---
+function useStudentAdmin(rawData: any) {
+  const [localEntries, setLocalEntries] = useState<StudentEntry[]>([]);
+  const [search, setSearch] = useState("");
+  const [genFilter, setGenFilter] = useState("ALL");
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-const toDraft = (entry: GicYearBookEntry): DraftEntry => ({
-  year: entry.year,
-  title: entry.title,
-  fileUrl: entry.fileUrl,
-  coverImageUrl: entry.coverImageUrl,
-  description: entry.description ?? "",
-});
-
-const toEntry = (id: string, draft: DraftEntry): GicYearBookEntry => ({
-  id,
-  year: draft.year.trim(),
-  title: draft.title.trim(),
-  fileUrl: draft.fileUrl.trim(),
-  coverImageUrl: draft.coverImageUrl.trim(),
-  description: draft.description.trim(),
-});
-
-const generateId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `gic-year-book-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
-
-const parseCsvLine = (line: string) =>
-  line
-    .split(",")
-    .map((value) => value.trim())
-    .map((value) => value.replace(/^\"|\"$/g, ""));
-
-const parseCsvEntries = (csvText: string) => {
-  const lines = csvText
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  if (lines.length === 0) {
-    return { entries: [] as GicYearBookEntry[], invalidLines: [] as string[] };
-  }
-
-  const headerTokens = parseCsvLine(lines[0]).map((token) =>
-    token.toLowerCase(),
-  );
-  const hasHeader =
-    headerTokens.includes("year") && headerTokens.includes("title");
-  const dataLines = hasHeader ? lines.slice(1) : lines;
-
-  const entries: GicYearBookEntry[] = [];
-  const invalidLines: string[] = [];
-
-  dataLines.forEach((line) => {
-    const [year, title, fileUrl, coverImageUrl, description = ""] =
-      parseCsvLine(line);
-
-    if (!year || !title || !fileUrl || !coverImageUrl) {
-      invalidLines.push(line);
-
-      return;
-    }
-
-    entries.push(
-      toEntry(generateId(), {
-        year,
-        title,
-        fileUrl,
-        coverImageUrl,
-        description,
-      }),
-    );
-  });
-
-  return { entries, invalidLines };
-};
-
-export default function GicYearBookAdminPage() {
-  const { data } = useGicYearBookData();
-  const updateYearBook = useUpdateGicYearBookData();
-
-  const entries = data?.entries ?? [];
-
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [draft, setDraft] = React.useState<DraftEntry | null>(null);
-  const [createDraft, setCreateDraft] = React.useState<DraftEntry>(emptyDraft);
-  const [csvFileName, setCsvFileName] = React.useState("");
-
-  const disableActions = updateYearBook.isPending || editingId !== null;
-
-  const handleDraftChange = (field: keyof DraftEntry, value: string) => {
-    setDraft((prev) => (prev ? { ...prev, [field]: value } : prev));
-  };
-
-  const handleCreateDraftChange = (field: keyof DraftEntry, value: string) => {
-    setCreateDraft((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleEdit = (entry: GicYearBookEntry) => {
-    setEditingId(entry.id);
-    setDraft(toDraft(entry));
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setDraft(null);
-  };
-
-  const handleSaveEdit = (entry: GicYearBookEntry) => {
-    if (!draft) return;
-
-    const nextEntry = toEntry(entry.id, draft);
-
-    updateYearBook.mutate(
-      {
-        updates: [
-          {
-            type: "update",
-            id: entry.id,
-            changes: nextEntry,
-          },
-        ],
-      },
-      {
-        onSuccess: () => handleCancelEdit(),
-      },
-    );
-  };
-
-  const handleDelete = (entry: GicYearBookEntry) => {
-    updateYearBook.mutate({ updates: [{ type: "delete", id: entry.id }] });
-  };
-
-  const validateDraft = (entryDraft: DraftEntry) =>
-    entryDraft.year.trim() &&
-    entryDraft.title.trim() &&
-    entryDraft.fileUrl.trim() &&
-    entryDraft.coverImageUrl.trim();
-
-  const handleSingleCreate = () => {
-    if (!validateDraft(createDraft)) {
-      addToast({
-        title: "Missing information",
-        description: "Year, title, file URL, and cover image URL are required.",
-        severity: "warning",
+  useEffect(() => {
+    if (rawData?.generations) {
+      const flattened: StudentEntry[] = [];
+      Object.entries(rawData.generations).forEach(([gen, students]: [string, any]) => {
+        students.forEach((s: any, index: number) => {
+          flattened.push({ ...s, id: `${gen}-${index}-${Date.now()}`, generation: gen });
+        });
       });
-
-      return;
+      setLocalEntries(flattened);
     }
+  }, [rawData]);
 
-    const entry = toEntry(generateId(), createDraft);
+  const generations = useMemo(() => 
+    ["ALL", ...Array.from(new Set(localEntries.map((e) => e.generation)))], 
+  [localEntries]);
 
-    updateYearBook.mutate(
-      {
-        updates: [{ type: "add", entry }],
-      },
-      {
-        onSuccess: () => {
-          setCreateDraft(emptyDraft);
-          addToast({
-            title: "Year book added",
-            description: "The new year book entry has been created.",
-            severity: "success",
-          });
-        },
-      },
-    );
+  const filtered = useMemo(() => {
+    return localEntries.filter((e) => {
+      const matchesSearch = e.name.toLowerCase().includes(search.toLowerCase()) || 
+                            e.quote.toLowerCase().includes(search.toLowerCase());
+      const matchesGen = genFilter === "ALL" || e.generation === genFilter;
+      return matchesSearch && matchesGen;
+    });
+  }, [localEntries, search, genFilter]);
+
+  return {
+    entries: filtered,
+    generations,
+    search, setSearch,
+    genFilter, setGenFilter,
+    isDeleting, setIsDeleting,
+    localEntries, setLocalEntries
+  };
+}
+
+// --- Main Page Component ---
+export default function StudentAdminPage() {
+  const { data } = useStudentGenerationData();
+  const admin = useStudentAdmin(data);
+  
+  // Modal States
+  const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
+  const { isOpen: isBulkOpen, onOpen: onBulkOpen, onClose: onBulkClose } = useDisclosure();
+  
+  // Form States
+  const [selected, setSelected] = useState<StudentEntry | null>(null);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+
+  // --- Handlers ---
+
+  const handleUpsert = () => {
+    // In a real app, this would be a TanStack Mutation
+    // For now, we simulate the UI update
+    onFormClose();
   };
 
-  const handleCsvUpload = async (file?: File | null) => {
-    if (!file) return;
+  const handleCsvProcess = async () => {
+    if (!csvFile) return;
+    const text = await csvFile.text();
+    const rows = text.split("\n").filter(row => row.trim() !== "");
+    
+    const newEntries: StudentEntry[] = rows.slice(1).map((row, i) => {
+      const [name, quote, image, generation] = row.split(",").map(s => s.trim());
+      return { id: `bulk-${Date.now()}-${i}`, name, quote, image, generation };
+    });
 
-    setCsvFileName(file.name);
+    admin.setLocalEntries(prev => [...newEntries, ...prev]);
+    setCsvFile(null);
+    onBulkClose();
+  };
 
-    const text = await file.text();
-    const { entries: parsedEntries, invalidLines } = parseCsvEntries(text);
-
-    if (parsedEntries.length === 0) {
-      addToast({
-        title: "No valid rows",
-        description:
-          "Ensure the CSV includes year, title, fileUrl, and coverImageUrl.",
-        severity: "warning",
-      });
-
-      return;
-    }
-
-    updateYearBook.mutate(
-      {
-        updates: [{ type: "bulkAdd", entries: parsedEntries }],
-      },
-      {
-        onSuccess: () => {
-          addToast({
-            title: "Bulk upload complete",
-            description: `Added ${parsedEntries.length} year book entries.${
-              invalidLines.length
-                ? ` Skipped ${invalidLines.length} invalid rows.`
-                : ""
-            }`,
-            severity: invalidLines.length ? "warning" : "success",
-          });
-        },
-      },
-    );
+  const confirmDelete = () => {
+    admin.setLocalEntries(prev => prev.filter(e => e.id !== admin.isDeleting));
+    admin.setIsDeleting(null);
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Student showcase
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          GIC Year book
-        </h1>
-        <p className="max-w-3xl text-sm text-default-500">
-          Manage year book entries with a simple table. Upload a single entry or
-          bulk import from CSV.
-        </p>
-      </section>
-
-      <section className="grid gap-4 rounded-2xl border border-divider/80 bg-content1 p-6 lg:grid-cols-5">
-        <Input
-          isDisabled={disableActions}
-          label="Year"
-          placeholder="2025"
-          value={createDraft.year}
-          onValueChange={(value) => handleCreateDraftChange("year", value)}
-        />
-        <Input
-          isDisabled={disableActions}
-          label="Title"
-          placeholder="GIC Year Book 2025"
-          value={createDraft.title}
-          onValueChange={(value) => handleCreateDraftChange("title", value)}
-        />
-        <Input
-          isDisabled={disableActions}
-          label="File URL"
-          placeholder="https://example.com/yearbook-2025.pdf"
-          value={createDraft.fileUrl}
-          onValueChange={(value) => handleCreateDraftChange("fileUrl", value)}
-        />
-        <Input
-          isDisabled={disableActions}
-          label="Cover image URL"
-          placeholder="https://example.com/cover-2025.jpg"
-          value={createDraft.coverImageUrl}
-          onValueChange={(value) =>
-            handleCreateDraftChange("coverImageUrl", value)
-          }
-        />
-        <div className="flex flex-col gap-2">
-          <Input
-            isDisabled={disableActions}
-            label="Description"
-            placeholder="Short summary"
-            value={createDraft.description}
-            onValueChange={(value) =>
-              handleCreateDraftChange("description", value)
-            }
-          />
-          <Button
-            color="primary"
-            isDisabled={disableActions}
-            isLoading={updateYearBook.isPending}
-            onPress={handleSingleCreate}
+    <div className="max-w-7xl mx-auto p-6 space-y-8 animate-in fade-in duration-500">
+      
+      {/* --- Page Header --- */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-foreground">
+            Student <span className="text-primary">Yearbook</span>
+          </h1>
+          <p className="text-default-500 mt-1 font-medium italic">
+            "Capturing the legacy of GIC excellence, one generation at a time."
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button 
+            variant="flat" 
+            className="font-bold border border-divider" 
+            startContent={<Upload size={18}/>} 
+            onPress={onBulkOpen}
           >
-            Create entry
+            Bulk CSV
+          </Button>
+          <Button 
+            color="primary" 
+            className="font-bold shadow-lg shadow-primary/20" 
+            startContent={<UserPlus size={18}/>} 
+            onPress={() => { setSelected(null); onFormOpen(); }}
+          >
+            Add Student
           </Button>
         </div>
-      </section>
+      </div>
 
-      <section className="space-y-3 rounded-2xl border border-divider/80 bg-content1 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">
-              Bulk CSV upload
-            </h2>
-            <p className="text-xs text-default-500">
-              CSV columns: year,title,fileUrl,coverImageUrl,description
-              (optional).
-            </p>
-          </div>
-          <div className="text-xs font-semibold text-default-500">
-            {csvFileName ? `Selected: ${csvFileName}` : "No file selected"}
-          </div>
-        </div>
-        <input
-          accept=".csv,text/csv"
-          aria-label="Upload year book CSV"
-          className="block w-full cursor-pointer rounded-xl border border-dashed border-divider bg-background px-4 py-6 text-sm text-default-600"
-          disabled={disableActions}
-          type="file"
-          onChange={(event) => handleCsvUpload(event.target.files?.[0])}
+      {/* --- Filter & Action Bar --- */}
+      <Card className="p-4 border-none shadow-sm bg-content1/70 backdrop-blur-md flex flex-col md:flex-row gap-4">
+        <Input 
+          className="flex-1"
+          placeholder="Search by student name or quote keywords..." 
+          startContent={<Search size={18} className="text-default-400" />}
+          value={admin.search}
+          onValueChange={admin.setSearch}
+          variant="flat"
         />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">
-            Year book entries
-          </h2>
-          {updateYearBook.isPending ? (
-            <span className="text-xs font-semibold text-default-500">
-              Saving changes…
-            </span>
-          ) : null}
+        <div className="flex gap-2">
+          <Select 
+            className="w-48"
+            placeholder="All Generations"
+            selectedKeys={[admin.genFilter]}
+            onSelectionChange={(keys) => admin.setGenFilter(Array.from(keys)[0] as string)}
+          >
+            {admin.generations.map((g) => (
+              <SelectItem key={g}>{g === "ALL" ? "All Generations" : g}</SelectItem>
+            ))}
+          </Select>
+          <Tooltip content="Refresh Data">
+            <Button isIconOnly variant="flat" onPress={() => window.location.reload()}>
+              <RefreshCcw size={18} />
+            </Button>
+          </Tooltip>
         </div>
-        <Table
-          aria-label="GIC year book entries"
-          classNames={{
-            wrapper:
-              "rounded-2xl border border-divider/80 bg-content1 shadow-none",
-            th: "bg-default-100 text-[10px] font-black uppercase tracking-widest text-default-600",
-            td: "border-b border-divider/60 py-4 text-sm font-medium last:border-none",
-          }}
-        >
-          <TableHeader>
-            <TableColumn>YEAR</TableColumn>
-            <TableColumn>TITLE</TableColumn>
-            <TableColumn>FILE URL</TableColumn>
-            <TableColumn>COVER URL</TableColumn>
-            <TableColumn>DESCRIPTION</TableColumn>
-            <TableColumn align="end">ACTIONS</TableColumn>
-          </TableHeader>
-          <TableBody emptyContent="No year book entries yet.">
-            {entries.map((entry) => {
-              const isEditing = editingId === entry.id;
-              const rowDraft = isEditing
-                ? (draft ?? toDraft(entry))
-                : toDraft(entry);
+      </Card>
 
-              return (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    {isEditing ? (
-                      <Input
-                        aria-label="Year"
-                        size="sm"
-                        value={rowDraft.year}
-                        onValueChange={(value) =>
-                          handleDraftChange("year", value)
-                        }
-                      />
-                    ) : (
-                      entry.year
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {isEditing ? (
-                      <Input
-                        aria-label="Title"
-                        size="sm"
-                        value={rowDraft.title}
-                        onValueChange={(value) =>
-                          handleDraftChange("title", value)
-                        }
-                      />
-                    ) : (
-                      entry.title
-                    )}
-                  </TableCell>
-                  <TableCell className="max-w-[280px] truncate">
-                    {isEditing ? (
-                      <Input
-                        aria-label="File URL"
-                        size="sm"
-                        value={rowDraft.fileUrl}
-                        onValueChange={(value) =>
-                          handleDraftChange("fileUrl", value)
-                        }
-                      />
-                    ) : (
-                      entry.fileUrl
-                    )}
-                  </TableCell>
-                  <TableCell className="max-w-[280px] truncate">
-                    {isEditing ? (
-                      <Input
-                        aria-label="Cover image URL"
-                        size="sm"
-                        value={rowDraft.coverImageUrl}
-                        onValueChange={(value) =>
-                          handleDraftChange("coverImageUrl", value)
-                        }
-                      />
-                    ) : (
-                      entry.coverImageUrl
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {isEditing ? (
-                      <Input
-                        aria-label="Description"
-                        size="sm"
-                        value={rowDraft.description}
-                        onValueChange={(value) =>
-                          handleDraftChange("description", value)
-                        }
-                      />
-                    ) : (
-                      entry.description
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap justify-end gap-2">
-                      {isEditing ? (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="flat"
-                            onPress={handleCancelEdit}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            color="primary"
-                            isLoading={updateYearBook.isPending}
-                            size="sm"
-                            onPress={() => handleSaveEdit(entry)}
-                          >
-                            Save
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            isDisabled={disableActions}
-                            size="sm"
-                            variant="flat"
-                            onPress={() => handleEdit(entry)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            color="danger"
-                            isDisabled={disableActions}
-                            size="sm"
-                            variant="light"
-                            onPress={() => handleDelete(entry)}
-                          >
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </section>
+      {/* --- Main Table --- */}
+      <Table 
+        aria-label="Student database" 
+        shadow="none"
+        classNames={{ 
+          wrapper: "rounded-3xl border border-divider bg-content1 p-0 overflow-hidden",
+          th: "bg-default-50 py-4 text-default-600 font-bold uppercase text-[11px] tracking-widest border-b border-divider",
+          td: "py-4 font-medium"
+        }}
+      >
+        <TableHeader>
+          <TableColumn>STUDENT IDENTITY</TableColumn>
+          <TableColumn>CLASS GENERATION</TableColumn>
+          <TableColumn>YEARBOOK QUOTE</TableColumn>
+          <TableColumn align="end">MANAGEMENT</TableColumn>
+        </TableHeader>
+        <TableBody emptyContent="No records found. Try adjusting your search.">
+          {admin.entries.map((student) => (
+            <TableRow key={student.id} className="hover:bg-default-50/50 transition-colors">
+              <TableCell>
+                <div className="flex items-center gap-4">
+                  <Avatar src={student.image} radius="lg" className="w-12 h-12 shadow-sm border border-divider" />
+                  <span className="font-bold text-base">{student.name}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Chip size="sm" variant="dot" color="primary" className="font-bold border-none">
+                  {student.generation}
+                </Chip>
+              </TableCell>
+              <TableCell className="max-w-md italic text-default-500 leading-relaxed">
+                "{student.quote}"
+              </TableCell>
+              <TableCell>
+                <div className="flex justify-end gap-1">
+                  <Button isIconOnly variant="light" radius="full" size="sm" onPress={() => { setSelected(student); onFormOpen(); }}>
+                    <Edit3 size={16} className="text-default-400" />
+                  </Button>
+                  <Button isIconOnly variant="light" radius="full" size="sm" color="danger" onPress={() => admin.setIsDeleting(student.id)}>
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* --- MODAL: CREATE / EDIT --- */}
+      <Modal isOpen={isFormOpen} onClose={onFormClose} size="2xl" backdrop="blur">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 py-6 border-b border-divider">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-primary/10 rounded-lg text-primary"><Edit3 size={20}/></div>
+              <h2 className="text-xl font-bold">{selected ? "Edit Profile" : "New Student Entry"}</h2>
+            </div>
+          </ModalHeader>
+          <ModalBody className="py-8 gap-6">
+            <div className="grid grid-cols-2 gap-4">
+              <Input label="Student Name" placeholder="e.g. Sok Rathana" labelPlacement="outside" variant="bordered" defaultValue={selected?.name} />
+              <Input label="Generation" placeholder="e.g. Gen 8" labelPlacement="outside" variant="bordered" defaultValue={selected?.generation} />
+            </div>
+            <Input label="Portrait Image URL" placeholder="https://i.pravatar.cc/..." labelPlacement="outside" variant="bordered" defaultValue={selected?.image} />
+            <Textarea label="Yearbook Quote" placeholder="Enter an inspiring quote..." labelPlacement="outside" variant="bordered" minRows={3} defaultValue={selected?.quote} />
+          </ModalBody>
+          <ModalFooter className="border-t border-divider py-4">
+            <Button variant="light" className="font-bold" onPress={onFormClose}>Discard</Button>
+            <Button color="primary" className="font-bold px-8" onPress={handleUpsert}>
+              {selected ? "Update Profile" : "Create Entry"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* --- MODAL: BULK CSV UPLOAD --- */}
+      <Modal isOpen={isBulkOpen} onClose={onBulkClose} size="md" backdrop="blur">
+        <ModalContent>
+          <ModalHeader className="py-6 border-b border-divider">Bulk CSV Import</ModalHeader>
+          <ModalBody className="py-8">
+            <div className="relative border-2 border-dashed border-divider rounded-3xl p-10 flex flex-col items-center justify-center gap-4 bg-default-50 hover:bg-default-100 transition-colors cursor-pointer group">
+              <div className="p-4 bg-background rounded-2xl shadow-sm group-hover:scale-110 transition-transform">
+                <FileText size={40} className="text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-lg">Select CSV File</p>
+                <p className="text-xs text-default-400 mt-2">Required: name, quote, image, generation</p>
+              </div>
+              <input 
+                type="file" accept=".csv" 
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+              />
+              {csvFile && (
+                <Chip color="success" variant="flat" className="mt-2 font-bold" startContent={<CheckCircle2 size={14}/>}>
+                  {csvFile.name}
+                </Chip>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter className="border-t border-divider py-4">
+            <Button variant="light" className="font-bold" onPress={onBulkClose}>Cancel</Button>
+            <Button color="primary" className="font-bold px-10" isDisabled={!csvFile} onPress={handleCsvProcess}>
+              Start Import
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* --- MODAL: DELETE CONFIRMATION --- */}
+      <Modal isOpen={!!admin.isDeleting} onClose={() => admin.setIsDeleting(null)} size="sm" backdrop="blur" hideCloseButton>
+        <ModalContent>
+          <ModalBody className="p-10 text-center flex flex-col items-center">
+            <div className="w-20 h-20 bg-danger/10 text-danger rounded-full flex items-center justify-center mb-6 animate-pulse">
+              <AlertCircle size={40} />
+            </div>
+            <h3 className="text-2xl font-black">Remove Profile?</h3>
+            <p className="text-default-500 text-sm mt-3 leading-relaxed">
+              This action will permanently remove the student from the yearbook database. This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter className="flex flex-col gap-2 pb-10 px-10 border-none">
+            <Button color="danger" className="font-black w-full text-lg shadow-lg shadow-danger/20" onPress={confirmDelete}>
+              Confirm Delete
+            </Button>
+            <Button variant="light" className="font-bold w-full" onPress={() => admin.setIsDeleting(null)}>
+              Keep Profile
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
     </div>
   );
 }

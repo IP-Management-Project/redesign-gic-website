@@ -11,6 +11,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
+import { MoreVertical, Edit3, Globe, Trash2 } from "lucide-react"; // Matching the professional look
+
 
 export type NewsStatus = "PUBLISHED" | "UNPUBLISHED";
 
@@ -52,9 +54,10 @@ export function NewsCard({
   onDelete,
   hideExcerpt,
 }: NewsCardProps) {
+
   const CardInner = (
     <Card className="h-full border border-divider bg-content1 shadow-sm hover:shadow-xl dark:hover:shadow-primary/10 transition-all duration-300 group rounded-2xl overflow-hidden">
-      {/* Image */}
+      {/* Image Container */}
       <div className="relative h-56 w-full overflow-hidden">
         <img
           src={item.image}
@@ -62,7 +65,8 @@ export function NewsCard({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
 
-        <div className="absolute top-4 left-4 flex items-center gap-2">
+        {/* Badges */}
+        <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
           <Chip
             size="sm"
             variant="flat"
@@ -71,57 +75,71 @@ export function NewsCard({
             {item.category}
           </Chip>
 
-          {item.status === "UNPUBLISHED" ? (
+          {item.status === "UNPUBLISHED" && (
             <Chip
               size="sm"
               variant="flat"
               className="bg-warning-100/90 text-warning-900 dark:bg-warning-900/20 dark:text-warning-200 backdrop-blur-md border-none"
             >
-              Unpublished
+              Draft
             </Chip>
-          ) : null}
+          )}
         </div>
 
-        {showAdminMenu ? (
+        {/* --- FIXED ADMIN MENU --- */}
+        {/* --- FIXED ADMIN MENU --- */}
+        {showAdminMenu && (
           <div
-            className="absolute top-3 right-3 z-10"
-            onClick={(e) => e.preventDefault()}
+            className="absolute top-3 right-3 z-30"
+            // Block the div itself just in case
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
           >
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Button
+                  isIconOnly
                   size="sm"
                   variant="flat"
-                  className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md"
-                  onPress={(e) => {
-                    // prevent card click
-                    // @ts-expect-error HeroUI passes press event, still safe
-                    e?.stopPropagation?.();
+                  className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md min-w-8 w-8 h-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
                   }}
                 >
-                  •••
+                  <MoreVertical size={16} />
                 </Button>
               </DropdownTrigger>
 
               <DropdownMenu
-                aria-label="News actions"
+                aria-label="Admin Actions"
+                variant="flat"
                 onAction={(key) => {
                   if (key === "edit") onEdit?.(item);
                   if (key === "toggle") onTogglePublish?.(item);
                   if (key === "delete") onDelete?.(item);
                 }}
               >
-                <DropdownItem key="edit">Edit</DropdownItem>
-                <DropdownItem key="toggle">
-                  {item.status === "PUBLISHED" ? "Unpublish" : "Publish"}
+                <DropdownItem key="edit" startContent={<Edit3 size={14} />}>
+                  Edit Details
                 </DropdownItem>
-                <DropdownItem key="delete" className="text-danger">
-                  Delete
+                <DropdownItem key="toggle" startContent={<Globe size={14} />}>
+                  {item.status === "PUBLISHED" ? "Set to Draft" : "Publish Live"}
+                </DropdownItem>
+                <DropdownItem
+                  key="delete"
+                  className="text-danger"
+                  color="danger"
+                  startContent={<Trash2 size={14} />}
+                >
+                  Delete Card
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
-        ) : null}
+        )}
       </div>
 
       {/* Content */}

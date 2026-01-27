@@ -11,7 +11,7 @@ export type StudentGenerationData = {
   positions: string[];
 };
 
-const studentGenerationData: StudentGenerationData = {
+export const studentGenerationData: StudentGenerationData = {
   generations: {
     "Gen 8": [
       {

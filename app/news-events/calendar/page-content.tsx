@@ -37,7 +37,7 @@ export default function AcademicCalendar() {
               Academic <span className="text-blue-600">Schedule</span>
             </h1>
             <p className="text-slate-500 dark:text-zinc-400 font-medium">
-              A comprehensive guide to entrance exams , national holidays , and academic terms.
+              A comprehensive guide to entrance exams, national holidays, and academic terms.
             </p>
           </div>
 
@@ -82,8 +82,8 @@ export default function AcademicCalendar() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-4"
             >
-              {calendarEvents.map((event, i) => (
-                <TimelineItem key={i} event={event} />
+              {calendarEvents.map((event) => (
+                <TimelineItem key={event.id} event={event} />
               ))}
             </motion.div>
           )}
@@ -96,7 +96,7 @@ export default function AcademicCalendar() {
               {glossary.map((item) => (
                 <div key={item.term}>
                   <h4 className="text-blue-500 font-black uppercase text-xs tracking-widest mb-2">{item.term}</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed">{item.description} </p>
                 </div>
               ))}
            </div>
@@ -110,21 +110,30 @@ export default function AcademicCalendar() {
 // MONTH GRID CARD
 // --------------------------------------------------------------------------------
 function MonthCard({ month, events }: { month: string; events: CalendarEvent[] }) {
+  // Helper to format date display
+  const renderDate = (start: string, end?: string) => {
+    if (!end || start === end) return start;
+    return `${start} — ${end}`;
+  };
+
   return (
     <Card className="p-6 rounded-[2rem] bg-gray-50 dark:bg-zinc-900 border border-divider shadow-none flex flex-col h-64 hover:border-blue-600/30 transition-all">
       <h3 className="text-lg font-black mb-4 border-b border-divider pb-2">{month}</h3>
       <div className="flex-grow space-y-3 overflow-y-auto pr-2 custom-scrollbar">
-        {events.length > 0 ? events.map((event, i) => (
-          <div key={i} className="group cursor-default">
+        {events.length > 0 ? events.map((event) => (
+          <div key={event.id} className="group cursor-default">
             <div className="flex items-center gap-2 mb-1">
                <div className={`w-1.5 h-1.5 rounded-full ${
                  event.type === 'Holiday' ? 'bg-emerald-500' : 
-                 event.type === 'Exam' ? 'bg-red-500' : 'bg-blue-500'
+                 event.type === 'Exam' ? 'bg-red-500' : 
+                 event.type === 'Admin' ? 'bg-amber-500' : 'bg-blue-500'
                }`} />
-               <span className="text-[10px] font-black uppercase text-slate-400">{event.date}</span>
+               <span className="text-[10px] font-black uppercase text-slate-400">
+                 {renderDate(event.startDate, event.endDate)}
+               </span>
             </div>
             <p className="text-xs font-bold leading-tight group-hover:text-blue-600 transition-colors">
-              {event.title} <span className="text-[9px] text-blue-500 font-medium"></span>
+              {event.title}
             </p>
           </div>
         )) : (
@@ -139,12 +148,19 @@ function MonthCard({ month, events }: { month: string; events: CalendarEvent[] }
 // TIMELINE LIST ITEM
 // --------------------------------------------------------------------------------
 function TimelineItem({ event }: { event: CalendarEvent }) {
+  const renderDate = (start: string, end?: string) => {
+    if (!end || start === end) return start;
+    return `${start} — ${end}`;
+  };
+
   return (
     <Card className="p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-divider shadow-none hover:shadow-xl hover:shadow-blue-600/5 transition-all">
       <div className="flex flex-col md:flex-row items-center gap-8">
-        <div className="w-full md:w-32 text-center md:text-right shrink-0">
+        <div className="w-full md:w-48 text-center md:text-right shrink-0">
           <p className="text-[10px] font-black uppercase text-blue-600 mb-1">{event.month}</p>
-          <h4 className="text-2xl font-black tracking-tighter">{event.date}</h4>
+          <h4 className="text-lg font-black tracking-tighter">
+            {renderDate(event.startDate, event.endDate)}
+          </h4>
         </div>
         <div className="hidden md:block h-12 w-px bg-divider" />
         <div className="flex-grow">
@@ -155,7 +171,7 @@ function TimelineItem({ event }: { event: CalendarEvent }) {
             </Chip>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Institutional event as scheduled in the ITC academic calendar.
+            Official milestone as recorded in the 2024-2025 university calendar.
           </p>
         </div>
         <Button isIconOnly variant="light" className="text-blue-600 hover:bg-blue-50">

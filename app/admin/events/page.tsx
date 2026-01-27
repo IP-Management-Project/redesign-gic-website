@@ -1,298 +1,326 @@
 "use client";
 
 import React from "react";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Card } from "@heroui/card";
-import { Divider } from "@heroui/divider";
-import { Select, SelectItem } from "@heroui/select";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
-import { Textarea } from "@heroui/input";
-import { Pagination } from "@heroui/pagination";
-import { Chip } from "@heroui/chip";
+import { 
+  Button, Input, Card, Divider, Select, SelectItem, 
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, 
+  Textarea, Pagination, Chip, Dropdown, DropdownTrigger, 
+  DropdownMenu, DropdownItem, Tooltip 
+} from "@heroui/react";
+import { 
+  Plus, Search, Filter, SortDesc, MoreVertical, 
+  BookOpen, Users, FileText, Layers, Calendar, 
+  MapPin, Hash, ExternalLink, Trash2, Edit3, RefreshCcw 
+} from "lucide-react";
 import { usePublicationsCentralize } from "@/hooks/usePublicationsCentralize";
 import type { Publication } from "@/hooks/usePublicationsData";
 
 export default function PublicationsAdminPage() {
   const {
-    publications,
-    filtered,
-    paginated,
-    stats,
-    filters,
-    form,
-    isOpen,
-    page,
-    totalPages,
-    setFilters,
-    setForm,
-    setIsOpen,
-    setPage,
-    openCreate,
-    openEdit,
-    closeModal,
-    upsert,
-    remove,
-    resetFilters,
+    publications, filtered, paginated, stats, filters, form,
+    isOpen, page, totalPages, setFilters, setForm, setIsOpen,
+    setPage, openCreate, openEdit, closeModal, upsert, remove, resetFilters,
   } = usePublicationsCentralize();
 
   function confirmRemove(pub: Publication) {
-    const ok = window.confirm(`Delete "${pub.title}"? This cannot be undone.`);
-    if (!ok) return;
-    remove(pub);
+    const ok = window.confirm(`Permanently delete "${pub.title}"? This cannot be undone.`);
+    if (ok) remove(pub);
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-black">
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        
+        {/* --- Header & Main Action --- */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-3xl font-black">Publications Management</h1>
-            <p className="text-default-500 mt-2">
-              Manage journals, conference papers, and reports for the research portal.
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">
+              Publication <span className="text-primary">Repository</span>
+            </h1>
+            <p className="text-default-500 mt-1 text-medium">
+              Curate and manage your academic outputs and research reports.
             </p>
           </div>
-
-          <Button color="primary" onPress={openCreate}>
-            + Create Publication
+          <Button 
+            color="primary" 
+            size="lg"
+            className="shadow-lg shadow-primary/20 font-bold"
+            startContent={<Plus size={20} />} 
+            onPress={openCreate}
+          >
+            Create Publication
           </Button>
         </div>
 
-        <Divider className="my-8" />
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Total</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.total}</p>
-            <p className="mt-2 text-sm text-default-500">
-              Publications currently listed.
-            </p>
-          </Card>
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Journals</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.journal}</p>
-            <p className="mt-2 text-sm text-default-500">Peer-reviewed articles.</p>
-          </Card>
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Conferences</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.conference}</p>
-            <p className="mt-2 text-sm text-default-500">Conference proceedings.</p>
-          </Card>
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Reports</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.report}</p>
-            <p className="mt-2 text-sm text-default-500">Internal publications.</p>
-          </Card>
+        {/* --- Academic Metrics --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {[
+            { label: "Total Assets", val: stats.total, icon: <Layers size={22} />, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Journals", val: stats.journal, icon: <BookOpen size={22} />, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: "Conferences", val: stats.conference, icon: <Users size={22} />, color: "text-purple-600", bg: "bg-purple-50" },
+            { label: "Reports", val: stats.report, icon: <FileText size={22} />, color: "text-amber-600", bg: "bg-amber-50" },
+          ].map((s, i) => (
+            <Card key={i} shadow="sm" className="border-none bg-content1/50 backdrop-blur-md">
+              <div className="p-5 flex items-center gap-4">
+                <div className={`p-3 rounded-2xl ${s.bg} ${s.color} dark:bg-default-100`}>
+                  {s.icon}
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-default-400 tracking-widest">{s.label}</p>
+                  <p className="text-2xl font-black text-foreground">{s.val}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
 
-        <Card className="border border-divider bg-content1 rounded-2xl p-4 mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-5">
+        {/* --- Unified Search & Filter Toolbar --- */}
+        <Card className="mb-8 border-none shadow-sm bg-content1/80 backdrop-blur-md overflow-visible">
+          <div className="p-4 flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
               <Input
+                isClearable
+                startContent={<Search size={18} className="text-default-400" />}
+                placeholder="Search by title, author, venue, or DOI..."
                 value={filters.query}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, query: value }))
-                }
-                label="Search"
-                placeholder="Search by title, author, venue, tags..."
+                onValueChange={(v) => setFilters(p => ({ ...p, query: v }))}
+                variant="flat"
               />
             </div>
-
-            <div className="md:col-span-3">
-              <Select
-                label="Type"
-                selectedKeys={new Set([filters.typeFilter])}
-                onSelectionChange={(keys) => {
-                  const v = Array.from(keys)[0] as any;
-                  setFilters((prev) => ({ ...prev, typeFilter: v ?? "ALL" }));
-                }}
+            
+            <div className="flex flex-wrap items-center gap-3">
+              <Select 
+                className="w-40"
+                labelPlacement="outside"
+                startContent={<Filter size={16} />}
+                selectedKeys={[filters.typeFilter]}
+                onSelectionChange={(keys) => setFilters(p => ({ ...p, typeFilter: Array.from(keys)[0] as any }))}
               >
-                <SelectItem key="ALL">All</SelectItem>
-                <SelectItem key="Journal">Journal</SelectItem>
-                <SelectItem key="Conference">Conference</SelectItem>
-                <SelectItem key="Report">Report</SelectItem>
+                <SelectItem key="ALL">All Types</SelectItem>
+                <SelectItem key="Journal">Journals</SelectItem>
+                <SelectItem key="Conference">Conferences</SelectItem>
+                <SelectItem key="Report">Reports</SelectItem>
               </Select>
-            </div>
 
-            <div className="md:col-span-4">
-              <Select
-                label="Sort"
-                selectedKeys={new Set([filters.sortKey])}
-                onSelectionChange={(keys) => {
-                  const v = Array.from(keys)[0] as any;
-                  setFilters((prev) => ({ ...prev, sortKey: v ?? "NEWEST" }));
-                }}
+              <Select 
+                className="w-44"
+                labelPlacement="outside"
+                startContent={<SortDesc size={16} />}
+                selectedKeys={[filters.sortKey]}
+                onSelectionChange={(keys) => setFilters(p => ({ ...p, sortKey: Array.from(keys)[0] as any }))}
               >
-                <SelectItem key="NEWEST">Newest year</SelectItem>
-                <SelectItem key="OLDEST">Oldest year</SelectItem>
-                <SelectItem key="TITLE_AZ">Title A → Z</SelectItem>
-                <SelectItem key="TITLE_ZA">Title Z → A</SelectItem>
+                <SelectItem key="NEWEST">Newest First</SelectItem>
+                <SelectItem key="OLDEST">Oldest First</SelectItem>
+                <SelectItem key="TITLE_AZ">Title A-Z</SelectItem>
               </Select>
-            </div>
 
-            <div className="md:col-span-12 flex items-end justify-between gap-3 flex-wrap">
-              <div className="text-sm text-default-500">
-                Showing <span className="font-bold text-foreground">{filtered.length}</span>{" "}
-                of <span className="font-bold text-foreground">{publications.length}</span>
-              </div>
-
-              <Button variant="flat" onPress={resetFilters}>
-                Reset
-              </Button>
+              <Tooltip content="Reset Filters">
+                <Button isIconOnly variant="flat" onPress={resetFilters} className="text-default-500">
+                  <RefreshCcw size={18} />
+                </Button>
+              </Tooltip>
             </div>
           </div>
         </Card>
 
+        {/* --- Content Area --- */}
         <div className="mt-8">
           {filtered.length === 0 ? (
-            <Card className="border border-dashed border-divider bg-content1 rounded-2xl p-10 text-center">
-              <h3 className="text-xl font-black">No publications yet</h3>
-              <p className="text-default-500 mt-2">
-                Add your first publication or adjust filters to see results.
-              </p>
-              <Button className="mt-6" color="primary" onPress={openCreate}>
-                + Create Publication
-              </Button>
-            </Card>
+            <div className="flex flex-col items-center justify-center py-20 bg-content1/30 rounded-3xl border-2 border-dashed border-divider">
+              <BookOpen size={48} className="text-default-200 mb-4" />
+              <h3 className="text-xl font-bold">No publications found</h3>
+              <p className="text-default-500 max-w-xs text-center mt-2">Try adjusting your filters or add a new research entry.</p>
+              <Button color="primary" variant="flat" className="mt-6" onPress={openCreate}>Add First Entry</Button>
+            </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {paginated.map((pub) => (
-                  <Card key={pub.id} className="border border-divider bg-content1 rounded-2xl p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-3">
-                        <Chip size="sm" variant="flat" className="bg-background/80 font-bold">
+                  <Card key={pub.id} className="border border-divider bg-content1 hover:shadow-lg transition-all duration-300 group rounded-2xl p-0">
+                    <div className="flex flex-col h-full">
+                      {/* Top Bar */}
+                      <div className="flex items-center justify-between p-4 border-b border-divider bg-default-50/50">
+                        <Chip 
+                          size="sm" 
+                          variant="dot" 
+                          color={pub.type === "Journal" ? "success" : pub.type === "Conference" ? "secondary" : "warning"}
+                          className="font-bold uppercase text-[10px]"
+                        >
                           {pub.type}
                         </Chip>
-                        <h3 className="text-xl font-black">{pub.title}</h3>
-                        <p className="text-sm text-default-500">{pub.authors}</p>
-                        <p className="text-sm text-default-500">
-                          {pub.venue} · {pub.year}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {pub.tags.map((tag) => (
-                            <span
-                              key={`${pub.id}-${tag}`}
-                              className="text-xs font-semibold uppercase tracking-wide text-default-500 bg-default-100 rounded-full px-3 py-1"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
+                        
+                        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                          <Dropdown placement="bottom-end">
+                            <DropdownTrigger>
+                              <Button isIconOnly size="sm" variant="light" radius="full">
+                                <MoreVertical size={18} className="text-default-400" />
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="Actions" onAction={(key) => key === "edit" ? openEdit(pub) : confirmRemove(pub)}>
+                              <DropdownItem key="edit" startContent={<Edit3 size={16} />}>Edit Entry</DropdownItem>
+                              <DropdownItem key="delete" color="danger" className="text-danger" startContent={<Trash2 size={16} />}>
+                                Delete
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <Button size="sm" variant="flat" onPress={() => openEdit(pub)}>
-                          Edit
-                        </Button>
-                        <Button size="sm" color="danger" variant="flat" onPress={() => confirmRemove(pub)}>
-                          Delete
-                        </Button>
+
+                      {/* Content Body */}
+                      <div className="p-6 flex-grow">
+                        <h3 className="text-lg font-bold leading-snug group-hover:text-primary transition-colors mb-3 line-clamp-2">
+                          {pub.title}
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm text-default-600 font-medium">
+                            <Users size={14} className="text-default-400" />
+                            <span className="truncate">{pub.authors}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-default-400">
+                            <MapPin size={14} />
+                            <span>{pub.venue}</span>
+                            <span>•</span>
+                            <Calendar size={14} />
+                            <span>{pub.year}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2 mt-5">
+                          {pub.tags.map((tag) => (
+                            <Chip key={tag} size="sm" variant="flat" className="text-[10px] font-semibold bg-default-100/50">
+                              #{tag}
+                            </Chip>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </Card>
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-default-500">
-                  Page <span className="font-semibold text-foreground">{page}</span> of{" "}
-                  <span className="font-semibold text-foreground">{totalPages}</span>
+              {/* Pagination */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-divider">
+                <p className="text-sm text-default-500 font-medium italic">
+                  Showing {paginated.length} of {filtered.length} publications
                 </p>
                 <Pagination
-                  page={page}
-                  total={totalPages}
-                  onChange={setPage}
+                  isCompact
                   showControls
-                  className="mx-auto sm:mx-0"
+                  total={totalPages}
+                  page={page}
+                  onChange={setPage}
+                  color="primary"
                 />
               </div>
             </div>
           )}
         </div>
 
-        <Modal isOpen={isOpen} onOpenChange={setIsOpen} size="3xl">
+        {/* --- Enhanced Modal --- */}
+        <Modal 
+          isOpen={isOpen} 
+          onOpenChange={setIsOpen} 
+          size="3xl" 
+          scrollBehavior="inside"
+          classNames={{
+            header: "border-b border-divider",
+            footer: "border-t border-divider",
+            base: "bg-background",
+          }}
+        >
           <ModalContent>
-            <ModalHeader className="flex flex-col gap-1">
-              {form.id ? "Edit Publication" : "Create Publication"}
-              <span className="text-sm text-default-500 font-normal">
-                {form.id ? `Editing: ${form.id}` : "Add a new publication entry."}
-              </span>
+            <ModalHeader className="flex flex-col gap-1 py-6">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                {form.id ? <Edit3 size={20} className="text-primary" /> : <Plus size={20} className="text-primary" />}
+                {form.id ? "Edit Scholarly Work" : "New Publication Entry"}
+              </h2>
             </ModalHeader>
 
-            <ModalBody>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModalBody className="py-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   className="md:col-span-2"
-                  label="Title"
+                  label="Article Title"
+                  placeholder="The impact of AI on..."
+                  labelPlacement="outside"
                   value={form.title}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, title: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, title: v }))}
                 />
 
                 <Input
                   className="md:col-span-2"
                   label="Authors"
+                  placeholder="Separate with commas"
+                  labelPlacement="outside"
                   value={form.authors}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, authors: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, authors: v }))}
                 />
 
                 <Select
-                  label="Type"
-                  selectedKeys={new Set([form.type])}
-                  onSelectionChange={(keys) => {
-                    const v = Array.from(keys)[0] as Publication["type"];
-                    setForm((prev) => ({ ...prev, type: v ?? "Journal" }));
-                  }}
+                  label="Publication Type"
+                  labelPlacement="outside"
+                  selectedKeys={[form.type]}
+                  onSelectionChange={(keys) => setForm(p => ({ ...p, type: Array.from(keys)[0] as any }))}
                 >
-                  <SelectItem key="Journal">Journal</SelectItem>
-                  <SelectItem key="Conference">Conference</SelectItem>
-                  <SelectItem key="Report">Report</SelectItem>
+                  <SelectItem key="Journal">Journal Article</SelectItem>
+                  <SelectItem key="Conference">Conference Paper</SelectItem>
+                  <SelectItem key="Report">Internal Report</SelectItem>
                 </Select>
 
                 <Input
                   label="Year"
                   type="number"
+                  labelPlacement="outside"
                   value={form.year}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, year: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, year: v }))}
                 />
 
                 <Input
                   className="md:col-span-2"
-                  label="Venue"
+                  label="Venue / Publisher"
+                  placeholder="e.g. Nature Machine Intelligence"
+                  labelPlacement="outside"
                   value={form.venue}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, venue: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, venue: v }))}
                 />
 
                 <Input
-                  className="md:col-span-2"
-                  label="Tags"
+                  className="md:col-span-1"
+                  label="Keywords / Tags"
+                  placeholder="Separated by commas"
+                  labelPlacement="outside"
                   value={form.tags}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, tags: value }))}
-                  placeholder="NLP, Machine Translation, L2K"
+                  onValueChange={(v) => setForm(p => ({ ...p, tags: v }))}
                 />
 
                 <Input
-                  className="md:col-span-2"
-                  label="DOI / URL"
+                  className="md:col-span-1"
+                  label="DOI / Resource URL"
+                  placeholder="https://doi.org/..."
+                  labelPlacement="outside"
                   value={form.doi}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, doi: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, doi: v }))}
+                  startContent={<ExternalLink size={14} className="text-default-300" />}
                 />
 
                 <Textarea
                   className="md:col-span-2"
-                  label="Abstract"
+                  label="Abstract Summary"
+                  placeholder="Brief overview of findings..."
+                  labelPlacement="outside"
                   value={form.abstract}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, abstract: value }))}
+                  onValueChange={(v) => setForm(p => ({ ...p, abstract: v }))}
                   minRows={4}
                 />
               </div>
             </ModalBody>
 
-            <ModalFooter>
-              <Button variant="flat" onPress={closeModal}>
+            <ModalFooter className="py-4">
+              <Button variant="light" onPress={closeModal} className="font-semibold text-default-500">
                 Cancel
               </Button>
-              <Button color="primary" onPress={upsert}>
-                {form.id ? "Save Changes" : "Create"}
+              <Button color="primary" onPress={upsert} className="font-bold px-8">
+                {form.id ? "Save Changes" : "Create Entry"}
               </Button>
             </ModalFooter>
           </ModalContent>

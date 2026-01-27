@@ -1,147 +1,81 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+"use client";
 
-export type GicYearBookEntry = {
+import { useState, useMemo, useEffect } from "react";
+import { StudentGenerationData, StudentGenerationCard } from "./useStudentGenerationData";
+
+export type StudentEntry = StudentGenerationCard & {
   id: string;
-  year: string;
-  title: string;
-  fileUrl: string;
-  coverImageUrl: string;
-  description?: string;
+  generation: string;
 };
 
-export type GicYearBookData = {
-  entries: GicYearBookEntry[];
-};
+export function useGicYearBookData(rawData?: StudentGenerationData) {
+  const [localEntries, setLocalEntries] = useState<StudentEntry[]>([]);
+  const [search, setSearch] = useState("");
+  const [genFilter, setGenFilter] = useState("ALL");
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-export type GicYearBookUpdate =
-  | {
-      type: "add";
-      entry: GicYearBookEntry;
+  // Sync with raw data from React Query
+  useEffect(() => {
+    if (rawData?.generations) {
+      const flattened: StudentEntry[] = [];
+      Object.entries(rawData.generations).forEach(([gen, students]) => {
+        students.forEach((s, index) => {
+          flattened.push({ ...s, id: `${gen}-${index}`, generation: gen });
+        });
+      });
+      setLocalEntries(flattened);
     }
-  | {
-      type: "update";
-      id: string;
-      changes: Partial<GicYearBookEntry>;
+  }, [rawData]);
+
+  // Derived State: Generations list for the Filter Dropdown
+  const generations = useMemo(() => 
+    ["ALL", ...Array.from(new Set(localEntries.map((e) => e.generation)))], 
+  [localEntries]);
+
+  // Core Filtering & Search Logic
+  const filtered = useMemo(() => {
+    return localEntries.filter((e) => {
+      const matchesSearch = e.name.toLowerCase().includes(search.toLowerCase());
+      const matchesGen = genFilter === "ALL" || e.generation === genFilter;
+      return matchesSearch && matchesGen;
+    });
+  }, [localEntries, search, genFilter]);
+
+  // Actions
+  const addStudent = (newStudent: Omit<StudentEntry, "id">) => {
+    setLocalEntries((prev) => [{ ...newStudent, id: crypto.randomUUID() }, ...prev]);
+  };
+
+  const updateStudent = (id: string, updated: Partial<StudentEntry>) => {
+    setLocalEntries((prev) => prev.map((e) => (e.id === id ? { ...e, ...updated } : e)));
+  };
+
+  const deleteStudent = () => {
+    if (isDeleting) {
+      setLocalEntries((prev) => prev.filter((e) => e.id !== isDeleting));
+      setIsDeleting(null);
     }
-  | {
-      type: "delete";
-      id: string;
-    }
-  | {
-      type: "bulkAdd";
-      entries: GicYearBookEntry[];
-    };
+  };
 
-export type GicYearBookUpdatePayload = {
-  updates: GicYearBookUpdate[];
-};
-
-export const gicYearBookSeed: GicYearBookData = {
-  entries: [
-    {
-      id: "gic-yearbook-2024",
-      year: "2024",
-      title: "GIC Year Book 2024",
-      fileUrl: "https://example.com/yearbook-2024.pdf",
-      coverImageUrl:
-        "https://images.unsplash.com/photo-1455390582262-044cdead277a",
-      description: "Highlights from the Class of 2024.",
-    },
-    {
-      id: "gic-yearbook-2023",
-      year: "2023",
-      title: "GIC Year Book 2023",
-      fileUrl: "https://example.com/yearbook-2023.pdf",
-      coverImageUrl:
-        "https://images.unsplash.com/photo-1516979187457-637abb4f9353",
-      description: "Student stories, events, and academic milestones.",
-    },
-  ],
-};
-
-const cloneValue = <T>(value: T): T => {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-
-  return JSON.parse(JSON.stringify(value)) as T;
-};
-
-const getGicYearBookData = async (): Promise<GicYearBookData> =>
-  cloneValue(gicYearBookSeed);
-
-const applyYearBookUpdates = (
-  current: GicYearBookData,
-  updates: GicYearBookUpdate[],
-): GicYearBookData => {
-  const nextEntries = cloneValue(current.entries);
-
-  updates.forEach((update) => {
-    if (update.type === "add") {
-      nextEntries.push(update.entry);
-
-      return;
-    }
-
-    if (update.type === "bulkAdd") {
-      nextEntries.push(...update.entries);
-
-      return;
-    }
-
-    if (update.type === "delete") {
-      const index = nextEntries.findIndex((entry) => entry.id === update.id);
-
-      if (index === -1) return;
-      nextEntries.splice(index, 1);
-
-      return;
-    }
-
-    const index = nextEntries.findIndex((entry) => entry.id === update.id);
-
-    if (index === -1) return;
-
-    nextEntries[index] = {
-      ...nextEntries[index],
-      ...update.changes,
-    };
-  });
+  const bulkUpload = (entries: Omit<StudentEntry, "id">[]) => {
+    const withIds = entries.map((e) => ({ ...e, id: crypto.randomUUID() }));
+    setLocalEntries((prev) => [...withIds, ...prev]);
+  };
 
   return {
-    entries: nextEntries,
-  };
-};
-
-const updateGicYearBookData = async (
-  payload: GicYearBookUpdatePayload,
-): Promise<GicYearBookUpdatePayload> => {
-  // TODO: replace with API mutation.
-  await new Promise((resolve) => setTimeout(resolve, 200));
-
-  return payload;
-};
-
-export function useGicYearBookData() {
-  return useQuery({
-    queryKey: ["gicYearBook"],
-    queryFn: getGicYearBookData,
-    initialData: gicYearBookSeed,
-    staleTime: Number.POSITIVE_INFINITY,
-  });
-}
-
-export function useUpdateGicYearBookData() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: updateGicYearBookData,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<GicYearBookData>(["gicYearBook"], (current) => {
-        const baseState = current ?? gicYearBookSeed;
-
-        return applyYearBookUpdates(baseState, payload.updates);
-      });
+    entries: filtered,
+    generations,
+    search,
+    setSearch,
+    genFilter,
+    setGenFilter,
+    isDeleting,
+    setIsDeleting,
+    actions: {
+      addStudent,
+      updateStudent,
+      deleteStudent,
+      bulkUpload,
     },
-  });
+  };
 }

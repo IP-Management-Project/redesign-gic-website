@@ -109,56 +109,6 @@ export default function ExchangePage() {
                     </motion.div>
                 </section>
 
-                <motion.section
-                    {...fadeIn}
-                    className="mb-16 rounded-[3rem] border border-[#76879d]/20 bg-white/80 dark:bg-zinc-900/80 shadow-2xl p-8 md:p-10 backdrop-blur-xl"
-                >
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#76879d]">Student Management Portal</p>
-                            <h2 className="text-3xl md:text-4xl font-black text-[#26304d] dark:text-white uppercase tracking-tighter">
-                                Add an exchange experience
-                            </h2>
-                            <p className="mt-2 text-sm text-slate-500 dark:text-zinc-400 max-w-xl">
-                                Capture new study abroad stories and highlight unforgettable moments.
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-[#76879d]">
-                            Live sync enabled
-                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                        </div>
-                    </div>
-
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Input label="Student name" value={formValues.name} onValueChange={handleChange("name")} placeholder="Student name" />
-                        <Input label="Program type" value={formValues.type} onValueChange={handleChange("type")} placeholder="Khmer to France" />
-                        <Input label="Destination" value={formValues.destination} onValueChange={handleChange("destination")} placeholder="Host university / country" />
-                        <Input label="Focus" value={formValues.focus} onValueChange={handleChange("focus")} placeholder="e.g., AI & Robotics" />
-                        <Textarea label="Experience story" value={formValues.story} onValueChange={handleChange("story")} placeholder="Share the experience story" minRows={3} />
-                        <Input label="Background image URL" value={formValues.backgroundImg} onValueChange={handleChange("backgroundImg")} placeholder="https://..." />
-                        <Input label="Portrait URL" value={formValues.portrait} onValueChange={handleChange("portrait")} placeholder="https://..." />
-                        <Input
-                            label="Activity images (comma separated)"
-                            value={formValues.activityImages}
-                            onValueChange={handleChange("activityImages")}
-                            placeholder="https://..., https://..."
-                        />
-                    </div>
-
-                    <div className="mt-6 flex flex-wrap items-center gap-4">
-                        <Button
-                            className="bg-[#26304d] text-white font-black uppercase tracking-widest text-xs h-12 px-6 rounded-2xl"
-                            onPress={handleAddExperience}
-                            isLoading={isPending}
-                        >
-                            Add exchange story
-                        </Button>
-                        <p className="text-xs text-slate-500 dark:text-zinc-400">
-                            New stories appear immediately in the grid below.
-                        </p>
-                    </div>
-                </motion.section>
-
                 {/* UPDATED STORY GRID */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
                     {exchangeData.map((item) => (

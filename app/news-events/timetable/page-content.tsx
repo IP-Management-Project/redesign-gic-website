@@ -1,109 +1,155 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  CalendarDays, 
   Clock, 
-  MapPin, 
-  Search, 
-  Filter, 
+  User, 
+  BookOpen, 
   Download, 
-  GraduationCap,
-  BookOpen
+  Info
 } from "lucide-react";
-import { Card, CardBody } from "@heroui/card";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
-import { useTimetableData } from "@/hooks/useTimetableData";
-import type { SessionType, TimetableSession } from "@/hooks/useTimetableData";
+import { Chip } from "@heroui/chip";
+import { Spinner } from "@heroui/spinner";
+import { Tooltip } from "@heroui/tooltip";
+import { Divider } from "@heroui/divider";
 
-export default function TimetableHub() {
-  const { data } = useTimetableData();
-  const academicYears = data?.academicYears ?? [];
-  const semesters = data?.semesters ?? [];
-  const timetableData = data?.timetable ?? {};
-  const days = data?.days ?? [];
-  const legendItems = data?.legend ?? [];
-  const [year, setYear] = useState("Year 3");
-  const [semester, setSemester] = useState("Semester I");
+import { useTimetableData, FIXED_SLOTS, type TimetableSession } from "@/hooks/useTimetableData";
+
+export default function TimetableClientPage() {
+  const { data, isLoading } = useTimetableData();
+  
+  const [selectedYear, setSelectedYear] = useState("Year 3");
+  const [selectedSem, setSelectedSem] = useState("Semester I");
+
+  const filteredTimetable = useMemo(() => {
+    return data?.timetable.filter(
+      (s) => s.academicYear === selectedYear && s.semester === selectedSem
+    ) || [];
+  }, [data, selectedYear, selectedSem]);
+
+  if (isLoading || !data) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
+        <Spinner label="Syncing Academic Schedule..." color="primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 py-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 py-12 md:py-24">
+      <div className="max-w-[1600px] mx-auto px-20">
         
-        {/* HEADER & GLOBAL FILTERS */}
-        <section className="mb-12 flex flex-col md:flex-row justify-between items-end gap-8 border-b border-divider pb-12">
-          <div className="max-w-xl">
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 leading-none">
+        {/* --- HEADER --- */}
+        <header className="mb-20 flex flex-col  lg:flex-row justify-between items-start lg:items-end gap-10">
+          <div className="max-w-2xl">
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 leading-none uppercase ">
               GIC <span className="text-blue-600">Timetable</span>
             </h1>
-            <p className="text-slate-500 font-medium">
-              Access real-time schedules for Engineering and Master's programs.
+            <p className="text-slate-500 dark:text-zinc-400 font-medium text-lg uppercase tracking-widest">
+              Digital Course Orchestration • 2025/2026
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-4 bg-gray-100 dark:bg-zinc-900 p-2 rounded-[2rem] border border-divider">
+          <div className="flex flex-wrap gap-4 bg-gray-50 dark:bg-zinc-900 p-3 rounded-[2rem] border border-divider">
             <Select 
-              label="Select Year" 
-              className="w-40" 
-              size="sm"
-              selectedKeys={[year]}
-              onSelectionChange={(keys) => setYear(Array.from(keys)[0] as string)}
+              label="Year Group" 
+              className="w-44" 
+              variant="bordered"
+              selectedKeys={[selectedYear]}
+              onSelectionChange={(keys) => setSelectedYear(Array.from(keys)[0] as string)}
             >
-              {academicYears.map((academicYear) => (
-                <SelectItem key={academicYear} textValue={academicYear}>
-                  {academicYear}
-                </SelectItem>
+              {data.academicYears.map((y) => (
+                <SelectItem key={y} textValue={y}>{y}</SelectItem>
               ))}
             </Select>
             <Select 
               label="Semester" 
-              className="w-40" 
-              size="sm"
-              selectedKeys={[semester]}
-              onSelectionChange={(keys) => setSemester(Array.from(keys)[0] as string)}
+              className="w-44" 
+              variant="bordered"
+              selectedKeys={[selectedSem]}
+              onSelectionChange={(keys) => setSelectedSem(Array.from(keys)[0] as string)}
             >
-              {semesters.map((term) => (
-                <SelectItem key={term} textValue={term}>
-                  {term}
-                </SelectItem>
+              {data.semesters.map((s) => (
+                <SelectItem key={s} textValue={s}>{s}</SelectItem>
               ))}
             </Select>
           </div>
-        </section>
+        </header>
 
-        {/* TIMETABLE GRID */}
-        <div className="grid lg:grid-cols-5 gap-4">
-          {days.map((day) => (
-            <div key={day} className="flex flex-col gap-4">
-              <div className="text-center p-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">
+        {/* --- GRID --- */}
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-x-8">
+          
+          {/* Sidebar: Time Metadata */}
+          <div className="hidden lg:flex flex-col gap-0 pt-20">
+            {FIXED_SLOTS.map((slot, idx) => (
+              <div key={slot} className="h-56 flex flex-col items-center justify-center relative">
+                <div className="flex items-center gap-2 text-foreground font-black italic text-lg">
+                  <Clock size={16} className="text-blue-600" />
+                  {slot}
+                </div>
+                <span className="text-[10px] font-bold text-default-400 uppercase tracking-widest mt-1">2h Block</span>
+                {idx !== FIXED_SLOTS.length - 1 && <Divider className="absolute bottom-0 w-1/2 left-1/4 opacity-50" />}
+              </div>
+            ))}
+          </div>
+
+          {/* Days Columns */}
+          {data.days.map((day) => (
+            <div key={day} className="flex flex-col gap-0">
+              <div className="text-center p-5 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl mb-10">
                 {day}
               </div>
               
-              <AnimatePresence mode="wait">
-                <div className="space-y-4">
-                  {timetableData[year]?.[semester]
-                    ?.filter((entry) => entry.day === day)
-                    .map((session, index) => (
-                      <SessionCard key={`${session.subject}-${index}`} session={session} />
-                    ))}
-                </div>
-              </AnimatePresence>
+              <div className="flex flex-col">
+                {FIXED_SLOTS.map((slot, idx) => {
+                  const session = filteredTimetable.find(s => s.day === day && s.timeSlot === slot);
+                  return (
+                    <div key={`${day}-${slot}`} className="h-56 flex flex-col items-stretch relative py-4">
+                      <AnimatePresence mode="wait">
+                        {session && (
+                          <SessionCard key={session.id} session={session} />
+                        )}
+                      </AnimatePresence>
+                      
+                      {/* Sub-block Divider */}
+                      {idx !== FIXED_SLOTS.length - 1 && (
+                        <Divider className="absolute bottom-0 w-full opacity-30" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
 
-        {/* LEGEND & DOWNLOAD */}
-        <div className="mt-16 flex flex-col md:flex-row justify-between items-center gap-8 p-10 rounded-[3rem] bg-gray-50 dark:bg-zinc-900 border border-divider">
-          <div className="flex flex-wrap gap-6">
-            {legendItems.map((item) => (
-              <LegendItem key={item.label} color={item.color} label={item.label} />
-            ))}
+        {/* --- FOOTER --- */}
+        <div className="mt-32 p-12 rounded-[3rem] bg-zinc-950 text-white flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-wrap gap-12">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
+              <span className="text-[11px] font-black uppercase tracking-widest opacity-60">Lecture (C)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+              <span className="text-[11px] font-black uppercase tracking-widest opacity-60">Tutorial (TD)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+              <span className="text-[11px] font-black uppercase tracking-widest opacity-60">Laboratory (TP)</span>
+            </div>
           </div>
-          <Button color="primary" className="font-black h-14 px-10 rounded-2xl" startContent={<Download size={18} />}>
-            EXPORT SCHEDULE PDF
+          
+          <Button 
+            className="font-black h-16 px-12 rounded-2xl bg-white text-black hover:bg-blue-600 hover:text-white transition-all shadow-2xl" 
+            startContent={<Download size={20} />}
+          >
+            DOWNLOAD PLANNER
           </Button>
         </div>
       </div>
@@ -111,8 +157,16 @@ export default function TimetableHub() {
   );
 }
 
+// --- SESSION COMPONENT ---
+
 function SessionCard({ session }: { session: TimetableSession }) {
-  const typeColors: Record<SessionType, string> = {
+  const colors = {
+    C: "border-blue-600/20 bg-blue-600/5",
+    TD: "border-amber-500/20 bg-amber-500/5",
+    TP: "border-emerald-500/20 bg-emerald-500/5",
+  };
+
+  const chipColors = {
     C: "bg-blue-600",
     TD: "bg-amber-500",
     TP: "bg-emerald-500",
@@ -122,39 +176,36 @@ function SessionCard({ session }: { session: TimetableSession }) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="p-5 rounded-[2rem] bg-white dark:bg-zinc-800 border border-divider shadow-sm hover:border-blue-600/30 transition-all group"
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4, ease: "circOut" }}
+      className={`w-full h-full p-6 rounded-3xl border ${colors[session.type]} flex flex-col justify-between hover:scale-[1.02] transition-transform duration-500`}
     >
-      <div className="flex justify-between items-start mb-4">
-        <span className="text-[9px] font-black text-slate-400 flex items-center gap-1 uppercase tracking-widest">
-          <Clock size={10} /> {session.time}
-        </span>
-        <div className={`px-2 py-0.5 rounded text-[8px] font-black text-white ${typeColors[session.type]}`}>
+      <div className="flex justify-between items-start">
+        <Chip size="sm" className={`text-white font-black text-[8px] border-none ${chipColors[session.type]}`}>
           {session.type}
+        </Chip>
+        <div className="text-default-300 opacity-20">
+          <BookOpen size={20} />
         </div>
       </div>
       
-      <h4 className="text-sm font-black leading-tight mb-2 group-hover:text-blue-600 transition-colors">
-        {session.subject}
-      </h4>
-      <p className="text-[10px] text-slate-500 font-bold uppercase mb-4 flex items-center gap-1">
-        <GraduationCap size={12} className="text-blue-500" /> {session.lecturer}
-      </p>
-
-      {session.group && (
-        <div className="pt-2 border-t border-divider flex justify-between items-center">
-          <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">{session.group}</span>
-          <span className="text-[9px] text-slate-400 font-mono italic">{session.code || 'Lab-Res'}</span>
+      <div>
+        <h4 className="text-sm font-black leading-tight mb-2 uppercase tracking-tight">
+          {session.subject}
+        </h4>
+        <div className="flex items-center gap-2 text-[11px] text-default-500 font-bold uppercase tracking-wide">
+          <User size={12} className="text-primary" /> {session.lecturer}
         </div>
-      )}
-    </motion.div>
-  );
-}
+      </div>
 
-function LegendItem({ color, label }: { color: string, label: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className={`w-3 h-3 rounded-full ${color}`} />
-      <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{label}</span>
-    </div>
+      <div className="pt-3 border-t border-divider/50 flex justify-between items-center">
+        <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">
+          {session.group || 'GIC'}
+        </span>
+        <span className="text-[9px] font-mono font-bold text-default-400">
+          {session.code || 'Lab-Res'}
+        </span>
+      </div>
+    </motion.div>
   );
 }

@@ -2,9 +2,7 @@
 
 import React from "react";
 
-import LabsAndClubsPage, {
-  type LabsSectionKey,
-} from "@/app/research/labs/page-content";
+import LabsAndClubsPage from "@/app/research/labs/page-content";
 
 import ClubsModal from "./modals/clubs-modal";
 import ClubModal from "./modals/club-modal";
@@ -17,6 +15,20 @@ import HeaderModal from "./modals/header-modal";
 import HeroModal from "./modals/hero-modal";
 import ProjectModal from "./modals/project-modal";
 import ResearchPortfolioModal from "./modals/research-portfolio-modal";
+
+// ✅ Define the union type your modals/sections support
+export type LabsSectionKey =
+  | "hero"
+  | "labs-header"
+  | "featured-lab"
+  | "research-portfolio"
+  | "deployments"
+  | `deployment-${number}`
+  | `project-${number}`
+  | "clubs"
+  | `club-${number}`
+  | "facilities-node"
+  | "facilities-studio";
 
 const parseSectionIndex = (section: LabsSectionKey | null, prefix: string) => {
   if (!section || !section.startsWith(`${prefix}-`)) return null;
@@ -33,46 +45,36 @@ export default function LaboratoryAdminPage() {
 
   return (
     <div className="relative">
+      {/* ✅ LabsAndClubsPage now must accept these props */}
       <LabsAndClubsPage editable onEditSection={setActiveSection} />
 
       <HeroModal isOpen={activeSection === "hero"} onClose={() => setActiveSection(null)} />
       <HeaderModal isOpen={activeSection === "labs-header"} onClose={() => setActiveSection(null)} />
-      <FeaturedLabModal
-        isOpen={activeSection === "featured-lab"}
-        onClose={() => setActiveSection(null)}
-      />
-      <ResearchPortfolioModal
-        isOpen={activeSection === "research-portfolio"}
-        onClose={() => setActiveSection(null)}
-      />
-      <DeploymentsModal
-        isOpen={activeSection === "deployments"}
-        onClose={() => setActiveSection(null)}
-      />
+      <FeaturedLabModal isOpen={activeSection === "featured-lab"} onClose={() => setActiveSection(null)} />
+      <ResearchPortfolioModal isOpen={activeSection === "research-portfolio"} onClose={() => setActiveSection(null)} />
+
+      <DeploymentsModal isOpen={activeSection === "deployments"} onClose={() => setActiveSection(null)} />
       <DeploymentItemModal
         isOpen={deploymentIndex !== null}
         deploymentIndex={deploymentIndex}
         onClose={() => setActiveSection(null)}
       />
+
       <ProjectModal
         isOpen={projectIndex !== null}
         projectIndex={projectIndex}
         onClose={() => setActiveSection(null)}
       />
+
       <ClubsModal isOpen={activeSection === "clubs"} onClose={() => setActiveSection(null)} />
       <ClubModal
         isOpen={clubIndex !== null}
         clubIndex={clubIndex}
         onClose={() => setActiveSection(null)}
       />
-      <FacilitiesNodeModal
-        isOpen={activeSection === "facilities-node"}
-        onClose={() => setActiveSection(null)}
-      />
-      <FacilitiesStudioModal
-        isOpen={activeSection === "facilities-studio"}
-        onClose={() => setActiveSection(null)}
-      />
+
+      <FacilitiesNodeModal isOpen={activeSection === "facilities-node"} onClose={() => setActiveSection(null)} />
+      <FacilitiesStudioModal isOpen={activeSection === "facilities-studio"} onClose={() => setActiveSection(null)} />
     </div>
   );
 }

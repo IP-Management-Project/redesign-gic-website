@@ -13,7 +13,7 @@ export type ExchangeStoryCard = {
   span: string;
 };
 
-const exchangeSemesterData: ExchangeStoryCard[] = [
+export const exchangeSemesterData: ExchangeStoryCard[] = [
   {
     id: 1,
     type: "Khmer to France",

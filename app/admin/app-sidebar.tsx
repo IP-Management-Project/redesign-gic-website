@@ -42,7 +42,7 @@ type NavItem = {
   items?: NavItem[]; // children
 };
 
-const data: {
+export const data: {
   navMain: { title: string; items: NavItem[] }[];
 } = {
   navMain: [
@@ -109,7 +109,6 @@ const data: {
           ]
         },
         { title: "Timetable", url: "/admin/timetable" },
-        { title: "Schedule", url: "/admin/schedule" },
         { title: "Calendar", url: "/admin/calendar" },
         { title: "FAQ", url: "/admin/faq" },
 

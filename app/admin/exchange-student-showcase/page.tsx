@@ -1,295 +1,138 @@
 "use client";
 
 import React from "react";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Card } from "@heroui/card";
-import { Divider } from "@heroui/divider";
-import { Select, SelectItem } from "@heroui/select";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
-import { Textarea } from "@heroui/input";
-import { Pagination } from "@heroui/pagination";
-import { Chip } from "@heroui/chip";
-import { useExchangeShowcaseCentralize } from "@/hooks/useExchangeShowcaseCentralize";
-import type { ShowcaseItem } from "@/hooks/useExchangeShowcaseCentralize";
+import { 
+  Button, Input, Card, Select, SelectItem, 
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, 
+  Textarea, Pagination, Chip, Avatar, Tooltip
+} from "@heroui/react";
+import { Search, Plus, Globe, MapPin, Edit3, Trash2, RefreshCcw, LayoutGrid } from "lucide-react";
+import { useExchangeStoriesCentralize } from "@/hooks/useExchangeStoriesCentralize";
 
-const kindLabels: Record<ShowcaseItem["kind"], string> = {
-  gallery: "Gallery",
-  season: "Season",
-};
-
-export default function ExchangeShowcaseAdminPage() {
+export default function ExchangeStoriesAdminPage() {
   const {
-    items,
-    filtered,
-    paginated,
-    stats,
-    filters,
-    form,
-    isOpen,
-    page,
-    totalPages,
-    setFilters,
-    setForm,
-    setIsOpen,
-    setPage,
-    openCreate,
-    openEdit,
-    closeModal,
-    upsert,
-    remove,
-    resetFilters,
-  } = useExchangeShowcaseCentralize();
-
-  function confirmRemove(item: ShowcaseItem) {
-    const ok = window.confirm(`Delete "${item.title}"? This cannot be undone.`);
-    if (!ok) return;
-    remove(item);
-  }
+    filtered, paginated, stats, filters, setFilters,
+    form, setForm, isOpen, page, setPage, totalPages,
+    openCreate, openEdit, upsert, remove, resetFilters, closeModal
+  } = useExchangeStoriesCentralize();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-black text-foreground">
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-3xl font-black">Exchange Student Showcase</h1>
-            <p className="text-default-500 mt-2">
-              Manage highlight seasons and gallery moments for the exchange student showcase.
-            </p>
+            <h1 className="text-4xl font-extrabold tracking-tight">Exchange <span className="text-primary">Stories</span></h1>
+            <p className="text-default-500 mt-1 text-medium">Manage student testimonials and global exchange highlights.</p>
           </div>
+          <Button color="primary" size="lg" className="font-bold shadow-lg" startContent={<Plus size={20}/>} onPress={openCreate}>
+            Add Story
+          </Button>
+        </div>
 
+        {/* Adaptive Metrics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          {[
+            { label: "Total Testimonials", val: stats.total, color: "text-blue-500", bg: "bg-blue-500/10" },
+            { label: "Khmer Students Abroad", val: stats.khmerAbroad, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+            { label: "International Students", val: stats.international, color: "text-purple-500", bg: "bg-purple-500/10" },
+          ].map((s, i) => (
+            <Card key={i} shadow="sm" className="border-none bg-content1 p-5 flex flex-col items-center text-center">
+              <p className="text-[10px] uppercase font-black text-default-400 tracking-widest">{s.label}</p>
+              <p className={`text-3xl font-black mt-1 ${s.color}`}>{s.val}</p>
+            </Card>
+          ))}
+        </div>
+
+        {/* Toolbar */}
+        <Card className="p-4 mb-8 bg-content1/70 backdrop-blur-md border-none shadow-sm flex flex-col lg:flex-row gap-4">
+          <Input 
+            className="flex-1"
+            placeholder="Search students, destinations, or focus..." 
+            startContent={<Search size={18} className="text-default-400"/>}
+            value={filters.query}
+            onValueChange={(v) => setFilters(p => ({ ...p, query: v }))}
+          />
           <div className="flex gap-2">
-            <Button variant="flat" onPress={() => openCreate("season")}>
-              + Add Season
-            </Button>
-            <Button color="primary" onPress={() => openCreate("gallery")}>
-              + Add Gallery
-            </Button>
-          </div>
-        </div>
-
-        <Divider className="my-8" />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Total items</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.total}</p>
-            <p className="mt-2 text-sm text-default-500">Across gallery and seasons.</p>
-          </Card>
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Gallery</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.gallery}</p>
-            <p className="mt-2 text-sm text-default-500">Visual highlights.</p>
-          </Card>
-          <Card className="border border-divider bg-content1 rounded-2xl p-5">
-            <p className="text-xs uppercase tracking-widest text-default-500">Seasons</p>
-            <p className="mt-2 text-3xl font-black text-foreground">{stats.seasons}</p>
-            <p className="mt-2 text-sm text-default-500">Season showcases.</p>
-          </Card>
-        </div>
-
-        <Card className="border border-divider bg-content1 rounded-2xl p-4 mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-5">
-              <Input
-                value={filters.query}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, query: value }))
-                }
-                label="Search"
-                placeholder="Search by title, winner, year..."
-              />
-            </div>
-
-            <div className="md:col-span-3">
-              <Select
-                label="Type"
-                selectedKeys={new Set([filters.kindFilter])}
-                onSelectionChange={(keys) => {
-                  const v = Array.from(keys)[0] as any;
-                  setFilters((prev) => ({ ...prev, kindFilter: v ?? "ALL" }));
-                }}
-              >
-                <SelectItem key="ALL">All</SelectItem>
-                <SelectItem key="gallery">Gallery</SelectItem>
-                <SelectItem key="season">Season</SelectItem>
-              </Select>
-            </div>
-
-            <div className="md:col-span-4">
-              <Select
-                label="Sort"
-                selectedKeys={new Set([filters.sortKey])}
-                onSelectionChange={(keys) => {
-                  const v = Array.from(keys)[0] as any;
-                  setFilters((prev) => ({ ...prev, sortKey: v ?? "TITLE_AZ" }));
-                }}
-              >
-                <SelectItem key="TITLE_AZ">Title A → Z</SelectItem>
-                <SelectItem key="TITLE_ZA">Title Z → A</SelectItem>
-              </Select>
-            </div>
-
-            <div className="md:col-span-12 flex items-end justify-between gap-3 flex-wrap">
-              <div className="text-sm text-default-500">
-                Showing <span className="font-bold text-foreground">{filtered.length}</span>{" "}
-                of <span className="font-bold text-foreground">{items.length}</span>
-              </div>
-
-              <Button variant="flat" onPress={resetFilters}>
-                Reset
-              </Button>
-            </div>
+            <Select 
+              className="w-56"
+              labelPlacement="outside"
+              selectedKeys={[filters.typeFilter]}
+              onSelectionChange={(keys) => setFilters(p => ({ ...p, typeFilter: Array.from(keys)[0] as string }))}
+            >
+              <SelectItem key="ALL">All Directions</SelectItem>
+              <SelectItem key="Khmer to France">Khmer to France</SelectItem>
+              <SelectItem key="French to Cambodia">French to Cambodia</SelectItem>
+            </Select>
+            <Tooltip content="Reset Filters">
+              <Button isIconOnly variant="flat" onPress={resetFilters}><RefreshCcw size={18}/></Button>
+            </Tooltip>
           </div>
         </Card>
 
-        <div className="mt-8">
-          {filtered.length === 0 ? (
-            <Card className="border border-dashed border-divider bg-content1 rounded-2xl p-10 text-center">
-              <h3 className="text-xl font-black">No showcase items yet</h3>
-              <p className="text-default-500 mt-2">
-                Add your first season or gallery highlight.
-              </p>
-              <Button className="mt-6" color="primary" onPress={() => openCreate("gallery")}>
-                + Add Gallery
-              </Button>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {paginated.map((item) => (
-                  <Card key={item.id} className="border border-divider bg-content1 rounded-2xl p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-3">
-                        <Chip size="sm" variant="flat" className="bg-background/80 font-bold">
-                          {kindLabels[item.kind]}
-                        </Chip>
-                        <h3 className="text-xl font-black">{item.title}</h3>
-                        <p className="text-sm text-default-500">{item.subtitle}</p>
-                        {item.meta ? (
-                          <p className="text-sm text-default-500">Year: {item.meta}</p>
-                        ) : null}
-                        {item.teams?.length ? (
-                          <p className="text-sm text-default-500">
-                            Teams: {item.teams.join(", ")}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Button size="sm" variant="flat" onPress={() => openEdit(item)}>
-                          Edit
-                        </Button>
-                        <Button size="sm" color="danger" variant="flat" onPress={() => confirmRemove(item)}>
-                          Delete
-                        </Button>
+        {/* Stories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {paginated.map((item) => (
+            <Card key={item.id} className="p-6 border border-divider bg-content1 hover:shadow-md transition-all">
+               <div className="flex gap-5">
+                  <Avatar src={item.portrait} className="w-24 h-24 shrink-0 shadow-lg" radius="lg" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <Chip size="sm" color="primary" variant="flat" className="font-bold mb-2 uppercase text-[10px]">
+                        {item.type}
+                      </Chip>
+                      <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                        <Button isIconOnly size="sm" variant="light" onPress={() => openEdit(item)}><Edit3 size={16}/></Button>
+                        <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => { if(confirm("Delete?")) remove(item.id)}}><Trash2 size={16}/></Button>
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-default-500">
-                  Page <span className="font-semibold text-foreground">{page}</span> of{" "}
-                  <span className="font-semibold text-foreground">{totalPages}</span>
-                </p>
-                <Pagination
-                  page={page}
-                  total={totalPages}
-                  onChange={setPage}
-                  showControls
-                  className="mx-auto sm:mx-0"
-                />
-              </div>
-            </div>
-          )}
+                    <h3 className="text-xl font-bold truncate">{item.name}</h3>
+                    <div className="flex items-center gap-2 text-default-500 text-sm mt-1">
+                      <MapPin size={14} className="text-primary" /> {item.destination}
+                    </div>
+                    <p className="mt-4 text-sm text-default-500 italic line-clamp-2 leading-relaxed">
+                      "{item.story}"
+                    </p>
+                  </div>
+               </div>
+            </Card>
+          ))}
         </div>
 
-        <Modal isOpen={isOpen} onOpenChange={setIsOpen} size="3xl">
+        {/* Pagination */}
+        <div className="mt-10 flex justify-center">
+          <Pagination total={totalPages} page={page} onChange={setPage} color="primary" showControls />
+        </div>
+
+        {/* Modal */}
+        <Modal isOpen={isOpen} onOpenChange={closeModal} size="3xl" scrollBehavior="inside">
           <ModalContent>
-            <ModalHeader className="flex flex-col gap-1">
-              {form.id ? "Edit Showcase Item" : "Create Showcase Item"}
-              <span className="text-sm text-default-500 font-normal">
-                {form.id ? `Editing: ${form.id}` : "Add a new season or gallery highlight."}
-              </span>
+            <ModalHeader className="flex flex-col gap-1 py-6">
+               <h2 className="text-2xl font-black uppercase tracking-tighter">
+                {form.id ? "Edit Student Story" : "Create New Story"}
+               </h2>
             </ModalHeader>
-
-            <ModalBody>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select
-                  label="Type"
-                  selectedKeys={new Set([form.kind])}
-                  onSelectionChange={(keys) => {
-                    const v = Array.from(keys)[0] as ShowcaseItem["kind"];
-                    setForm((prev) => ({ ...prev, kind: v ?? "gallery" }));
-                  }}
-                >
-                  <SelectItem key="gallery">Gallery</SelectItem>
-                  <SelectItem key="season">Season</SelectItem>
+            <ModalBody className="pb-10">
+              <div className="grid grid-cols-2 gap-6">
+                <Input label="FULL NAME" labelPlacement="outside" placeholder="Sok Pongra" value={form.name} onValueChange={(v) => setForm(p => ({ ...p, name: v }))} />
+                <Select label="DIRECTION" labelPlacement="outside" selectedKeys={form.type ? [form.type] : []} onSelectionChange={(k) => setForm(p => ({ ...p, type: Array.from(k)[0] as string }))}>
+                  <SelectItem key="Khmer to France">Khmer to France</SelectItem>
+                  <SelectItem key="French to Cambodia">French to Cambodia</SelectItem>
                 </Select>
-
-                <Input
-                  label="Title"
-                  value={form.title}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, title: value }))}
-                  placeholder={form.kind === "season" ? "Season 9" : "Team Collaboration"}
-                />
-
-                <Input
-                  label={form.kind === "season" ? "Winner" : "Subtitle"}
-                  value={form.subtitle}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, subtitle: value }))}
-                  placeholder={form.kind === "season" ? "EcoPulse AI" : "Gallery item"}
-                />
-
-                {form.kind === "season" ? (
-                  <Input
-                    label="Year"
-                    value={form.meta}
-                    onValueChange={(value) => setForm((prev) => ({ ...prev, meta: value }))}
-                  />
-                ) : null}
-
-                {form.kind === "gallery" ? (
-                  <>
-                    <Input
-                      className="md:col-span-2"
-                      label="Image URL"
-                      value={form.image}
-                      onValueChange={(value) => setForm((prev) => ({ ...prev, image: value }))}
-                    />
-                    <Input
-                      className="md:col-span-2"
-                      label="Grid Span"
-                      value={form.span}
-                      onValueChange={(value) => setForm((prev) => ({ ...prev, span: value }))}
-                      placeholder="md:col-span-2 md:row-span-1"
-                    />
-                  </>
-                ) : null}
-
-                {form.kind === "season" ? (
-                  <Textarea
-                    className="md:col-span-2"
-                    label="Teams (comma separated)"
-                    value={form.teams}
-                    onValueChange={(value) => setForm((prev) => ({ ...prev, teams: value }))}
-                    minRows={3}
-                  />
-                ) : null}
+                <Input label="DESTINATION" labelPlacement="outside" placeholder="INSA Rennes, France" value={form.destination} onValueChange={(v) => setForm(p => ({ ...p, destination: v }))} />
+                <Input label="ACADEMIC FOCUS" labelPlacement="outside" placeholder="Cybersecurity" value={form.focus} onValueChange={(v) => setForm(p => ({ ...p, focus: v }))} />
+                <Input className="col-span-2" label="PORTRAIT URL" labelPlacement="outside" value={form.portrait} onValueChange={(v) => setForm(p => ({ ...p, portrait: v }))} />
+                <Textarea className="col-span-2" label="THE STORY" labelPlacement="outside" minRows={4} value={form.story} onValueChange={(v) => setForm(p => ({ ...p, story: v }))} />
               </div>
             </ModalBody>
-
-            <ModalFooter>
-              <Button variant="flat" onPress={closeModal}>
-                Cancel
-              </Button>
-              <Button color="primary" onPress={upsert}>
-                {form.id ? "Save Changes" : "Create"}
-              </Button>
+            <ModalFooter className="border-t border-divider">
+              <Button variant="flat" onPress={closeModal}>Discard</Button>
+              <Button color="primary" className="font-bold px-10" onPress={upsert}>Save Profile</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
+
       </div>
     </div>
   );
