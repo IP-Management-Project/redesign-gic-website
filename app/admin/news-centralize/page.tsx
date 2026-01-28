@@ -106,20 +106,19 @@ export default function NewsManagementPage() {
                 <SelectItem key="PUBLISHED">Published</SelectItem>
                 <SelectItem key="UNPUBLISHED">Drafts</SelectItem>
               </Select>
-
               <Select
                 className="w-44"
                 labelPlacement="outside"
                 selectedKeys={new Set([filters.categoryFilter])}
                 onSelectionChange={(keys) => {
                   const first = Array.from(keys)[0];
-                  setFilters((prev) => ({ ...prev, categoryFilter: String(first) as any }));
+                  setFilters((prev) => ({ ...prev, categoryFilter: String(first) }));
                 }}
-                items={["ALL", ...categories as any]}
+                items={["ALL", ...categories].map((c) => ({ id: c, label: c }))}
               >
-                {(c) => (
-                  <SelectItem key={c} textValue={c}>
-                    {c === "ALL" ? "All Categories" : c}
+                {(item) => (
+                  <SelectItem key={item.id} textValue={item.label}>
+                    {item.label === "ALL" ? "All Categories" : item.label}
                   </SelectItem>
                 )}
               </Select>
