@@ -33,7 +33,7 @@ export default function SectionModal({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} size="2xl" scrollBehavior="inside">
-      <ModalContent ref={modalRef}>
+      <ModalContent>
         {(modalOnClose) => (
           <>
             <ModalHeader {...moveProps} className="cursor-move">

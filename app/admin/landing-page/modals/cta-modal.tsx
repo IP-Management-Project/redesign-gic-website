@@ -58,9 +58,10 @@ export default function CtaModal({ isOpen, onClose }: SectionModalProps) {
   };
 
   const handleSave = () => {
-    const updates = fields.reduce<Record<string, string | boolean>>((acc, field) => {
+    const updates = fields.reduce<Record<string, string | boolean>>((acc, field: any) => {
       const value = get(formValues, field.key, formValues[field.key] ?? "");
-      acc[field.key] = field.parse ? field.parse(String(value)) : String(value);
+      const parse = field.parse;
+      acc[field.key] = parse ? parse(String(value)) : String(value);
       return acc;
     }, {});
 

@@ -4,6 +4,7 @@ import type { CurriculumCourse } from "@/hooks/useCurriculumData";
 import type {
   CurriculumProgramData,
   CurriculumProgramKey,
+  CurriculumCourseUpdate,
 } from "@/hooks/useCurriculumManagementData";
 
 import React from "react";
@@ -66,6 +67,7 @@ const blankCourse: CurriculumCourse = {
   hTD: 0,
   hTP: 0,
   credit: 0,
+  order: 0
 };
 
 const blankDraft = () => toDraft(blankCourse);
@@ -254,15 +256,27 @@ function CurriculumTable({
                       course.code
                     )}
                   </TableCell>
-                  {numberFields.map((field) =>
-                    renderNumberCell({
-                      course,
-                      field,
-                      isEditing,
-                      draft: rowDraft,
-                      onDraftChange,
-                    }),
-                  )}
+                  {renderNumberCell({
+                    course,
+                    field: "hC",
+                    isEditing,
+                    draft: rowDraft,
+                    onDraftChange,
+                  })}
+                  {renderNumberCell({
+                    course,
+                    field: "hTD",
+                    isEditing,
+                    draft: rowDraft,
+                    onDraftChange,
+                  })}
+                  {renderNumberCell({
+                    course,
+                    field: "hTP",
+                    isEditing,
+                    draft: rowDraft,
+                    onDraftChange,
+                  })}
                   <TableCell className="text-end">
                     {isEditing ? (
                       <Input
@@ -381,7 +395,7 @@ export function CurriculumManagement({
     }
 
     const nextCourse = toCourse(draft, currentCourse);
-    const updates =
+    const updates: CurriculumCourseUpdate[] =
       editingRow.mode === "add"
         ? [{ type: "add", semester: editingRow.semester, course: nextCourse }]
         : [
@@ -408,7 +422,7 @@ export function CurriculumManagement({
     updateCurriculum.mutate(
       {
         programKey,
-        updates: [{ type: "delete", semester, courseIndex }],
+        updates: [{ type: "delete", semester, courseIndex }] as CurriculumCourseUpdate[],
       },
       {
         onSuccess: () => {

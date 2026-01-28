@@ -58,17 +58,6 @@ export default function GicNavbar({ content }: { content: any }) {
           className="sm:hidden"
         />
         <NavbarBrand as={NextLink} href="/" className="gap-3">
-          {/* <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-primary/20">
-            GIC
-          </div>
-          <div className="hidden lg:flex flex-col">
-            <p className="font-black text-foreground leading-tight tracking-tighter">
-              {content.brand.name}
-            </p>
-            <p className="text-[10px] text-default-500 uppercase font-bold tracking-widest">
-              {content.brand.tagline}
-            </p>
-          </div> */}
           <Image src={"/logos/gic.png"} alt="" width={50} height={50} />
           <div className="hidden lg:flex flex-col">
             <p className="font-black text-foreground leading-tight tracking-tighter">

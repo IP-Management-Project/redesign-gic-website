@@ -400,7 +400,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
         },
         {
           label: "Project",
-          href: "/student",
+          href: "/projects",
           children: [
             { label: "Incubation", href: "/project/techno-innovation-challenge", desc: "Support for startups and student-led innovation initiatives." },
             { label: "Erasmus + KA2 ALIEN", href: "/project/erasmus-alien", desc: "International collaboration project highlights and outcomes." },

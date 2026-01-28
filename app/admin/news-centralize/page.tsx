@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { 
-  Button, Input, Card, Divider, Select, SelectItem, 
-  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, 
-  Textarea, Pagination, Chip, Tooltip 
+import {
+  Button, Input, Card, Divider, Select, SelectItem,
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
+  Textarea, Pagination, Chip, Tooltip
 } from "@heroui/react";
-import { 
-  Search, Plus, Filter, SortDesc, 
-  Newspaper, CheckCircle2, FileEdit, Trash2, 
+import {
+  Search, Plus, Filter, SortDesc,
+  Newspaper, CheckCircle2, FileEdit, Trash2,
   RefreshCcw, LayoutGrid, List
 } from "lucide-react"; // Assuming Lucide-React is used for icons
 import { NewsCard } from "@/components/NewsCard";
@@ -31,7 +31,7 @@ export default function NewsManagementPage() {
   return (
     <div className="min-h-screen dark:bg-black">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* --- Header & Actions --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div>
@@ -43,17 +43,17 @@ export default function NewsManagementPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button 
-              variant="bordered" 
+            <Button
+              variant="bordered"
               startContent={<RefreshCcw size={18} />}
               onPress={() => window.location.reload()}
             >
               Refresh
             </Button>
-            <Button 
-              color="primary" 
+            <Button
+              color="primary"
               className="shadow-lg shadow-primary/20 font-semibold"
-              startContent={<Plus size={20} />} 
+              startContent={<Plus size={20} />}
               onPress={openCreate}
             >
               New Article
@@ -93,9 +93,9 @@ export default function NewsManagementPage() {
                 variant="flat"
               />
             </div>
-            
+
             <div className="flex flex-wrap items-center gap-3">
-              <Select 
+              <Select
                 className="w-40"
                 labelPlacement="outside"
                 startContent={<Filter size={16} />}
@@ -107,17 +107,25 @@ export default function NewsManagementPage() {
                 <SelectItem key="UNPUBLISHED">Drafts</SelectItem>
               </Select>
 
-              <Select 
+              <Select
                 className="w-44"
                 labelPlacement="outside"
-                selectedKeys={[filters.categoryFilter]}
-                onSelectionChange={(keys) => setFilters(prev => ({ ...prev, categoryFilter: Array.from(keys)[0] as any }))}
+                selectedKeys={new Set([filters.categoryFilter])}
+                onSelectionChange={(keys) => {
+                  const first = Array.from(keys)[0];
+                  setFilters((prev) => ({ ...prev, categoryFilter: String(first) as any }));
+                }}
+                items={["ALL", ...categories as any]}
               >
-                <SelectItem key="ALL">All Categories</SelectItem>
-                {categories.map(c => <SelectItem key={c}>{c}</SelectItem>)}
+                {(c) => (
+                  <SelectItem key={c} textValue={c}>
+                    {c === "ALL" ? "All Categories" : c}
+                  </SelectItem>
+                )}
               </Select>
 
-              <Select 
+
+              <Select
                 className="w-48"
                 labelPlacement="outside"
                 startContent={<SortDesc size={16} />}
@@ -187,10 +195,10 @@ export default function NewsManagementPage() {
         )}
 
         {/* --- Upsert Modal --- */}
-        <Modal 
-          isOpen={isOpen} 
-          onOpenChange={setIsOpen} 
-          size="3xl" 
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={setIsOpen}
+          size="3xl"
           backdrop="blur"
           scrollBehavior="inside"
           classNames={{

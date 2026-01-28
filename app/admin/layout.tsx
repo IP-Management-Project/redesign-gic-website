@@ -107,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </header>
 
           <main className="flex-1 overflow-y-auto">
-            <div className="max-w-7xl mx-auto py-8 px-6">{children}</div>
+            <div id="admincon" className="max-w-7xl mx-auto py-8 px-6">{children}</div>
           </main>
         </div>
       </SidebarProvider>

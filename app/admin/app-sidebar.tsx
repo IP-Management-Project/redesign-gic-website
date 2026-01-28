@@ -123,8 +123,7 @@ export const data: {
     {
       title: "Configuration",
       items: [
-        { title: "Site settings", url: "/admin/settings" },
-        { title: "Roles & access", url: "/admin/roles" },
+        { title: "User management", url: "/admin/user-management" },
       ],
     },
   ],
