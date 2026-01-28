@@ -1,0 +1,109 @@
+{
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs": {
+    "id": 52280,
+    "files": [
+      "static/chunks/8213a2eb.ccd62b69790d17f0.js",
+      "static/chunks/5376.04a3d57f5f04927f.js"
+    ]
+  },
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs-component-countdown": {
+    "id": 3975,
+    "files": [
+      "static/chunks/3975.131d92a92ae7f44a.js"
+    ]
+  },
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs-custom-code": {
+    "id": 73297,
+    "files": [
+      "static/chunks/3297.b31b4c1d61dce7b9.js"
+    ]
+  },
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs-plugin-forms": {
+    "id": 4239,
+    "files": [
+      "static/chunks/4239.0af2c5b3f6a1b0e0.js"
+    ]
+  },
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs-preset-webpage": {
+    "id": 90757,
+    "files": [
+      "static/chunks/757.f72c5a0202c9400a.js"
+    ]
+  },
+  "app/admin/projects/edit/[slug]/page.tsx -> grapesjs-tooltip": {
+    "id": 86837,
+    "files": [
+      "static/chunks/6837.04c3f70c4439e53d.js"
+    ]
+  },
+  "node_modules/@heroui/accordion/dist/chunk-CY6RTJSV.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": []
+  },
+  "node_modules/@heroui/calendar/dist/chunk-MNZWV6CN.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": []
+  },
+  "node_modules/@heroui/modal/dist/chunk-NWAOTABO.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/3179.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-EGL3KBB2.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/5560.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-IWMNIPIV.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/5560.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-NW7HJLND.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/3179.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-Z57F4COC.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/3179.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/ripple/dist/chunk-UIQI3AYJ.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/3179.3baf2874e922dd35.js"
+    ]
+  },
+  "node_modules/@heroui/toast/dist/chunk-LE3O4WYR.mjs -> ./src-UW24ZMRV.mjs": {
+    "id": 97573,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/7573.6a9698e48d758045.js"
+    ]
+  },
+  "node_modules/@heroui/toast/dist/chunk-ZPZBECKL.mjs -> framer-motion": {
+    "id": 295,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/4438-46d5920d12cfa585.js",
+      "static/chunks/295.8d8a99d33648f551.js"
+    ]
+  },
+  "node_modules/@heroui/tooltip/dist/chunk-AUA5GDXN.mjs -> @heroui/dom-animation": {
+    "id": 53179,
+    "files": [
+      "static/chunks/7730-49fa05946cae12e6.js",
+      "static/chunks/3179.3baf2874e922dd35.js"
+    ]
+  }
+}
