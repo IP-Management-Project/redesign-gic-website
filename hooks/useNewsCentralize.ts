@@ -38,15 +38,19 @@ type NewsCentralizeOptions = {
 
 // 2. Helper to map API data to NewsItem (moved outside to be reusable)
 function mapApiToNewsItem(article: any): NewsItem {
+  const updatedAt = typeof article.updatedAt === "string" ? Date.parse(article.updatedAt) : article.updatedAt;
   return {
     id: article.id,
+    slug: article.slug,
     category: article.category,
     title: article.title,
-    date: article.date,
+    date: article.publishDate ?? article.date,
+    publishDate: article.publishDate ?? article.date,
     excerpt: article.excerpt,
     image: article.heroImage || article.image, // Handle variable naming diffs
+    heroImage: article.heroImage || article.image,
     status: article.status ?? "PUBLISHED",
-    updatedAt: article.updatedAt ?? Date.now(),
+    updatedAt: Number.isFinite(updatedAt) ? updatedAt : Date.now(),
   };
 }
 
@@ -187,10 +191,10 @@ export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
       id: item.id,
       category: item.category,
       title: item.title,
-      date: item.date,
+      date: item.publishDate ?? item.date ?? "",
       excerpt: item.excerpt,
-      image: item.image,
-      status: item.status,
+      image: item.heroImage ?? item.image ?? "",
+      status: item.status ?? "PUBLISHED",
     });
     setIsOpen(true);
   }
@@ -214,8 +218,10 @@ export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
                 category: form.category.trim() || item.category,
                 title: cleanedTitle,
                 date: form.date.trim() || item.date,
+                publishDate: form.date.trim() || item.publishDate,
                 excerpt: form.excerpt.trim() || item.excerpt,
                 image: form.image.trim() || item.image,
+                heroImage: form.image.trim() || item.heroImage,
                 status: form.status,
                 updatedAt: now(),
               }
@@ -225,11 +231,14 @@ export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
 
       const created: NewsItem = {
         id: idFactory(cleanedTitle),
+        slug: normalize(cleanedTitle),
         category: form.category.trim() || "Press Release / 2026",
         title: cleanedTitle,
         date: form.date.trim() || "TBD",
+        publishDate: form.date.trim() || "TBD",
         excerpt: form.excerpt.trim() || "",
         image: form.image.trim() || "/landing/server.png",
+        heroImage: form.image.trim() || "/landing/server.png",
         status: form.status,
         updatedAt: now(),
       };

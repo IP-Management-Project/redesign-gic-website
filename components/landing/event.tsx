@@ -31,11 +31,14 @@ type PressReleaseSlideshowProps = {
 function mapPressReleaseToNewsItem(item: any): NewsItem {
   return {
     id: item.id?.toString(),
+    slug: item.link,
     category: item.category,
     title: item.title,
     date: item.date,
+    publishDate: item.date,
     excerpt: item.excerpt,
     image: item.image,
+    heroImage: item.image,
     status: "PUBLISHED",
     updatedAt: Date.now(),
   };

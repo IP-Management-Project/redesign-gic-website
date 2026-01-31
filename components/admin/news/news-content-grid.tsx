@@ -1,5 +1,4 @@
-import { NewsEventArticleItem, NewsEventArticleResponse } from "@/api/services/news";
-import { NewsCard } from "@/components/NewsCard";
+import { NewsCard, NewsItem } from "@/components/NewsCard";
 import { Button } from "@heroui/button";
 import { Card } from "@heroui/card";
 import { Divider } from "@heroui/divider";
@@ -9,7 +8,7 @@ import { Newspaper } from "lucide-react";
 
 interface NewsContentGridProps {
   isLoading: boolean;
-  items: NewsEventArticleItem[];
+  items: NewsItem[];
   totalItems: number;
   totalPages: number;
   currentPage: number;
@@ -67,7 +66,7 @@ export function NewsContentGrid({
           <div key={item.id} className="group transition-transform duration-300 hover:-translate-y-2">
             <NewsCard
               item={item}
-              href={`edit/${item.article?.slug}`}
+              href={`edit/${item.slug ?? item.id}`}
               showAdminMenu
               onEdit={onEdit}
               onTogglePublish={onTogglePublish}

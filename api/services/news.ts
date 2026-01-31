@@ -1,5 +1,47 @@
-import { NewsEventArticle } from "@/hooks/useNewsEventArticle";
 import { apiClient } from "../axiosClient";
+
+export type NewsEventArticleStatus = "PUBLISHED" | "UNPUBLISHED";
+
+export type NewsEventSpotlight = {
+  title: string;
+  subtitle: string;
+  specs: string[];
+};
+
+export type NewsEventRelatedBrief = {
+  date: string;
+  title: string;
+};
+
+export type NewsEventArticleContent = {
+  grapesPageId: string;
+  slug: string;
+  title: string;
+  html: string;
+  css: string;
+  spotlight?: NewsEventSpotlight;
+  relatedBriefs?: NewsEventRelatedBrief[];
+  updatedAt?: string | null;
+};
+
+export interface NewsEventArticleItem {
+  id: string;
+  createdAt?: string;
+  updatedAt?: string;
+  slug: string;
+  category: string;
+  title: string;
+  excerpt: string;
+  publishDate: string;
+  domain: string;
+  readingTime: string;
+  heroImage: string;
+  thumbnailImage?: string;
+  status: NewsEventArticleStatus;
+  publishedAt?: string;
+  updatedContentAt?: string | null;
+  content?: NewsEventArticleContent | null;
+}
 
 export interface NewsEventArticleResponse {
   data: NewsEventArticleItem[];
@@ -12,26 +54,10 @@ export interface NewsEventArticleResponse {
     hasPrev: boolean;
   };
 }
-export interface NewsEventArticleItem {
-  id: string;
-  link: string;
-  article: {
-    id: string;
-    slug: string;
-    category: string;
-    title: string;
-    excerpt: string;
-    publishDate: string;
-    domain: string;
-    readingTime: string;
-    heroImage: string;
-    status: string;
-  };
-}
 
 export const newsApi = {
 
-  getNews: () => apiClient.get<{ data: NewsEventArticleResponse[] }>('/news'),
+  getNews: () => apiClient.get<NewsEventArticleResponse>('/news'),
 
-  getNewsBySlug: (slug: string) => apiClient.get<{ data: NewsEventArticleResponse[] }>(`/news/${slug}`),
+  getNewsBySlug: (slug: string) => apiClient.get<NewsEventArticleItem | { data: NewsEventArticleItem }>(`/news/${slug}`),
 };
