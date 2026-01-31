@@ -12,23 +12,14 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { MoreVertical, Edit3, Globe, Trash2 } from "lucide-react"; // Matching the professional look
+import { NewsEventArticleItem } from "@/api/services/news";
+import _ from "lodash";
 
 
 export type NewsStatus = "PUBLISHED" | "UNPUBLISHED";
 
-export type NewsItem = {
-  id: string;
-  category: string;
-  title: string;
-  date: string; // e.g. "JAN 18, 2026"
-  excerpt: string;
-  image: string;
-  status: NewsStatus;
-  updatedAt: number; // for sorting
-};
-
 type NewsCardProps = {
-  item: NewsItem;
+  item: NewsEventArticleItem;
 
   /** When provided, card is clickable and will route. */
   href?: string;
@@ -37,9 +28,9 @@ type NewsCardProps = {
   showAdminMenu?: boolean;
 
   /** Admin actions (optional). */
-  onEdit?: (item: NewsItem) => void;
-  onTogglePublish?: (item: NewsItem) => void;
-  onDelete?: (item: NewsItem) => void;
+  onEdit?: (item: NewsEventArticleItem) => void;
+  onTogglePublish?: (item: NewsEventArticleItem) => void;
+  onDelete?: (item: NewsEventArticleItem) => void;
 
   /** Optional: hide excerpt (if you want tighter card). */
   hideExcerpt?: boolean;
@@ -60,8 +51,8 @@ export function NewsCard({
       {/* Image Container */}
       <div className="relative h-56 w-full overflow-hidden">
         <img
-          src={item.image}
-          alt={item.title}
+          src={_.get(item, "article.heroImage", "/images/placeholder-image.png")}
+          alt={_.get(item, "article.title", "News Article")}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
 
@@ -72,10 +63,10 @@ export function NewsCard({
             variant="flat"
             className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md text-foreground font-bold border-none shadow-sm"
           >
-            {item.category}
+            {_.get(item, "article.category", "Uncategorized")}
           </Chip>
 
-          {item.status === "UNPUBLISHED" && (
+          {_.get(item, "article.status", "UNPUBLISHED") === "UNPUBLISHED" && (
             <Chip
               size="sm"
               variant="flat"
@@ -126,7 +117,9 @@ export function NewsCard({
                   Edit Details
                 </DropdownItem>
                 <DropdownItem key="toggle" startContent={<Globe size={14} />}>
-                  {item.status === "PUBLISHED" ? "Set to Draft" : "Publish Live"}
+                  {_.get(item, "article.status", "UNPUBLISHED") === "UNPUBLISHED"
+                    ? "Publish Live"
+                    : "Set to Draft"}
                 </DropdownItem>
                 <DropdownItem
                   key="delete"
@@ -145,16 +138,16 @@ export function NewsCard({
       {/* Content */}
       <CardBody className="p-7 flex flex-col">
         <div className="text-[11px] font-bold text-default-400 uppercase tracking-widest mb-3">
-          {item.date}
+          {_.get(item, "article.publishDate", "No Date")}
         </div>
 
         <h3 className="text-xl font-black text-foreground leading-tight mb-4 group-hover:text-primary transition-colors">
-          {item.title}
+          {_.get(item, "article.title", "Untitled Article")}
         </h3>
 
         {!hideExcerpt ? (
           <p className="text-default-500 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">
-            {item.excerpt}
+            {_.get(item, "article.excerpt", "No excerpt available")}
           </p>
         ) : (
           <div className="flex-grow" />

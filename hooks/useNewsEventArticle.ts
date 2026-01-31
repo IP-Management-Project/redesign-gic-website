@@ -1,3 +1,4 @@
+import { newsApi } from "@/api/services/news";
 import { useQuery } from "@tanstack/react-query";
 
 export type NewsEventSpotlight = {
@@ -77,12 +78,30 @@ export const newsEventArticleMockData: Record<string, NewsEventArticle> = {
 const getNewsEventArticle = async (eventSlug: string): Promise<NewsEventArticle | null> =>
   newsEventArticleMockData[eventSlug] ?? null;
 
+export function useNewsEvents() {
+  return useQuery({
+    queryKey: ["newsEvents"],
+    queryFn: async () => {
+      const response = await newsApi.getNews();
+
+      return response.data || []; 
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
 export function useNewsEventArticle(eventSlug?: string) {
   return useQuery({
     queryKey: ["newsEventArticle", eventSlug],
-    queryFn: () => getNewsEventArticle(eventSlug ?? ""),
-    enabled: Boolean(eventSlug),
-    initialData: eventSlug ? newsEventArticleMockData[eventSlug] : undefined,
-    staleTime: Number.POSITIVE_INFINITY,
+    queryFn: async () => {
+      if (!eventSlug) return null;
+      const response = await newsApi.getNewsBySlug(eventSlug);
+      
+      // Access the first item from the list
+      const item = response.data
+      return item ? item.article : null;
+    },
+    enabled: !!eventSlug,
+    staleTime: 1000 * 60 * 5,
   });
 }

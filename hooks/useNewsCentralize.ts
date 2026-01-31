@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { NewsItem, NewsStatus } from "@/components/NewsCard";
-import { newsEventArticleMockData } from "@/hooks/useNewsEventArticle";
+// 1. Import the new list hook instead of the mock data
+import { useNewsEvents } from "@/hooks/useNewsEventArticle"; 
 
 export type SortKey =
   | "NEWEST_UPDATED"
@@ -28,22 +29,26 @@ export type NewsFilters = {
 };
 
 type NewsCentralizeOptions = {
-  initialNews?: NewsItem[];
+  // initialNews is now optional/fallback
+  initialNews?: NewsItem[]; 
   now?: () => number;
   idFactory?: (title: string) => string;
   perPage?: number;
 };
 
-const defaultNews: NewsItem[] = Object.values(newsEventArticleMockData).map((article) => ({
-  id: article.id,
-  category: article.category,
-  title: article.title,
-  date: article.date,
-  excerpt: article.excerpt,
-  image: article.heroImage,
-  status: article.status ?? "PUBLISHED",
-  updatedAt: article.updatedAt ?? Date.now(),
-}));
+// 2. Helper to map API data to NewsItem (moved outside to be reusable)
+function mapApiToNewsItem(article: any): NewsItem {
+  return {
+    id: article.id,
+    category: article.category,
+    title: article.title,
+    date: article.date,
+    excerpt: article.excerpt,
+    image: article.heroImage || article.image, // Handle variable naming diffs
+    status: article.status ?? "PUBLISHED",
+    updatedAt: article.updatedAt ?? Date.now(),
+  };
+}
 
 const emptyForm: NewsFormState = {
   category: "Press Release / 2026",
@@ -77,16 +82,29 @@ function defaultIdFactory(title: string) {
 
 export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
   const {
-    initialNews = defaultNews,
+    initialNews = [], // Default to empty if waiting for API
     now = () => Date.now(),
     idFactory = defaultIdFactory,
     perPage = 6,
   } = options;
+
+  // 3. Fetch data using the hook
+  const { data: serverNews, isLoading, isError } = useNewsEvents();
+
   const [news, setNews] = useState<NewsItem[]>(initialNews);
   const [filters, setFilters] = useState<NewsFilters>(defaultFilters);
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState<NewsFormState>(emptyForm);
   const [page, setPage] = useState(1);
+
+  // 4. Sync Server State to Local State
+  // When API data arrives, we populate the local `news` state.
+  useEffect(() => {
+    if (serverNews && Array.isArray(serverNews)) {
+      const mappedNews = serverNews.map(mapApiToNewsItem);
+      setNews(mappedNews);
+    }
+  }, [serverNews]);
 
   const categories = useMemo(() => {
     const set = new Set(news.map((item) => item.category));
@@ -186,6 +204,8 @@ export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
     if (!cleanedTitle) return;
 
     setNews((prev) => {
+      // Logic remains the same: modifying LOCAL state
+      // Note: In a real app, you would likely call a mutation here (e.g. useUpdateNews)
       if (form.id) {
         return prev.map((item) =>
           item.id === form.id
@@ -254,6 +274,8 @@ export function useNewsCentralize(options: NewsCentralizeOptions = {}) {
     page,
     perPage,
     totalPages,
+    isLoading, // 5. Return loading state
+    isError,
     setForm,
     setFilters,
     setIsOpen,

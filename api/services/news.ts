@@ -1,23 +1,37 @@
+import { NewsEventArticle } from "@/hooks/useNewsEventArticle";
 import { apiClient } from "../axiosClient";
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
+export interface NewsEventArticleResponse {
+  data: NewsEventArticleItem[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+export interface NewsEventArticleItem {
+  id: string;
+  link: string;
+  article: {
+    id: string;
+    slug: string;
+    category: string;
+    title: string;
+    excerpt: string;
+    publishDate: string;
+    domain: string;
+    readingTime: string;
+    heroImage: string;
+    status: string;
+  };
 }
 
-export const userApi = {
-  getUsers: () => apiClient.get<User[]>("/users"),
+export const newsApi = {
 
-  getUserById: (id: number) =>
-    apiClient.get<User>(`/users/${id}`),
+  getNews: () => apiClient.get<{ data: NewsEventArticleResponse[] }>('/news'),
 
-  createUser: (data: Partial<User>) =>
-    apiClient.post<User>("/users", data),
-
-  updateUser: (id: number, data: Partial<User>) =>
-    apiClient.put<User>(`/users/${id}`, data),
-
-  deleteUser: (id: number) =>
-    apiClient.delete<void>(`/users/${id}`),
+  getNewsBySlug: (slug: string) => apiClient.get<{ data: NewsEventArticleResponse[] }>(`/news/${slug}`),
 };
