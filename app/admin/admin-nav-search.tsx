@@ -59,7 +59,7 @@ export function AdminNavSearch(props: {
       setQ("");
       inputRef.current?.blur();
     },
-    [router]
+    [router],
   );
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -99,10 +99,9 @@ export function AdminNavSearch(props: {
     <div ref={rootRef} className="relative w-full">
       {/* Floating shell */}
       <div
-        className={[
-          "transition-all",
-          open ? "scale-[1.01]" : "scale-100",
-        ].join(" ")}
+        className={["transition-all", open ? "scale-[1.01]" : "scale-100"].join(
+          " ",
+        )}
       >
         <Input
           ref={inputRef as any}

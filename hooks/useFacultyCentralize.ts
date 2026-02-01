@@ -206,7 +206,7 @@ export function useFacultyCentralize(options: FacultyCentralizeOptions = {}) {
   function resetFilters() {
     setFilters(defaultFilters);
   }
-
+ 
   return {
     members,
     filtered,
