@@ -114,12 +114,20 @@
       "namedRegex": "^/about/faculty\\-staff/(?<nxtPpersonSlug>[^/]+?)/head(?:/)?$"
     },
     {
-      "page": "/admin/edit/[id]",
-      "regex": "^/admin/edit/([^/]+?)(?:/)?$",
+      "page": "/admin/curriculum/[programKey]",
+      "regex": "^/admin/curriculum/([^/]+?)(?:/)?$",
       "routeKeys": {
-        "nxtPid": "nxtPid"
+        "nxtPprogramKey": "nxtPprogramKey"
       },
-      "namedRegex": "^/admin/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+      "namedRegex": "^/admin/curriculum/(?<nxtPprogramKey>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/admin/projects/edit/[slug]",
+      "regex": "^/admin/projects/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/admin/projects/edit/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
       "page": "/news-events/events/[eventSlug]",
@@ -138,52 +146,12 @@
       "namedRegex": "^/news\\-events/(?<nxtPeventSlug>[^/]+?)(?:/)?$"
     },
     {
-      "page": "/program/degrees/[degreeSlug]",
-      "regex": "^/program/degrees/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPdegreeSlug": "nxtPdegreeSlug"
-      },
-      "namedRegex": "^/program/degrees/(?<nxtPdegreeSlug>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/program/degrees/[degreeSlug]/admissions",
-      "regex": "^/program/degrees/([^/]+?)/admissions(?:/)?$",
-      "routeKeys": {
-        "nxtPdegreeSlug": "nxtPdegreeSlug"
-      },
-      "namedRegex": "^/program/degrees/(?<nxtPdegreeSlug>[^/]+?)/admissions(?:/)?$"
-    },
-    {
-      "page": "/program/degrees/[degreeSlug]/curriculum",
-      "regex": "^/program/degrees/([^/]+?)/curriculum(?:/)?$",
-      "routeKeys": {
-        "nxtPdegreeSlug": "nxtPdegreeSlug"
-      },
-      "namedRegex": "^/program/degrees/(?<nxtPdegreeSlug>[^/]+?)/curriculum(?:/)?$"
-    },
-    {
       "page": "/program/exchange-semester/[studentSlug]",
       "regex": "^/program/exchange\\-semester/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPstudentSlug": "nxtPstudentSlug"
       },
       "namedRegex": "^/program/exchange\\-semester/(?<nxtPstudentSlug>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/research/labs/[labSlug]",
-      "regex": "^/research/labs/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPlabSlug": "nxtPlabSlug"
-      },
-      "namedRegex": "^/research/labs/(?<nxtPlabSlug>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/research/projects/[projectSlug]",
-      "regex": "^/research/projects/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPprojectSlug": "nxtPprojectSlug"
-      },
-      "namedRegex": "^/research/projects/(?<nxtPprojectSlug>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -228,6 +196,150 @@
       "regex": "^/about/services(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/about/services(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/calendar",
+      "regex": "^/admin/calendar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/calendar(?:/)?$"
+    },
+    {
+      "page": "/admin/curriculum",
+      "regex": "^/admin/curriculum(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/curriculum(?:/)?$"
+    },
+    {
+      "page": "/admin/events",
+      "regex": "^/admin/events(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/events(?:/)?$"
+    },
+    {
+      "page": "/admin/exchange-student-showcase",
+      "regex": "^/admin/exchange\\-student\\-showcase(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/exchange\\-student\\-showcase(?:/)?$"
+    },
+    {
+      "page": "/admin/faculty",
+      "regex": "^/admin/faculty(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/faculty(?:/)?$"
+    },
+    {
+      "page": "/admin/faq",
+      "regex": "^/admin/faq(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/faq(?:/)?$"
+    },
+    {
+      "page": "/admin/gic-year-book",
+      "regex": "^/admin/gic\\-year\\-book(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/gic\\-year\\-book(?:/)?$"
+    },
+    {
+      "page": "/admin/head-dep-messages",
+      "regex": "^/admin/head\\-dep\\-messages(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/head\\-dep\\-messages(?:/)?$"
+    },
+    {
+      "page": "/admin/history-gic",
+      "regex": "^/admin/history\\-gic(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/history\\-gic(?:/)?$"
+    },
+    {
+      "page": "/admin/laboratory",
+      "regex": "^/admin/laboratory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/laboratory(?:/)?$"
+    },
+    {
+      "page": "/admin/landing-page",
+      "regex": "^/admin/landing\\-page(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/landing\\-page(?:/)?$"
+    },
+    {
+      "page": "/admin/mission-vision",
+      "regex": "^/admin/mission\\-vision(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/mission\\-vision(?:/)?$"
+    },
+    {
+      "page": "/admin/news-centralize",
+      "regex": "^/admin/news\\-centralize(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/news\\-centralize(?:/)?$"
+    },
+    {
+      "page": "/admin/our-services",
+      "regex": "^/admin/our\\-services(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/our\\-services(?:/)?$"
+    },
+    {
+      "page": "/admin/program/associate",
+      "regex": "^/admin/program/associate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/program/associate(?:/)?$"
+    },
+    {
+      "page": "/admin/program/international",
+      "regex": "^/admin/program/international(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/program/international(?:/)?$"
+    },
+    {
+      "page": "/admin/program/master",
+      "regex": "^/admin/program/master(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/program/master(?:/)?$"
+    },
+    {
+      "page": "/admin/program/national",
+      "regex": "^/admin/program/national(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/program/national(?:/)?$"
+    },
+    {
+      "page": "/admin/projects",
+      "regex": "^/admin/projects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/projects(?:/)?$"
+    },
+    {
+      "page": "/admin/student-management",
+      "regex": "^/admin/student\\-management(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/student\\-management(?:/)?$"
+    },
+    {
+      "page": "/admin/techno-innovation",
+      "regex": "^/admin/techno\\-innovation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/techno\\-innovation(?:/)?$"
+    },
+    {
+      "page": "/admin/timetable",
+      "regex": "^/admin/timetable(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/timetable(?:/)?$"
+    },
+    {
+      "page": "/admin/user-management",
+      "regex": "^/admin/user\\-management(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/user\\-management(?:/)?$"
     },
     {
       "page": "/contact",
@@ -278,12 +390,6 @@
       "namedRegex": "^/program/careers(?:/)?$"
     },
     {
-      "page": "/program/degrees",
-      "regex": "^/program/degrees(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/program/degrees(?:/)?$"
-    },
-    {
       "page": "/program/engineering-degree",
       "regex": "^/program/engineering\\-degree(?:/)?$",
       "routeKeys": {},
@@ -320,6 +426,12 @@
       "namedRegex": "^/program/scholarships(?:/)?$"
     },
     {
+      "page": "/project",
+      "regex": "^/project(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/project(?:/)?$"
+    },
+    {
       "page": "/project/erasmus-alien",
       "regex": "^/project/erasmus\\-alien(?:/)?$",
       "routeKeys": {},
@@ -348,12 +460,6 @@
       "regex": "^/research/labs(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/research/labs(?:/)?$"
-    },
-    {
-      "page": "/research/projects",
-      "regex": "^/research/projects(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/research/projects(?:/)?$"
     },
     {
       "page": "/research/publications",

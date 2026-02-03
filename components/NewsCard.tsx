@@ -11,37 +11,35 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
-import { MoreVertical, Edit3, Globe, Trash2 } from "lucide-react"; // Matching the professional look
+import { MoreVertical, Edit3, Globe, Trash2, Copy } from "lucide-react";
 
-
-export type NewsStatus = "PUBLISHED" | "UNPUBLISHED";
+export type NewsEventArticleStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 
 export type NewsItem = {
   id: string;
-  category: string;
+  slug?: string;
+  category: string | { label: string; key: string }; 
   title: string;
-  date: string; // e.g. "JAN 18, 2026"
   excerpt: string;
-  image: string;
-  status: NewsStatus;
-  updatedAt: number; // for sorting
+  publishDate?: string;
+  date?: string;
+  domain?: string;
+  readingTime?: string;
+  heroImage?: string;
+  thumbnailImage?: string;
+  image?: string;
+  status?: NewsEventArticleStatus;
+  updatedAt?: number;
 };
 
 type NewsCardProps = {
   item: NewsItem;
-
-  /** When provided, card is clickable and will route. */
   href?: string;
-
-  /** Show the top-right menu. */
   showAdminMenu?: boolean;
-
-  /** Admin actions (optional). */
   onEdit?: (item: NewsItem) => void;
   onTogglePublish?: (item: NewsItem) => void;
   onDelete?: (item: NewsItem) => void;
-
-  /** Optional: hide excerpt (if you want tighter card). */
+  onDuplicate?: (item: NewsItem) => void;
   hideExcerpt?: boolean;
 };
 
@@ -52,46 +50,74 @@ export function NewsCard({
   onEdit,
   onTogglePublish,
   onDelete,
+  onDuplicate,
   hideExcerpt,
 }: NewsCardProps) {
+  
+  const categoryLabel = typeof item.category === "object" && item.category !== null 
+    ? item.category.label 
+    : item.category || "Uncategorized";
+
+  const isPublished = item.status === "PUBLISHED";
+  const isDraft = item.status === "DRAFT"; // or "UNPUBLISHED" based on your API
+  const isArchived = item.status === "ARCHIVED";
 
   const CardInner = (
     <Card className="h-full border border-divider bg-content1 shadow-sm hover:shadow-xl dark:hover:shadow-primary/10 transition-all duration-300 group rounded-2xl overflow-hidden">
       {/* Image Container */}
       <div className="relative h-56 w-full overflow-hidden">
         <img
-          src={item.image}
-          alt={item.title}
+          src={item.heroImage || item.image || "/images/placeholder-image.png"}
+          alt={item.title || "News Article"}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
 
-        {/* Badges */}
+        {/* Badges Container */}
         <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
           <Chip
             size="sm"
             variant="flat"
             className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md text-foreground font-bold border-none shadow-sm"
           >
-            {item.category}
+            {categoryLabel}
           </Chip>
 
-          {item.status === "UNPUBLISHED" && (
+          {/* --- NEW: Published Chip --- */}
+          {isPublished && (
             <Chip
               size="sm"
               variant="flat"
-              className="bg-warning-100/90 text-warning-900 dark:bg-warning-900/20 dark:text-warning-200 backdrop-blur-md border-none"
+              className="bg-success-100/90 text-success-700 dark:bg-success-900/20 dark:text-success-400 backdrop-blur-md border-none font-medium"
+            >
+              Live
+            </Chip>
+          )}
+
+          {isDraft && (
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-warning-100/90 text-warning-800 dark:bg-warning-900/20 dark:text-warning-400 backdrop-blur-md border-none font-medium"
             >
               Draft
             </Chip>
           )}
+
+          {isArchived && (
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-default-100/90 text-default-600 dark:bg-default-900/20 dark:text-default-400 backdrop-blur-md border-none font-medium"
+            >
+              Archived
+            </Chip>
+          )}
         </div>
 
-        {/* --- FIXED ADMIN MENU --- */}
-        {/* --- FIXED ADMIN MENU --- */}
+        {/* --- ADMIN MENU --- */}
         {showAdminMenu && (
           <div
             className="absolute top-3 right-3 z-30"
-            // Block the div itself just in case
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -120,14 +146,21 @@ export function NewsCard({
                   if (key === "edit") onEdit?.(item);
                   if (key === "toggle") onTogglePublish?.(item);
                   if (key === "delete") onDelete?.(item);
+                  if (key === "duplicate") onDuplicate?.(item);
                 }}
               >
                 <DropdownItem key="edit" startContent={<Edit3 size={14} />}>
                   Edit Details
                 </DropdownItem>
+                
                 <DropdownItem key="toggle" startContent={<Globe size={14} />}>
-                  {item.status === "PUBLISHED" ? "Set to Draft" : "Publish Live"}
+                  {isPublished ? "Unpublish (Set to Draft)" : "Publish Live"}
                 </DropdownItem>
+
+                <DropdownItem key="duplicate" startContent={<Copy size={14} />}>
+                  Duplicate
+                </DropdownItem>
+                
                 <DropdownItem
                   key="delete"
                   className="text-danger"
@@ -145,16 +178,16 @@ export function NewsCard({
       {/* Content */}
       <CardBody className="p-7 flex flex-col">
         <div className="text-[11px] font-bold text-default-400 uppercase tracking-widest mb-3">
-          {item.date}
+          {item.publishDate ?? item.date ?? "No Date"}
         </div>
 
         <h3 className="text-xl font-black text-foreground leading-tight mb-4 group-hover:text-primary transition-colors">
-          {item.title}
+          {item.title || "Untitled Article"}
         </h3>
 
         {!hideExcerpt ? (
           <p className="text-default-500 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">
-            {item.excerpt}
+            {item.excerpt || "No excerpt available"}
           </p>
         ) : (
           <div className="flex-grow" />

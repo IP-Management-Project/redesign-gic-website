@@ -15,7 +15,7 @@ import {
 import {
   type MissionVisionIconKey,
   useMissionVisionCopy,
-} from "@/hooks/useMissionVisionCopy";
+} from "@/hooks/news-centralize/useMissionVisionCopy";
 
 export type MissionVisionSectionKey = "hero" | "about" | "mission" | "vision";
 
