@@ -17,11 +17,12 @@ interface NewsContentGridProps {
   onTogglePublish: (item: any) => void;
   onDelete: (item: any) => void;
   onClearFilters: () => void;
+  onDuplicate: (item: any) => void;
 }
 
 export function NewsContentGrid({ 
   isLoading, items, totalItems, totalPages, currentPage, 
-  onPageChange, onEdit, onTogglePublish, onDelete, onClearFilters 
+  onPageChange, onEdit, onTogglePublish, onDelete, onClearFilters, onDuplicate
 }: NewsContentGridProps) {
   
   // 1. Loading State (Skeleton Grid)
@@ -66,11 +67,12 @@ export function NewsContentGrid({
           <div key={item.id} className="group transition-transform duration-300 hover:-translate-y-2">
             <NewsCard
               item={item}
-              href={`edit/${item.slug ?? item.id}`}
+              href={`news-centralize/edit/${item.slug ?? item.id}`}
               showAdminMenu
               onEdit={onEdit}
               onTogglePublish={onTogglePublish}
               onDelete={onDelete}
+              onDuplicate={onDuplicate}
             />
           </div>
         ))}

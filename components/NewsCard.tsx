@@ -11,14 +11,14 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
-import { MoreVertical, Edit3, Globe, Trash2 } from "lucide-react"; // Matching the professional look
-import { NewsEventArticleStatus } from "@/api/services/news";
-export type NewsStatus = NewsEventArticleStatus;
+import { MoreVertical, Edit3, Globe, Trash2, Copy } from "lucide-react";
+
+export type NewsEventArticleStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 
 export type NewsItem = {
   id: string;
   slug?: string;
-  category: string;
+  category: string | { label: string; key: string }; 
   title: string;
   excerpt: string;
   publishDate?: string;
@@ -28,25 +28,18 @@ export type NewsItem = {
   heroImage?: string;
   thumbnailImage?: string;
   image?: string;
-  status?: NewsStatus;
+  status?: NewsEventArticleStatus;
   updatedAt?: number;
 };
 
 type NewsCardProps = {
   item: NewsItem;
-
-  /** When provided, card is clickable and will route. */
   href?: string;
-
-  /** Show the top-right menu. */
   showAdminMenu?: boolean;
-
-  /** Admin actions (optional). */
   onEdit?: (item: NewsItem) => void;
   onTogglePublish?: (item: NewsItem) => void;
   onDelete?: (item: NewsItem) => void;
-
-  /** Optional: hide excerpt (if you want tighter card). */
+  onDuplicate?: (item: NewsItem) => void;
   hideExcerpt?: boolean;
 };
 
@@ -57,8 +50,17 @@ export function NewsCard({
   onEdit,
   onTogglePublish,
   onDelete,
+  onDuplicate,
   hideExcerpt,
 }: NewsCardProps) {
+  
+  const categoryLabel = typeof item.category === "object" && item.category !== null 
+    ? item.category.label 
+    : item.category || "Uncategorized";
+
+  const isPublished = item.status === "PUBLISHED";
+  const isDraft = item.status === "DRAFT"; // or "UNPUBLISHED" based on your API
+  const isArchived = item.status === "ARCHIVED";
 
   const CardInner = (
     <Card className="h-full border border-divider bg-content1 shadow-sm hover:shadow-xl dark:hover:shadow-primary/10 transition-all duration-300 group rounded-2xl overflow-hidden">
@@ -70,33 +72,52 @@ export function NewsCard({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
 
-        {/* Badges */}
+        {/* Badges Container */}
         <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
           <Chip
             size="sm"
             variant="flat"
             className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md text-foreground font-bold border-none shadow-sm"
           >
-            {item.category || "Uncategorized"}
+            {categoryLabel}
           </Chip>
 
-          {(item.status ?? "UNPUBLISHED") === "UNPUBLISHED" && (
+          {/* --- NEW: Published Chip --- */}
+          {isPublished && (
             <Chip
               size="sm"
               variant="flat"
-              className="bg-warning-100/90 text-warning-900 dark:bg-warning-900/20 dark:text-warning-200 backdrop-blur-md border-none"
+              className="bg-success-100/90 text-success-700 dark:bg-success-900/20 dark:text-success-400 backdrop-blur-md border-none font-medium"
+            >
+              Live
+            </Chip>
+          )}
+
+          {isDraft && (
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-warning-100/90 text-warning-800 dark:bg-warning-900/20 dark:text-warning-400 backdrop-blur-md border-none font-medium"
             >
               Draft
             </Chip>
           )}
+
+          {isArchived && (
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-default-100/90 text-default-600 dark:bg-default-900/20 dark:text-default-400 backdrop-blur-md border-none font-medium"
+            >
+              Archived
+            </Chip>
+          )}
         </div>
 
-        {/* --- FIXED ADMIN MENU --- */}
-        {/* --- FIXED ADMIN MENU --- */}
+        {/* --- ADMIN MENU --- */}
         {showAdminMenu && (
           <div
             className="absolute top-3 right-3 z-30"
-            // Block the div itself just in case
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -125,16 +146,21 @@ export function NewsCard({
                   if (key === "edit") onEdit?.(item);
                   if (key === "toggle") onTogglePublish?.(item);
                   if (key === "delete") onDelete?.(item);
+                  if (key === "duplicate") onDuplicate?.(item);
                 }}
               >
                 <DropdownItem key="edit" startContent={<Edit3 size={14} />}>
                   Edit Details
                 </DropdownItem>
+                
                 <DropdownItem key="toggle" startContent={<Globe size={14} />}>
-                  {(item.status ?? "UNPUBLISHED") === "UNPUBLISHED"
-                    ? "Publish Live"
-                    : "Set to Draft"}
+                  {isPublished ? "Unpublish (Set to Draft)" : "Publish Live"}
                 </DropdownItem>
+
+                <DropdownItem key="duplicate" startContent={<Copy size={14} />}>
+                  Duplicate
+                </DropdownItem>
+                
                 <DropdownItem
                   key="delete"
                   className="text-danger"

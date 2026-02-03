@@ -48,7 +48,7 @@ export function useNewsEvents() {
     queryFn: async () => {
       const response = await newsApi.getNews();
 
-      return response.data?.data || []; 
+      return response.data || []; 
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -76,7 +76,9 @@ export function useNewsEventArticleDetail(eventSlug?: string) {
     queryFn: async () => {
       if (!eventSlug) return null;
       const response = await newsApi.getNewsBySlug(eventSlug);
-      const payload = response.data;
+      console.log(response);
+      
+      const payload = response;
       return payload && "data" in payload ? payload.data : payload;
     },
     enabled: !!eventSlug,
@@ -88,7 +90,6 @@ export function useNewsEventArticleActions() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (updated: NewsEventArticleItem) => {
-      console.log("Mocking News Save:", updated);
       return updated;
     },
     onSuccess: (data) => {

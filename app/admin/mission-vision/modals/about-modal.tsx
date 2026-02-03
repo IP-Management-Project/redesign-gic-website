@@ -6,7 +6,7 @@ import { get } from "lodash";
 import FieldsForm from "@/app/admin/landing-page/modals/fields-form";
 import SectionModal from "@/app/admin/landing-page/modals/section-modal";
 import type { SectionModalProps } from "@/app/admin/landing-page/modals/types";
-import { useMissionVisionCopy, useUpdateMissionVisionCopy } from "@/hooks/useMissionVisionCopy";
+import { useMissionVisionCopy, useUpdateMissionVisionCopy } from "@/hooks/news-centralize/useMissionVisionCopy";
 
 const aboutFields = [
   { key: "about.title", label: "Section title", value: "" },

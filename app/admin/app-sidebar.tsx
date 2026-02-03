@@ -51,10 +51,9 @@ export const data: {
       items: [{ title: "Dashboard", url: "/admin" }],
     },
     {
-      title: "News & Events",
+      title: "News & Seminar & Publication",
       items: [
-        { title: "Centralize News", url: "/admin/news-centralize" },
-        { title: "Publications", url: "/admin/events" },
+        { title: "Media Managemnt", url: "/admin/news-centralize" },
       ]
     },
     {
