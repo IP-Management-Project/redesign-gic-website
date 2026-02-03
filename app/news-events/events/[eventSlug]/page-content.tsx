@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@heroui/button";
 import Link from "next/link";
-import { useNewsEventArticle } from "@/hooks/useNewsEventArticle";
+import { useNewsEventArticle } from "@/hooks/news-centralize/useNewsEventArticle";
 
 export default function NewsEditorialPage({ params }: { params: { eventSlug: string } }) {
   const { eventSlug } = params;
