@@ -100,11 +100,19 @@ export const data: {
       title: "Management",
       items: [
         {
+<<<<<<< Updated upstream
           title: "Curriculum", url: "/admin/curriculum/national", items: [
             { title: "National Program", url: "/admin/curriculum/national" },
             { title: "International Program", url: "/admin/curriculum/international" },
             { title: "Associate Program", url: "/admin/curriculum/associate" },
             { title: "Master Program", url: "/admin/curriculum/master" }
+=======
+          title: "Curriculum", url: "/admin", items: [
+            { title: "National Program", url: "/admin/cirriculmn/national" },
+            { title: "International Program", url: "/admin/cirriculmn/international" },
+            { title: "Associate Program", url: "/admin/cirriculmn/associate" },
+            { title: "Master Program", url: "/admin/cirriculmn/master" }
+>>>>>>> Stashed changes
           ]
         },
         { title: "Timetable", url: "/admin/timetable" },

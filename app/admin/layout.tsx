@@ -55,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </Breadcrumbs>
                 </div>
               </div>
+<<<<<<< Updated upstream
 
               <div className="hidden lg:flex flex-1 max-w-md">
                 <AdminNavSearch index={index} search={search} maxResults={10} />
@@ -103,6 +104,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   }}
                 />
               </div>
+=======
+>>>>>>> Stashed changes
             </div>
           </header>
 
@@ -113,6 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </SidebarProvider>
     </div>
   );
+<<<<<<< Updated upstream
 }
 
 const Divider = ({
@@ -128,3 +132,6 @@ const Divider = ({
     }`}
   />
 );
+=======
+}
+>>>>>>> Stashed changes
