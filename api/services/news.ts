@@ -1,5 +1,3 @@
-import { apiClient } from "../axiosClient";
-
 export interface User {
   id: number;
   name: string;
@@ -24,6 +22,7 @@ export const userApi = {
 import { get } from "lodash";
 import { apiClient } from "../axiosClient";
 import { id } from "zod/v4/locales";
+import { SortDir } from "../service.type";
 
 export type NewsEventArticleStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 
@@ -117,7 +116,7 @@ export type NewsQueryParams = {
   status?: string;
   category?: string;
   sortBy?: string;
-  sortDir?: "ASC" | "DESC";
+  sortDir?: SortDir;
 };
 
 export const newsApi = {

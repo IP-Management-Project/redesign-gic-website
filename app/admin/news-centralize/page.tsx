@@ -1,53 +1,51 @@
 "use client";
 
-import React, { useState, useMemo } from "react"; 
+import React, { useState } from "react";
+import { Button } from "@heroui/button";
+import { Menu, Plus, Newspaper, CheckCircle2, FileEdit } from "lucide-react";
+
+// --- Hooks ---
 import { useNewsCentralize } from "@/hooks/news-centralize/useNewsCentralize";
-import { useMediaKinds } from "@/hooks/news-centralize/useMediaKinds"; // Import this
-import { PageHeader } from "@/components/admin/news/news-page-header";
-import { NewsStats } from "@/components/admin/news/news-stats";
-import { NewsFilterBar } from "@/components/admin/news/filter-bar";
-import { NewsContentGrid } from "@/components/admin/news/news-content-grid";
 import { useNewsTemplates } from "@/hooks/news-centralize/useNewsTemplate";
+
+// --- Components ---
+import { PageHeader } from "@/components/admin/common/admin-header";
+import { StatsGrid, StatItem } from "@/components/admin/common/admin-stats"; 
+import { NewsContentGrid } from "@/components/admin/news/news-content-grid";
 import { TemplateSelector } from "@/components/admin/news/news-upsert-modal";
 import TemplateManagementDrawer from "./drawer/news-template-drawer";
 import { ConfirmModal } from "@/components/admin/common/modals/confirmation-modal";
+import { NewsFilterBar } from "@/components/admin/news/news-filter";
 
 export default function NewsManagementPage() {
-  // 1. Main Hook (Backend Pagination)
+  // 1. Main Hook
   const {
-    news,           // Current Page Data
-    stats,          // Meta stats
+    news,
+    stats,
     isLoading: isNewsLoading,
-    filters, 
-    page, 
-    totalPages, 
-    totalItems, 
-    setFilters, 
-    setPage, 
+    filters,
+    page,
+    totalPages,
+    totalItems,
+    setFilters,
+    setPage,
     resetFilters,
-    startCreateFlow, 
+    startCreateFlow,
     createDraftFromTemplate,
-    openEdit, 
-    togglePublish, 
+    openEdit,
+    togglePublish,
     remove,
     duplicate,
-    isTemplateModalOpen, 
+    isTemplateModalOpen,
     setIsTemplateModalOpen,
   } = useNewsCentralize({ perPage: 9 });
 
-  // 2. Fetch Categories (For Filter Dropdown)
-  const { kinds } = useMediaKinds();
-  // Transform kinds to simple string array for the filter bar
-  const categoryOptions = useMemo(() => 
-    kinds?.map(k => k.key).sort() || [], 
-  [kinds]);
-
-  // 3. Other Local State
+  // 2. Local UI State
   const [isManagerOpen, setIsManagerOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<any | null>(null);
 
-  // 4. Fetch Templates
+  // 3. Templates Data
   const {
     data: templates,
     isLoading: isTemplatesLoading
@@ -55,7 +53,7 @@ export default function NewsManagementPage() {
     enabled: isTemplateModalOpen || isManagerOpen
   });
 
-  // --- Handlers ---
+  // 4. Handlers
   const onRequestDelete = (item: any) => {
     setItemToDelete(item);
     setIsDeleteOpen(true);
@@ -68,30 +66,72 @@ export default function NewsManagementPage() {
     setIsDeleteOpen(false);
   };
 
+  // 5. Config for Stats
+  const statItems: StatItem[] = [
+    {
+      label: "Total Articles",
+      value: stats.total || 0,
+      icon: <Newspaper className="text-blue-500" />,
+      colorClass: "bg-blue-500/10"
+    },
+    {
+      label: "Live Now",
+      value: stats.published || 0,
+      icon: <CheckCircle2 className="text-green-500" />,
+      colorClass: "bg-green-500/10"
+    },
+    {
+      label: "In Draft",
+      value: stats.draft || 0,
+      icon: <FileEdit className="text-amber-500" />,
+      colorClass: "bg-amber-500/10"
+    },
+  ];
+
   return (
     <div className="min-h-screen dark:bg-black p-6 md:p-10">
       <div className="max-w-7xl mx-auto space-y-8">
 
+        {/* --- Header --- */}
         <PageHeader
-          onCreateNews={startCreateFlow}
-          onClickTemplateMangement={() => setIsManagerOpen(true)}
-        />
+          title="Newsroom"
+          titleHighlight="Studio"
+          description="Manage your content strategy and public announcements."
+        >
+          <Button
+            color="primary"
+            className="shadow-lg shadow-primary/20 font-semibold"
+            startContent={<Plus size={20} />}
+            onPress={startCreateFlow}
+          >
+            New Article
+          </Button>
 
-        {/* Stats - Note: If backend doesn't return count by status, 
-            you might need a separate API call for this, 
-            or just show 'Total' from pagination meta */}
-        <NewsStats stats={stats} isLoading={isNewsLoading} />
+          <Button
+            color="default"
+            className="shadow-lg shadow-primary/20 font-semibold"
+            startContent={<Menu size={20} />}
+            onPress={() => setIsManagerOpen(true)}
+          >
+            Templates
+          </Button>
+        </PageHeader>
 
+        {/* --- Stats --- */}
+        <StatsGrid items={statItems} isLoading={isNewsLoading} columns={3} />
+
+        {/* --- Filter Bar (Config Driven) --- */}
         <NewsFilterBar
           filters={filters}
-          categories={categoryOptions} // Pass fetched categories
           setFilters={setFilters}
           resetFilters={resetFilters}
+          // Note: 'categories' prop is removed because NewsFilterBar handles it internally now
         />
 
+        {/* --- Content Grid --- */}
         <NewsContentGrid
           isLoading={isNewsLoading}
-          items={news} // Directly pass the current page items
+          items={news}
           totalItems={totalItems}
           totalPages={totalPages}
           currentPage={page}
@@ -103,6 +143,7 @@ export default function NewsManagementPage() {
           onDuplicate={duplicate}
         />
 
+        {/* --- Modals & Drawers --- */}
         <TemplateSelector
           isOpen={isTemplateModalOpen}
           onClose={() => setIsTemplateModalOpen(false)}
@@ -120,7 +161,7 @@ export default function NewsManagementPage() {
           isOpen={isDeleteOpen}
           onClose={() => { setIsDeleteOpen(false); setItemToDelete(null); }}
           onConfirm={handleExecuteDelete}
-          isLoading={isNewsLoading} 
+          isLoading={isNewsLoading}
           title="Delete Article?"
           message={<span>Delete <b>{itemToDelete?.title}</b>?</span>}
           confirmLabel="Yes, Delete"

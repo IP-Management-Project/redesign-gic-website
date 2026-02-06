@@ -15,6 +15,7 @@ import {
   Card,
   CardBody,
   Divider,
+  addToast,
 } from "@heroui/react";
 
 import type { SectionModalProps } from "@/app/admin/landing-page/modals/types";
@@ -122,6 +123,13 @@ export default function HeroModal({ isOpen, onClose }: SectionModalProps) {
       { section: "hero", data: updates },
       {
         onSuccess: () => onClose(),
+        onError: (err) => {
+          addToast({
+            title: err.message,
+            // description: "Check the bulk format: Generation | Name | Quote | Image URL.",
+            color: "danger",
+          })
+        }
       },
     );
   };
@@ -147,7 +155,7 @@ export default function HeroModal({ isOpen, onClose }: SectionModalProps) {
                           width={200}
                           height={500}
                           className="h-100 w-full objec t-cover"
-                        /> 
+                        />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-default-100">
                           <div className="text-center">

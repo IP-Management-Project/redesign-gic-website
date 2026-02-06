@@ -1,5 +1,6 @@
 import { CreatePageDto, ProjectApi } from "@/service/project.api";
 import { Project } from "@/types/project";
+import { addToast } from "@heroui/toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const keys = {
@@ -29,6 +30,7 @@ export function usePageActions() {
     mutationFn: ProjectApi.create,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: keys.all });
+      addToast({ title: "Page created successfully", color: "success" });
     },
   });
 
@@ -43,6 +45,7 @@ export function usePageActions() {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: keys.all });
       qc.setQueryData(keys.project(data.slug), data);
+      addToast({ title: "Page saved successfully", color: "success" });
     },
   });
 

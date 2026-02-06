@@ -11,8 +11,11 @@ import {
 import Link from "next/link";
 import { useNewsEventArticle } from "@/hooks/news-centralize/useNewsEventArticle";
 
-export default function NewsEditorialPage({ params }: { params: { eventSlug: string } }) {
-  const { eventSlug } = params;
+export default function NewsEditorialPage({ params }: { params: { value: string } }) {
+  const parsed = JSON.parse(params.value);     // turn string into object
+const eventSlug = parsed.eventSlug;
+console.log(eventSlug);
+  
   const { data: article } = useNewsEventArticle(eventSlug);
 
   if (!article) {
