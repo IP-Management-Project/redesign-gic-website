@@ -116,11 +116,7 @@ export type NewsQueryParams = {
   status?: string;
   category?: string;
   sortBy?: string;
-<<<<<<< HEAD
   sortDir?: SortDir;
-=======
-  sortDir?: "ASC" | "DESC";
->>>>>>> 7bf081c67e36ec3107116fd0d4157f46ebdca074
 };
 
 export const newsApi = {

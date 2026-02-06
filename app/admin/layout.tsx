@@ -55,57 +55,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </Breadcrumbs>
                 </div>
               </div>
-<<<<<<< Updated upstream
-
-              <div className="hidden lg:flex flex-1 max-w-md">
-                <AdminNavSearch index={index} search={search} maxResults={10} />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full border border-success-100 bg-success-50 dark:bg-success-500/10 text-[11px] font-bold text-success-600 uppercase tracking-tight">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-success-500"></span>
-                  </span>
-                  Live System
-                </div>
-
-                <div className="flex items-center gap-1 border-l border-divider ml-2 pl-2">
-                  <ThemeSwitch />
-
-                  <Tooltip content="Notifications">
-                    <Button isIconOnly variant="light" radius="full" size="sm">
-                      <Badge color="danger" content="3" shape="circle" size="sm">
-                        <Bell size={18} className="text-default-500" />
-                      </Badge>
-                    </Button>
-                  </Tooltip>
-
-                  <Tooltip content="Settings">
-                    <Button isIconOnly variant="light" radius="full" size="sm">
-                      <Settings size={18} className="text-default-500" />
-                    </Button>
-                  </Tooltip>
-                </div>
-
-                <Divider orientation="vertical" className="h-6 mx-1" />
-
-                <User
-                  name="Alex Rivera"
-                  description="Senior Editor"
-                  avatarProps={{
-                    src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-                    size: "sm",
-                    className: "cursor-pointer",
-                  }}
-                  classNames={{
-                    name: "text-tiny font-bold",
-                    description: "text-[10px]",
-                  }}
-                />
-              </div>
-=======
->>>>>>> Stashed changes
             </div>
           </header>
 
@@ -116,22 +65,4 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </SidebarProvider>
     </div>
   );
-<<<<<<< Updated upstream
 }
-
-const Divider = ({
-  className,
-  orientation = "horizontal",
-}: {
-  className?: string;
-  orientation?: "horizontal" | "vertical";
-}) => (
-  <div
-    className={`${className} bg-divider ${
-      orientation === "vertical" ? "w-[1px] h-full" : "h-[1px] w-full"
-    }`}
-  />
-);
-=======
-}
->>>>>>> Stashed changes

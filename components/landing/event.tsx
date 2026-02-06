@@ -86,53 +86,11 @@ export default function PressReleaseSlideshow({
             }}
             className="news-swiper !pb-14"
           >
-<<<<<<< Updated upstream
             {news.map((item) => (
               <SwiperSlide key={item.id} className="h-auto">
                 <div className="h-full">
                   <NewsCard item={item} href={`/news-events/${item.id}`} />
                 </div>
-=======
-            {news.map((item, i) => (
-              <SwiperSlide key={i} className="h-auto">
-                <Card
-                  className="h-full border border-divider bg-content1 shadow-sm hover:shadow-xl dark:hover:shadow-primary/10 transition-all duration-300 group rounded-2xl overflow-hidden"
-                >
-                  <Link href={"/news-events/" + item.id.toString()}>
-                    {/* Image Section (Top) */}
-                    <div className="relative h-56 w-full overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Chip
-                          size="sm"
-                          variant="flat"
-                          className="bg-background/80 dark:bg-zinc-900/80 backdrop-blur-md text-foreground font-bold border-none shadow-sm"
-                        >
-                          {item.category}
-                        </Chip>
-                      </div>
-                    </div>
-                    {/* Content Section (Bottom) */}
-                    <CardBody className="p-7 flex flex-col">
-                      <div className="text-[11px] font-bold text-default-400 uppercase tracking-widest mb-3">
-                        {item.date}
-                      </div>
-
-                      <h3 className="text-xl font-black text-foreground leading-tight mb-4 group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h3>
-
-                      <p className="text-default-500 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">
-                        {item.excerpt}
-                      </p>
-                    </CardBody>
-                  </Link>
-                </Card>
->>>>>>> Stashed changes
               </SwiperSlide>
             ))}
           </Swiper>
