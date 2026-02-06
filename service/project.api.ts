@@ -1,4 +1,4 @@
-import { request } from "@/lib/http";
+import { apiClient } from "@/api/axiosClient";
 import { Project } from "@/types/project";
 
 export type CreatePageDto = {
@@ -9,19 +9,20 @@ export type CreatePageDto = {
 };
 
 export const ProjectApi = {
+  
   list() {
-    return request<Project[]>("get", "/projects");
+    return apiClient.get<Project[]>("/projects");
   },
 
   getBySlug(slug: string) {
-    return request<Project>("get", `/projects/${slug}`);
+    return apiClient.get<Project>(`/projects/${slug}`);
   },
 
   create(data: CreatePageDto) {
-    return request<Project>("post", "/projects", data);
+    return apiClient.post<Project>("/projects", data);
   },
 
   update(slug: string, data: Partial<CreatePageDto>) {
-    return request<Project>("patch", `/projects/${slug}`, data);
+    return apiClient.patch<Project>(`/projects/${slug}`, data);
   },
 };
