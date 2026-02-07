@@ -46,9 +46,20 @@ export function usePageActions() {
     },
   });
 
+  const deleteProject = useMutation({
+    mutationFn: (slug: string) => ProjectApi.delete(slug),
+
+    onSuccess: (_, slug) => {
+      qc.invalidateQueries({ queryKey: keys.all });
+      qc.removeQueries({ queryKey: keys.project(slug) });
+    },
+  });
+
   return {
     createProject: createProject.mutateAsync,
     saveProject: saveProject.mutateAsync,
+    deleteProject: deleteProject.mutateAsync,
     isSaving: saveProject.isPending,
+    isDeleting: deleteProject.isPending,
   };
 }
