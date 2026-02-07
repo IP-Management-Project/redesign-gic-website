@@ -24,4 +24,8 @@ export const ProjectApi = {
   update(slug: string, data: Partial<CreatePageDto>) {
     return request<Project>("patch", `/projects/${slug}`, data);
   },
+
+  delete(slug: string) {
+    return request<void>("delete", `/projects/${slug}`);
+  },
 };
