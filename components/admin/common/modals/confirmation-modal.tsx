@@ -1,14 +1,16 @@
 "use client";
 
-{/* <ConfirmModal
-  isOpen={isDeleteOpen}
-  onClose={() => setIsDeleteOpen(false)}
-  onConfirm={handleDelete}
-  isLoading={loading}
-  title="Delete Article?"
-  message="Are you sure you want to delete this article? It will be removed permanently."
-  confirmLabel="Yes, Delete"
-/> */}
+{
+  /* <ConfirmModal
+    isOpen={isDeleteOpen}
+    onClose={() => setIsDeleteOpen(false)}
+    onConfirm={handleDelete}
+    isLoading={loading}
+    title="Delete Article?"
+    message="Are you sure you want to delete this article? It will be removed permanently."
+    confirmLabel="Yes, Delete"
+  /> */
+}
 
 import React, { useEffect, useState } from "react";
 import {
@@ -59,9 +61,7 @@ export function ConfirmModal({
   }, [isOpen]);
 
   // Logic: If matchKeyword exists, input must match. Otherwise, always true.
-  const isConfirmEnabled = matchKeyword
-    ? inputValue === matchKeyword
-    : true;
+  const isConfirmEnabled = matchKeyword ? inputValue === matchKeyword : true;
 
   return (
     <Modal
@@ -78,15 +78,17 @@ export function ConfirmModal({
             </ModalHeader>
 
             <ModalBody>
-              <div className="text-default-500">
-                {message}
-              </div>
+              <div className="text-default-500">{message}</div>
 
               {/* Strict Mode: Input Field */}
               {matchKeyword && (
                 <div className="mt-4 p-3 bg-default-100 rounded-medium space-y-2">
                   <p className="text-tiny font-bold uppercase text-default-500">
-                    Type <span className="text-default-900 font-mono select-all">"{matchKeyword}"</span> to confirm:
+                    Type{" "}
+                    <span className="text-default-900 font-mono select-all">
+                      "{matchKeyword}"
+                    </span>{" "}
+                    to confirm:
                   </p>
                   <Input
                     placeholder={matchKeyword}
@@ -107,11 +109,7 @@ export function ConfirmModal({
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                variant="light"
-                onPress={onClose}
-                isDisabled={isLoading}
-              >
+              <Button variant="light" onPress={onClose} isDisabled={isLoading}>
                 Cancel
               </Button>
               <Button
