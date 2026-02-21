@@ -21,9 +21,6 @@ export const userApi = {
   deleteUser: (id: number) =>
     apiClient.delete<void>(`/users/${id}`),
 };
-import { get } from "lodash";
-import { apiClient } from "../axiosClient";
-import { id } from "zod/v4/locales";
 
 export type NewsEventArticleStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 
