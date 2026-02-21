@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosClient";
-
+import { SortDir } from "../service.type";
 export interface User {
   id: number;
   name: string;
@@ -114,7 +114,7 @@ export type NewsQueryParams = {
   status?: string;
   category?: string;
   sortBy?: string;
-  sortDir?: "ASC" | "DESC";
+  sortDir?: SortDir;
 };
 
 export const newsApi = {

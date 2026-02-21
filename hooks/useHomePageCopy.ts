@@ -577,6 +577,8 @@ const applyHomeCopyUpdate = (
   current: HomeCopy,
   updates: Record<string, string | boolean>,
 ): HomeCopy => {
+  console.log(current);
+  console.log(updates);
   return Object.entries(updates).reduce(
     (acc, [path, value]) => setNestedValue(acc, path, value),
     current,
