@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { apiClient } from "@/api/axiosClient";
 export type ServiceCapability = {
   title: string;
   desc: string;
@@ -9,7 +9,15 @@ export type ServiceCapability = {
 
 export type MainService = {
   title: string;
-  icon: "search" | "chart" | "scan" | "users" | "cpu" | "database" | "layout" | "video";
+  icon:
+    | "search"
+    | "chart"
+    | "scan"
+    | "users"
+    | "cpu"
+    | "database"
+    | "layout"
+    | "video";
   href: string;
 };
 
@@ -18,6 +26,8 @@ export type ServiceSpec = {
   val: string;
   icon: "storage" | "compute" | "security";
 };
+
+export const SERVICES_CONTENT_SLUG = "services-page";
 
 export type ServicesInfrastructureCopy = {
   badge: string;
@@ -62,84 +72,152 @@ export type ServicesPageUpdatePayload = {
 
 const servicesPageData: ServicesPageData = {
   header: {
-    title: "Our Services",
-    subtitle:
-      "An expert team of skillful programmers, experienced researchers, and top-tier students committing to quality products for our clients.",
+    title: "",
+    subtitle: "",
   },
   offerings: {
-    title: "What we offer",
-    subtitle: "Ready-to-deploy solutions and custom engineering services.",
+    title: "",
+    subtitle: "",
   },
   infrastructure: {
-    badge: "On-Premise Infrastructure",
-    titleMain: "Self-Managed",
-    titleHighlight: "Cloud Sovereignty",
-    description:
-      "Unlike standard providers, we operate our own physical server center right here at the department. This allows for full control over data residency, ultra-low latency, and bespoke configurations managed entirely by our expert team.",
-    controlTitle: "Full Data Control",
-    controlDesc:
-      "End-to-end management of hardware and software security layers.",
-    performanceTitle: "High Performance",
-    performanceDesc:
-      "Dedicated bare-metal resources optimized for heavy computation.",
-    statusLabel: "GIC Node-01 Active",
-    uptimeLabel: "Uptime Efficiency",
-    uptimeValue: "99.9%",
+    badge: "",
+    titleMain: "",
+    titleHighlight: "",
+    description: "",
+    controlTitle: "",
+    controlDesc: "",
+    performanceTitle: "",
+    performanceDesc: "",
+    statusLabel: "",
+    uptimeLabel: "",
+    uptimeValue: "",
   },
   methodology: {
-    title: "Our Development Philosophy",
-    description:
-      "We manage projects with specialized tools and effective methodologies. We embrace clean code to ensure long-term maintainability and performance.",
-    buttonLabel: "LET'S WORK TOGETHER",
+    title: "",
+    description: "",
+    buttonLabel: "",
   },
   capabilities: [
     {
-      title: "Social Contribution",
-      desc: "We are willing to work in projects that contribute to the development of the country.",
+      title: "",
+      desc: "",
       icon: "globe",
     },
     {
-      title: "Research Capability",
-      desc: "As an education institution, we have a very strong research capability working on local and international scales.",
+      title: "",
+      desc: "",
       icon: "search",
     },
     {
-      title: "Development Skill",
-      desc: "Specialized tools, clean code, and effective methodology. We are open to learning and mastering new technology.",
+      title: "",
+      desc: "",
       icon: "code",
     },
     {
-      title: "Powerful Computing Unit",
-      desc: "Coming soon... Advanced infrastructure to support high-performance data processing.",
+      title: "",
+      desc: "",
       icon: "cpu",
-      isSoon: true,
     },
   ],
   mainServices: [
-    { title: "Research Project", icon: "search", href: "/research" },
-    { title: "Supply Chain Management", icon: "chart", href: "/services/supply-chain" },
-    { title: "Biometric Facial Attendance", icon: "scan", href: "/services/biometric" },
-    { title: "IT Consultant", icon: "users", href: "/services/consultant" },
-    { title: "High-Performance Computing", icon: "cpu", href: "/services/hpc" },
-    { title: "Database Analysis & Design", icon: "database", href: "/services/database" },
-    { title: "System Design & Development", icon: "layout", href: "/services/dev" },
-    { title: "E-learning Service", icon: "video", href: "/services/elearning" },
+    { title: "", icon: "search", href: "/research" },
+    {
+      title: "",
+      icon: "chart",
+      href: "/services/supply-chain",
+    },
+    {
+      title: "",
+      icon: "scan",
+      href: "/services/biometric",
+    },
+    { title: "", icon: "users", href: "/services/consultant" },
+    { title: "", icon: "cpu", href: "/services/hpc" },
+    {
+      title: "",
+      icon: "database",
+      href: "/services/database",
+    },
+    {
+      title: "",
+      icon: "layout",
+      href: "/services/dev",
+    },
+    { title: "", icon: "video", href: "/services/elearning" },
   ],
   serverSpecs: [
-    { label: "Storage Capacity", val: "500TB NVMe", icon: "storage" },
-    { label: "Compute Power", val: "High-Performance HPC", icon: "compute" },
-    { label: "Security Protocol", val: "Hardware Encryption", icon: "security" },
+    { label: "", val: "", icon: "storage" },
+    { label: "", val: "", icon: "compute" },
+    {
+      label: "",
+      val: "",
+      icon: "security",
+    },
   ],
 };
 
-const getServicesData = async (): Promise<ServicesPageData> => servicesPageData;
+const extractStatusCode = (error: unknown) => {
+  const anyError = error as {
+    status?: number;
+    statusCode?: number;
+    response?: { status?: number };
+    request?: { status?: number };
+  };
+  return (
+    anyError?.statusCode ??
+    anyError?.status ??
+    anyError?.response?.status ??
+    (anyError as any)?.request?.status ??
+    null
+  );
+};
+
+const mergeSection = <T extends object>(
+  defaults: T,
+  incoming?: Partial<T>,
+): T => ({ ...defaults, ...(incoming ?? {}) });
+
+const normalizeServicesData = (
+  incoming?: Partial<ServicesPageData>,
+): ServicesPageData => ({
+  header: mergeSection(servicesPageData.header, incoming?.header),
+  offerings: mergeSection(servicesPageData.offerings, incoming?.offerings),
+  infrastructure: mergeSection(
+    servicesPageData.infrastructure,
+    incoming?.infrastructure,
+  ),
+  methodology: mergeSection(
+    servicesPageData.methodology,
+    incoming?.methodology,
+  ),
+  capabilities: incoming?.capabilities ?? servicesPageData.capabilities,
+  mainServices: incoming?.mainServices ?? servicesPageData.mainServices,
+  serverSpecs: incoming?.serverSpecs ?? servicesPageData.serverSpecs,
+});
+
+const getServicesData = async (): Promise<ServicesPageData> => {
+  try {
+    const response = await apiClient.get<Partial<ServicesPageData> | undefined>(
+      `/content/${SERVICES_CONTENT_SLUG}`,
+    );
+
+    // Normalize so missing sections do not break rendering
+    return normalizeServicesData(response ?? undefined);
+  } catch (error) {
+    console.error("Failed to fetch services page data:", error);
+    return servicesPageData;
+  }
+};
 
 export function useServicesData() {
   return useQuery({
     queryKey: ["servicesPage"],
     queryFn: getServicesData,
     initialData: servicesPageData,
-    staleTime: Number.POSITIVE_INFINITY,
+    // Always refetch on mount so we replace the fallback with live API data
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -190,8 +268,27 @@ const applyServicesUpdate = (
   );
 
 const updateServicesPageCopy = async (payload: ServicesPageUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return payload;
+  try {
+    return await apiClient.patch<ServicesPageData>(
+      `/content/${SERVICES_CONTENT_SLUG}`,
+      payload,
+    );
+  } catch (error) {
+    const status = extractStatusCode(error);
+
+    if (status === 404) {
+      // Seed empty structure and apply incoming update so persistence succeeds
+      const seeded = applyServicesUpdate(servicesPageData, payload.data);
+      return apiClient.put<ServicesPageData>(
+        `/content/${SERVICES_CONTENT_SLUG}`,
+        {
+          data: seeded,
+        },
+      );
+    }
+
+    throw error;
+  }
 };
 
 export function useUpdateServicesData() {
@@ -199,11 +296,18 @@ export function useUpdateServicesData() {
 
   return useMutation({
     mutationFn: updateServicesPageCopy,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<ServicesPageData>(["servicesPage"], (current) => {
-        if (!current) return current;
-        return applyServicesUpdate(current, payload.data);
-      });
+    onSuccess: (updated, payload) => {
+      queryClient.setQueryData<ServicesPageData>(
+        ["servicesPage"],
+        (current) => {
+          const base = current ?? servicesPageData;
+          if (updated) {
+            // Prefer normalized server response when present
+            return normalizeServicesData(updated);
+          }
+          return applyServicesUpdate(base, payload.data);
+        },
+      );
     },
   });
 }

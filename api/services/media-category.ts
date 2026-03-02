@@ -10,7 +10,13 @@ export const mediaApi = {
     return await apiClient.post("/media/kinds", payload);
   },
 
-  updateKind: async ({ key, data }: { key: string; data: Partial<MediaKind> }) => {
+  updateKind: async ({
+    key,
+    data,
+  }: {
+    key: string;
+    data: Partial<MediaKind>;
+  }) => {
     return await apiClient.patch(`/media/kinds/${key}`, data);
   },
 

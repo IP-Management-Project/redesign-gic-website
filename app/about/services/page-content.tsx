@@ -68,11 +68,17 @@ const emptyServicesData: ServicesPageData = {
   serverSpecs: [],
 };
 
-export default function ServicesPageContent({ editable = false, onEditSection }: ServicesPageContentProps) {
+export default function ServicesPageContent({
+  editable = false,
+  onEditSection,
+}: ServicesPageContentProps) {
   const { data } = useServicesData();
   const services = data ?? emptyServicesData;
 
-  const getEditAction = (section: ServicesSectionKey, label: string): EditAction | undefined =>
+  const getEditAction = (
+    section: ServicesSectionKey,
+    label: string,
+  ): EditAction | undefined =>
     editable && onEditSection
       ? {
           label,
@@ -111,7 +117,10 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
     transition: { duration: 0.6 },
   };
 
-  const headerWords = services.header.title.trim().split(/\s+/).filter(Boolean);
+  const headerTitle = services?.header?.title?.trim() ?? "";
+  const headerWords = headerTitle
+    ? headerTitle.split(/\s+/).filter(Boolean)
+    : [];
   const headerHighlight = headerWords.pop() ?? "";
   const headerMain = headerWords.join(" ");
 
@@ -122,7 +131,11 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
         {getEditAction("header", "Edit header") ? (
           <div className="pointer-events-none absolute inset-0">
             <div className="pointer-events-auto absolute right-6 top-6 z-20">
-              <Button size="sm" variant="flat" onPress={() => onEditSection?.("header")}>
+              <Button
+                size="sm"
+                variant="flat"
+                onPress={() => onEditSection?.("header")}
+              >
                 Edit header
               </Button>
             </div>
@@ -135,7 +148,9 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
             className="mb-6 text-5xl font-black tracking-tighter md:text-7xl"
           >
             {headerMain ? `${headerMain} ` : null}
-            <span className="text-blue-600">{headerHighlight || services.header.title}</span>
+            <span className="text-blue-600">
+              {headerHighlight || services.header.title}
+            </span>
           </motion.h1>
           <motion.p
             {...fadeIn}
@@ -150,7 +165,11 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
       <section className="relative py-24">
         {getEditAction("capabilities", "Edit capabilities") ? (
           <div className="mx-auto mb-6 flex max-w-7xl justify-end px-6">
-            <Button size="sm" variant="flat" onPress={() => onEditSection?.("capabilities")}>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => onEditSection?.("capabilities")}
+            >
               Edit capabilities
             </Button>
           </div>
@@ -158,7 +177,7 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
 
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {services.capabilities.map((cap, i) => (
+            {(services.capabilities ?? []).map((cap, i) => (
               <motion.div
                 key={`${cap.title}-${i}`}
                 {...fadeIn}
@@ -189,7 +208,11 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
       <section className="relative mx-4 overflow-hidden rounded-[3rem] bg-slate-900 py-20 dark:bg-zinc-900 md:mx-6">
         {getEditAction("offerings", "Edit offerings") ? (
           <div className="mx-auto mb-6 flex max-w-7xl justify-end px-6">
-            <Button size="sm" variant="flat" onPress={() => onEditSection?.("offerings")}>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => onEditSection?.("offerings")}
+            >
               Edit offerings
             </Button>
           </div>
@@ -200,7 +223,9 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
             <h2 className="mb-4 text-3xl font-black tracking-tighter text-white md:text-5xl">
               {services.offerings.title}
             </h2>
-            <p className="font-medium text-slate-400">{services.offerings.subtitle}</p>
+            <p className="font-medium text-slate-400">
+              {services.offerings.subtitle}
+            </p>
           </motion.div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -215,7 +240,9 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
                   {serviceIcons[service.icon]}
                 </div>
                 <div>
-                  <h4 className="mb-2 font-bold tracking-tight text-white">{service.title}</h4>
+                  <h4 className="mb-2 font-bold tracking-tight text-white">
+                    {service.title}
+                  </h4>
                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-500 opacity-0 transition-opacity group-hover:opacity-100">
                     Read More <ArrowRight size={12} />
                   </div>
@@ -230,7 +257,11 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
       <section className="relative overflow-hidden py-24">
         {getEditAction("infrastructure", "Edit infrastructure") ? (
           <div className="mx-auto mb-6 flex max-w-7xl justify-end px-6">
-            <Button size="sm" variant="flat" onPress={() => onEditSection?.("infrastructure")}>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => onEditSection?.("infrastructure")}
+            >
               Edit infrastructure
             </Button>
           </div>
@@ -252,7 +283,9 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
               </div>
               <h2 className="mb-6 text-4xl font-black tracking-tighter leading-tight md:text-6xl">
                 {services.infrastructure.titleMain} <br />
-                <span className="text-blue-600">{services.infrastructure.titleHighlight}</span>
+                <span className="text-blue-600">
+                  {services.infrastructure.titleHighlight}
+                </span>
               </h2>
               <p className="mb-8 text-lg leading-relaxed text-slate-600 dark:text-zinc-400">
                 {services.infrastructure.description}
@@ -264,8 +297,12 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
                     <ShieldCheck size={20} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold">{services.infrastructure.controlTitle}</h4>
-                    <p className="mt-1 text-xs text-slate-500">{services.infrastructure.controlDesc}</p>
+                    <h4 className="text-sm font-bold">
+                      {services.infrastructure.controlTitle}
+                    </h4>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {services.infrastructure.controlDesc}
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -273,8 +310,12 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
                     <Zap size={20} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold">{services.infrastructure.performanceTitle}</h4>
-                    <p className="mt-1 text-xs text-slate-500">{services.infrastructure.performanceDesc}</p>
+                    <h4 className="text-sm font-bold">
+                      {services.infrastructure.performanceTitle}
+                    </h4>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {services.infrastructure.performanceDesc}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -307,7 +348,9 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
                         {serverIcons[spec.icon]}
                         <span className="text-xs font-bold">{spec.label}</span>
                       </div>
-                      <span className="text-xs font-black uppercase text-white">{spec.val}</span>
+                      <span className="text-xs font-black uppercase text-white">
+                        {spec.val}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -315,12 +358,16 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
                 <div className="mt-8 border-t border-white/5 pt-6">
                   <div className="mb-2 flex justify-between text-[10px] font-black uppercase text-zinc-500">
                     <span>{services.infrastructure.uptimeLabel}</span>
-                    <span className="text-emerald-500">{services.infrastructure.uptimeValue}</span>
+                    <span className="text-emerald-500">
+                      {services.infrastructure.uptimeValue}
+                    </span>
                   </div>
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
                     <motion.div
                       initial={{ width: 0 }}
-                      whileInView={{ width: services.infrastructure.uptimeValue }}
+                      whileInView={{
+                        width: services.infrastructure.uptimeValue,
+                      }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-full bg-blue-600"
                     />
@@ -338,7 +385,11 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
       <section className="relative py-24">
         {getEditAction("methodology", "Edit methodology") ? (
           <div className="mx-auto mb-6 flex max-w-7xl justify-end px-6">
-            <Button size="sm" variant="flat" onPress={() => onEditSection?.("methodology")}>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => onEditSection?.("methodology")}
+            >
               Edit methodology
             </Button>
           </div>
@@ -347,8 +398,12 @@ export default function ServicesPageContent({ editable = false, onEditSection }:
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col items-center justify-between rounded-[3rem] bg-blue-600 p-12 text-white shadow-2xl shadow-blue-600/20 md:flex-row">
             <div className="mb-8 max-w-xl md:mb-0">
-              <h3 className="mb-4 text-3xl font-black tracking-tight">{services.methodology.title}</h3>
-              <p className="leading-relaxed text-blue-100">{services.methodology.description}</p>
+              <h3 className="mb-4 text-3xl font-black tracking-tight">
+                {services.methodology.title}
+              </h3>
+              <p className="leading-relaxed text-blue-100">
+                {services.methodology.description}
+              </p>
             </div>
             <button className="rounded-2xl bg-white px-10 py-4 font-black text-blue-600 transition-all hover:bg-slate-900 hover:text-white">
               {services.methodology.buttonLabel}

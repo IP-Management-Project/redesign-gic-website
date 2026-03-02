@@ -6,7 +6,10 @@ import { get } from "lodash";
 import FieldsForm from "@/app/admin/landing-page/modals/fields-form";
 import SectionModal from "@/app/admin/landing-page/modals/section-modal";
 import type { SectionModalProps } from "@/app/admin/landing-page/modals/types";
-import { useMissionVisionCopy, useUpdateMissionVisionCopy } from "@/hooks/news-centralize/useMissionVisionCopy";
+import {
+  useMissionVisionCopy,
+  useUpdateMissionVisionCopy,
+} from "@/hooks/news-centralize/useMissionVisionCopy";
 
 const missionFields = [
   { key: "mission.title", label: "Mission title", value: "" },
@@ -34,24 +37,27 @@ const missionFields = [
   },
 ];
 
-export default function MissionVisionMissionModal({ isOpen, onClose }: SectionModalProps) {
+export default function MissionVisionMissionModal({
+  isOpen,
+  onClose,
+}: SectionModalProps) {
   const { data } = useMissionVisionCopy();
   const updateMissionVision = useUpdateMissionVisionCopy();
 
-  const mission =
-    data?.mission ??
-    {
-      title: "",
-      bodyBefore: "",
-      bodyHighlight: "",
-      bodyAfter: "",
-      hardSkillsTitle: "",
-      hardSkillsDesc: "",
-      softSkillsTitle: "",
-      softSkillsDesc: "",
-    };
+  const mission = data?.mission ?? {
+    title: "",
+    bodyBefore: "",
+    bodyHighlight: "",
+    bodyAfter: "",
+    hardSkillsTitle: "",
+    hardSkillsDesc: "",
+    softSkillsTitle: "",
+    softSkillsDesc: "",
+  };
 
-  const [formValues, setFormValues] = React.useState<Record<string, string>>({});
+  const [formValues, setFormValues] = React.useState<Record<string, string>>(
+    {},
+  );
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -82,12 +88,22 @@ export default function MissionVisionMissionModal({ isOpen, onClose }: SectionMo
     const updates: Record<string, string> = {
       "mission.title": String(get(formValues, "mission.title", "")),
       "mission.bodyBefore": String(get(formValues, "mission.bodyBefore", "")),
-      "mission.bodyHighlight": String(get(formValues, "mission.bodyHighlight", "")),
+      "mission.bodyHighlight": String(
+        get(formValues, "mission.bodyHighlight", ""),
+      ),
       "mission.bodyAfter": String(get(formValues, "mission.bodyAfter", "")),
-      "mission.hardSkillsTitle": String(get(formValues, "mission.hardSkillsTitle", "")),
-      "mission.hardSkillsDesc": String(get(formValues, "mission.hardSkillsDesc", "")),
-      "mission.softSkillsTitle": String(get(formValues, "mission.softSkillsTitle", "")),
-      "mission.softSkillsDesc": String(get(formValues, "mission.softSkillsDesc", "")),
+      "mission.hardSkillsTitle": String(
+        get(formValues, "mission.hardSkillsTitle", ""),
+      ),
+      "mission.hardSkillsDesc": String(
+        get(formValues, "mission.hardSkillsDesc", ""),
+      ),
+      "mission.softSkillsTitle": String(
+        get(formValues, "mission.softSkillsTitle", ""),
+      ),
+      "mission.softSkillsDesc": String(
+        get(formValues, "mission.softSkillsDesc", ""),
+      ),
     };
 
     updateMissionVision.mutate(
@@ -109,7 +125,9 @@ export default function MissionVisionMissionModal({ isOpen, onClose }: SectionMo
       <FieldsForm
         fields={missionFields}
         formValues={formValues}
-        onChange={(key, value) => setFormValues((prev) => ({ ...prev, [key]: value }))}
+        onChange={(key, value) =>
+          setFormValues((prev) => ({ ...prev, [key]: value }))
+        }
         description="Split the mission statement around the highlighted phrase to keep the emphasis styling."
       />
     </SectionModal>

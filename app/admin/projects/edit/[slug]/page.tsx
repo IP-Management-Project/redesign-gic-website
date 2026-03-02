@@ -18,13 +18,17 @@ import { useProjectGrapesManager } from "@/hooks/projects/useProjectGrapesManage
 export default function EditorClient() {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: page, isLoading: fetchingData, refetch } = useProjectBySlug(slug);
+  const {
+    data: page,
+    isLoading: fetchingData,
+    refetch,
+  } = useProjectBySlug(slug);
 
   const { isSaving, status, handleSave } = useProjectEditorLogic(page, refetch);
 
   const { containerRef, editorRef, loadingEditor } = useProjectGrapesManager(
     page,
-    fetchingData
+    fetchingData,
   );
 
   useEffect(() => {
@@ -64,7 +68,9 @@ export default function EditorClient() {
     return (
       <div className="h-screen w-screen flex flex-col gap-4 items-center justify-center bg-[#0f0f10] text-white">
         <Spinner size="lg" color="white" />
-        <p className="text-sm font-mono animate-pulse">Opening Design Studio...</p>
+        <p className="text-sm font-mono animate-pulse">
+          Opening Design Studio...
+        </p>
       </div>
     );
   }

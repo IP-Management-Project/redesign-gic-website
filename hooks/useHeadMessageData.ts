@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { apiClient } from "@/api/axiosClient";
+
 export type HeadMessageCoreValue = {
   icon: "target" | "lightbulb" | "shield";
   title: string;
@@ -23,17 +25,17 @@ export type HeadMessageData = {
 
 export type HeadMessageUpdatePayload = {
   section: string;
-  data: Record<string, string>;
+  data: Record<string, unknown>;
 };
 
 const headMessageData: HeadMessageData = {
-  headName: "Dr. Lay HENG",
-  title: "Head of GIC Department",
-  specialization: "Pattern Recognition & AI specialized researcher",
-  email: "head@gic.itc.edu.kh",
-  linkedin: "https://www.linkedin.com",
-  portrait: "https://i.pravatar.cc/400?u=gic-head",
-  leadershipKicker: "Leadership Insight",
+  headName: "",
+  title: "",
+  specialization: "",
+  email: "",
+  linkedin: "",
+  portrait: "",
+  leadershipKicker: "",
   messageHtml: `
     <p class="text-2xl font-bold text-[#26304d] dark:text-white mb-8 leading-tight">
       At the Department of Information and Communication Engineering (GIC), we are not just teaching technology; we are architecting the future of Cambodia's digital landscape.
@@ -51,35 +53,78 @@ const headMessageData: HeadMessageData = {
   coreValues: [
     {
       icon: "target",
-      title: "Excellence",
-      desc: "Revealing potential to global stakeholders.",
+      title: "",
+      desc: "",
     },
     {
       icon: "lightbulb",
-      title: "Innovation",
-      desc: "Solving real-world problems via STEM.",
+      title: "",
+      desc: "",
     },
     {
       icon: "shield",
-      title: "Integrity",
-      desc: "Building robust digital foundations.",
+      title: "",
+      desc: "",
     },
   ],
-  signatureName: "Lay Heng, Ph.D.",
-  signatureTitle: "Head of GIC Department",
-  footerText:
-    "Engineering the foundations of the digital world / GIC Leadership",
+  signatureName: "",
+  signatureTitle: "",
+  footerText: "",
 };
 
-const getHeadMessageData = async (): Promise<HeadMessageData> =>
-  headMessageData;
+const normalizeHeadMessageData = (
+  incoming?: Partial<HeadMessageData>,
+): HeadMessageData => ({
+  headName: incoming?.headName ?? headMessageData.headName,
+  title: incoming?.title ?? headMessageData.title,
+  specialization: incoming?.specialization ?? headMessageData.specialization,
+  email: incoming?.email ?? headMessageData.email,
+  linkedin: incoming?.linkedin ?? headMessageData.linkedin,
+  portrait: incoming?.portrait ?? headMessageData.portrait,
+  leadershipKicker:
+    incoming?.leadershipKicker ?? headMessageData.leadershipKicker,
+  messageHtml: incoming?.messageHtml ?? headMessageData.messageHtml,
+  coreValues: incoming?.coreValues ?? headMessageData.coreValues,
+  signatureName: incoming?.signatureName ?? headMessageData.signatureName,
+  signatureTitle: incoming?.signatureTitle ?? headMessageData.signatureTitle,
+  footerText: incoming?.footerText ?? headMessageData.footerText,
+});
+
+const getHeadMessageData = async (): Promise<HeadMessageData> => {
+  try {
+    const response = await apiClient.get<Partial<HeadMessageData> | undefined>(
+      "/content/head-message",
+    );
+
+    // Some backends wrap payload in { data }
+    const unwrapped = (response as any)?.data ?? response;
+    return normalizeHeadMessageData(unwrapped ?? undefined);
+  } catch (error) {
+    const status = (error as any)?.response?.status ?? (error as any)?.status;
+    if (status === 404) {
+      // Seed the document on first access
+      try {
+        await apiClient.put<HeadMessageData>("/content/head-message", {
+          data: headMessageData,
+        });
+      } catch (seedError) {
+        console.error("Failed to seed head message", seedError);
+      }
+    } else {
+      console.error("Failed to fetch head message", error);
+    }
+    return headMessageData;
+  }
+};
 
 export function useHeadMessageData() {
   return useQuery({
     queryKey: ["headMessage"],
     queryFn: getHeadMessageData,
     initialData: headMessageData,
-    staleTime: Number.POSITIVE_INFINITY,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -88,7 +133,7 @@ type UpdatableHeadMessageData = Record<string, unknown>;
 const setNestedValue = (
   source: UpdatableHeadMessageData,
   path: string,
-  value: string,
+  value: unknown,
 ) => {
   const keys = path.split(".");
   const root = Array.isArray(source) ? [...source] : { ...source };
@@ -125,7 +170,7 @@ const setNestedValue = (
 
 const applyHeadMessageUpdate = (
   current: HeadMessageData,
-  updates: Record<string, string>,
+  updates: Record<string, unknown>,
 ): HeadMessageData =>
   Object.entries(updates).reduce(
     (acc, [path, value]) => setNestedValue(acc, path, value),
@@ -133,21 +178,64 @@ const applyHeadMessageUpdate = (
   );
 
 const updateHeadMessageData = async (payload: HeadMessageUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  try {
+    return await apiClient.patch<HeadMessageData>("/content/head-message", {
+      data: payload.data,
+      section: payload.section,
+    });
+  } catch (error) {
+    const status = (error as any)?.response?.status ?? (error as any)?.status;
 
-  return payload;
+    if (status === 404) {
+      const seeded = applyHeadMessageUpdate(headMessageData, payload.data);
+      return apiClient.put<HeadMessageData>("/content/head-message", {
+        data: seeded,
+      });
+    }
+
+    throw error;
+  }
 };
 
 export function useUpdateHeadMessageData() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateHeadMessageData,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<HeadMessageData>(["headMessage"], (current) => {
-        if (!current) return current;
+    mutationFn: async (payload) => {
+      const current =
+        queryClient.getQueryData<HeadMessageData>(["headMessage"]) ??
+        headMessageData;
+      const merged = applyHeadMessageUpdate(current, payload.data);
 
-        return applyHeadMessageUpdate(current, payload.data);
+      try {
+        return await apiClient.patch<HeadMessageData>("/content/head-message", {
+          data: merged,
+          section: payload.section,
+        });
+      } catch (error) {
+        const status =
+          (error as any)?.response?.status ?? (error as any)?.status;
+
+        if (status === 404) {
+          return apiClient.put<HeadMessageData>("/content/head-message", {
+            data: merged,
+          });
+        }
+
+        throw error;
+      }
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData<HeadMessageData>(["headMessage"], (current) => {
+        const base = current ?? headMessageData;
+
+        if (updated) {
+          // Handle APIs that wrap response in { data }
+          const unwrapped = (updated as any)?.data ?? updated;
+          return normalizeHeadMessageData(unwrapped as HeadMessageData);
+        }
+
+        return base;
       });
     },
   });

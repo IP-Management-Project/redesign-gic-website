@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { apiClient } from "@/api/axiosClient";
+
 export type ResearchProject = {
   title: string;
   topic: string;
@@ -92,168 +94,292 @@ export type LabsPageData = {
 
 export type LabsPageUpdatePayload = {
   section: string;
-  data: Record<string, string>;
+  data: Record<string, unknown>;
 };
 
 const labsPageData: LabsPageData = {
   hero: {
-    titleMain: "Labs &",
-    titleHighlight: "Innovation",
-    subtitle:
-      "Where theory meets practice. Explore our specialized research units and dynamic student-led communities.",
+    titleMain: "",
+    titleHighlight: "",
+    subtitle: "",
   },
   labsHeader: {
-    kicker: "Research Excellence",
-    title: "Advanced Laboratory Grid",
+    kicker: "",
+    title: "",
   },
   featuredLab: {
-    name: "Vila Lab",
-    leadLabel: "Led by",
-    leadName: "Mr. VALY Dona",
-    leadEmail: "dona.valy@gmail.com",
-    badgeLabel: "LEADING LAB",
-    visionLabel: "Laboratory Vision",
-    visionQuote: "Be the leading Khmer Natural Language Processing Lab in Cambodia.",
-    interestsLabel: "Research Interests",
-    applicationsLabel: "Expected Applications",
-    repositoryLabel: "EXPLORE LAB REPOSITORY",
-    repositoryHref: "https://github.com/ITC-GIC",
+    name: "",
+    leadLabel: "",
+    leadName: "",
+    leadEmail: "",
+    badgeLabel: "",
+    visionLabel: "",
+    visionQuote: "",
+    interestsLabel: "",
+    applicationsLabel: "",
+    repositoryLabel: "",
+    repositoryHref: "",
   },
   researchPortfolio: {
-    title: "Research Portfolio",
-    description:
-      "Our projects are backed by international institutions and national ministries, aiming to digitize Khmer heritage and advance local AI.",
+    title: "",
+    description: "",
   },
   deployments: {
-    title: "Active Deployments",
+    title: "",
     items: [
-      { name: "L2K Romanization", status: "ACTIVE" },
-      { name: "Manuscript OCR", status: "V2 BETA" },
+      { name: "", status: "" },
+      { name: "", status: "" },
     ],
-    ctaLabel: "PARTNER WITH US",
+    ctaLabel: "",
   },
   clubsCopy: {
-    titleMain: "Student",
-    titleHighlight: "Clubs",
-    description:
-      "GIC is more than just lectures. Join our clubs to sharpen your soft skills, collaborate on startups, and participate in national events.",
-    ctaLabel: "JOIN NOW",
+    titleMain: "",
+    titleHighlight: "",
+    description: "",
+    ctaLabel: "",
   },
   facilities: {
     nodeHub: {
-      kicker: "On-Campus Infrastructure",
-      titleMain: "Physical",
-      titleHighlight: "Node Hub",
-      description:
-        "GIC manages its own On-Campus Server Center. Students don't just learn theory; they get physical access to manage high-performance computing nodes and experiment with private cloud configurations.",
-      image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=800",
-      footnote: "Bare Metal Access",
+      kicker: "",
+      titleMain: "",
+      titleHighlight: "",
+      description: "",
+      image: "",
+      footnote: "",
     },
     studio: {
-      title: "E-Learning Studio",
-      description:
-        "Equipped by the ASEAN Cyber University project, this professional studio provides hands-on experience in digital content production for blended learning used nationwide.",
-      equipmentLabel: "Equipment",
-      equipmentValue: "Professional Studio",
-      partnershipLabel: "Partnership",
-      partnershipValue: "ASEAN Cyber Uni",
-      note: "Students can book studio time for media projects",
+      title: "",
+      description: "",
+      equipmentLabel: "",
+      equipmentValue: "",
+      partnershipLabel: "",
+      partnershipValue: "",
+      note: "",
     },
   },
   projects: [
     {
-      title: "L2K Conversion",
-      topic: "Automatic Latin-to-Khmer based Text Conversation",
-      funder: "MoEYS Cambodia",
-      period: "2019 - 2022",
-    },
-    {
-      title: "Manuscript Digitization",
-      topic: "Ancient Manuscript Digitization and Indexation",
-      funder: "ARES-CCD",
-      period: "2016 - 2019",
-    },
-    {
-      title: "Visual Attention",
-      topic: "Top-down Approach and Memory Information",
-      funder: "ARES-CCD",
-      period: "2017 - 2019",
+      title: "",
+      topic: "",
+      funder: "",
+      period: "",
     },
   ],
   labs: [
     {
-      name: "Natural Language Processing (NLP)",
-      desc: "Focusing on Khmer script analysis, OCR, and Machine Translation.",
+      name: "",
+      desc: "",
       icon: "globe",
-      specialization: "AI & Linguistics",
+      specialization: "",
     },
     {
-      name: "Data Science & Big Data",
-      desc: "Advanced processing for large-scale datasets and predictive modeling.",
+      name: "",
+      desc: "",
       icon: "search",
-      specialization: "Statistics & Mining",
+      specialization: "",
     },
     {
-      name: "Mobile Ecosystems & Security",
-      desc: "Research on iOS/Android security and data mining in mobile environments.",
+      name: "",
+      desc: "",
       icon: "cpu",
-      specialization: "Cybersecurity",
+      specialization: "",
     },
     {
-      name: "High-Performance Computing (HPC)",
-      desc: "Managing our physical server center for heavy computational research.",
+      name: "",
+      desc: "",
       icon: "shield",
-      specialization: "Cloud Sovereignty",
+      specialization: "",
     },
   ],
   clubs: [
     {
-      name: "Codera Development Club",
-      desc: "A community for full-stack and mobile app enthusiasts to build real-world projects.",
+      name: "",
+      desc: "",
       icon: "code",
       color: "bg-blue-600",
     },
     {
-      name: "Cybersecurity Club",
-      desc: "Practicing Capture The Flag (CTF) and ethical hacking to secure future infrastructures.",
+      name: "",
+      desc: "",
       icon: "terminal",
       color: "bg-zinc-900",
     },
     {
-      name: "Innovation Hub",
-      desc: "Focusing on entrepreneurship, startups, and Techno Innovation Challenges.",
+      name: "",
+      desc: "",
       icon: "lightbulb",
       color: "bg-amber-500",
     },
   ],
-  researchInterests: [
-    "Text & Pattern Recognition",
-    "Spoken Language Processing",
-    "Speech Synthesis",
-    "Artificial Intelligence",
-  ],
-  expectedApplications: [
-    "Khmer OCR Tool",
-    "Text to Speech",
-    "Speech Recognition",
-    "Romanization Tool",
-  ],
+  researchInterests: [],
+  expectedApplications: [],
 };
 
-const getLabsPageData = async (): Promise<LabsPageData> => labsPageData;
+const normalizeLabsPageData = (
+  incoming?: Partial<LabsPageData>,
+): LabsPageData => ({
+  hero: {
+    titleMain: incoming?.hero?.titleMain ?? labsPageData.hero.titleMain,
+    titleHighlight:
+      incoming?.hero?.titleHighlight ?? labsPageData.hero.titleHighlight,
+    subtitle: incoming?.hero?.subtitle ?? labsPageData.hero.subtitle,
+  },
+  labsHeader: {
+    kicker: incoming?.labsHeader?.kicker ?? labsPageData.labsHeader.kicker,
+    title: incoming?.labsHeader?.title ?? labsPageData.labsHeader.title,
+  },
+  featuredLab: {
+    name: incoming?.featuredLab?.name ?? labsPageData.featuredLab.name,
+    leadLabel:
+      incoming?.featuredLab?.leadLabel ?? labsPageData.featuredLab.leadLabel,
+    leadName:
+      incoming?.featuredLab?.leadName ?? labsPageData.featuredLab.leadName,
+    leadEmail:
+      incoming?.featuredLab?.leadEmail ?? labsPageData.featuredLab.leadEmail,
+    badgeLabel:
+      incoming?.featuredLab?.badgeLabel ?? labsPageData.featuredLab.badgeLabel,
+    visionLabel:
+      incoming?.featuredLab?.visionLabel ??
+      labsPageData.featuredLab.visionLabel,
+    visionQuote:
+      incoming?.featuredLab?.visionQuote ??
+      labsPageData.featuredLab.visionQuote,
+    interestsLabel:
+      incoming?.featuredLab?.interestsLabel ??
+      labsPageData.featuredLab.interestsLabel,
+    applicationsLabel:
+      incoming?.featuredLab?.applicationsLabel ??
+      labsPageData.featuredLab.applicationsLabel,
+    repositoryLabel:
+      incoming?.featuredLab?.repositoryLabel ??
+      labsPageData.featuredLab.repositoryLabel,
+    repositoryHref:
+      incoming?.featuredLab?.repositoryHref ??
+      labsPageData.featuredLab.repositoryHref,
+  },
+  researchPortfolio: {
+    title:
+      incoming?.researchPortfolio?.title ??
+      labsPageData.researchPortfolio.title,
+    description:
+      incoming?.researchPortfolio?.description ??
+      labsPageData.researchPortfolio.description,
+  },
+  deployments: {
+    title: incoming?.deployments?.title ?? labsPageData.deployments.title,
+    items: incoming?.deployments?.items ?? labsPageData.deployments.items,
+    ctaLabel:
+      incoming?.deployments?.ctaLabel ?? labsPageData.deployments.ctaLabel,
+  },
+  clubsCopy: {
+    titleMain:
+      incoming?.clubsCopy?.titleMain ?? labsPageData.clubsCopy.titleMain,
+    titleHighlight:
+      incoming?.clubsCopy?.titleHighlight ??
+      labsPageData.clubsCopy.titleHighlight,
+    description:
+      incoming?.clubsCopy?.description ?? labsPageData.clubsCopy.description,
+    ctaLabel: incoming?.clubsCopy?.ctaLabel ?? labsPageData.clubsCopy.ctaLabel,
+  },
+  facilities: {
+    nodeHub: {
+      kicker:
+        incoming?.facilities?.nodeHub?.kicker ??
+        labsPageData.facilities.nodeHub.kicker,
+      titleMain:
+        incoming?.facilities?.nodeHub?.titleMain ??
+        labsPageData.facilities.nodeHub.titleMain,
+      titleHighlight:
+        incoming?.facilities?.nodeHub?.titleHighlight ??
+        labsPageData.facilities.nodeHub.titleHighlight,
+      description:
+        incoming?.facilities?.nodeHub?.description ??
+        labsPageData.facilities.nodeHub.description,
+      image:
+        incoming?.facilities?.nodeHub?.image ??
+        labsPageData.facilities.nodeHub.image,
+      footnote:
+        incoming?.facilities?.nodeHub?.footnote ??
+        labsPageData.facilities.nodeHub.footnote,
+    },
+    studio: {
+      title:
+        incoming?.facilities?.studio?.title ??
+        labsPageData.facilities.studio.title,
+      description:
+        incoming?.facilities?.studio?.description ??
+        labsPageData.facilities.studio.description,
+      equipmentLabel:
+        incoming?.facilities?.studio?.equipmentLabel ??
+        labsPageData.facilities.studio.equipmentLabel,
+      equipmentValue:
+        incoming?.facilities?.studio?.equipmentValue ??
+        labsPageData.facilities.studio.equipmentValue,
+      partnershipLabel:
+        incoming?.facilities?.studio?.partnershipLabel ??
+        labsPageData.facilities.studio.partnershipLabel,
+      partnershipValue:
+        incoming?.facilities?.studio?.partnershipValue ??
+        labsPageData.facilities.studio.partnershipValue,
+      note:
+        incoming?.facilities?.studio?.note ??
+        labsPageData.facilities.studio.note,
+    },
+  },
+  projects: incoming?.projects ?? labsPageData.projects,
+  labs: incoming?.labs ?? labsPageData.labs,
+  clubs: incoming?.clubs ?? labsPageData.clubs,
+  researchInterests:
+    incoming?.researchInterests ?? labsPageData.researchInterests,
+  expectedApplications:
+    incoming?.expectedApplications ?? labsPageData.expectedApplications,
+});
+
+const getLabsPageData = async (): Promise<LabsPageData> => {
+  try {
+    const response = await apiClient.get<Partial<LabsPageData> | undefined>(
+      "/content/labs-page",
+    );
+
+    const unwrapped = (response as any)?.data ?? response;
+    return normalizeLabsPageData(unwrapped ?? undefined);
+  } catch (error) {
+    const status = (error as any)?.response?.status ?? (error as any)?.status;
+
+    if (status === 404) {
+      try {
+        await apiClient.put<LabsPageData>("/content/labs-page", {
+          data: labsPageData,
+        });
+      } catch (seedError) {
+        console.error("Failed to seed labs page", seedError);
+      }
+    } else {
+      console.error("Failed to fetch labs page", error);
+    }
+
+    return labsPageData;
+  }
+};
 
 export function useLabsPageData() {
   return useQuery({
     queryKey: ["labsPage"],
     queryFn: getLabsPageData,
     initialData: labsPageData,
-    staleTime: Number.POSITIVE_INFINITY,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 }
 
 type UpdatableLabsPageData = Record<string, unknown>;
 
-const setNestedValue = (source: UpdatableLabsPageData, path: string, value: string) => {
+const setNestedValue = (
+  source: UpdatableLabsPageData,
+  path: string,
+  value: unknown,
+) => {
   const keys = path.split(".");
   const root = Array.isArray(source) ? [...source] : { ...source };
   let cursor: any = root;
@@ -288,27 +414,48 @@ const setNestedValue = (source: UpdatableLabsPageData, path: string, value: stri
 
 const applyLabsPageUpdate = (
   current: LabsPageData,
-  updates: Record<string, string>,
+  updates: Record<string, unknown>,
 ): LabsPageData =>
   Object.entries(updates).reduce(
     (acc, [path, value]) => setNestedValue(acc, path, value),
     current,
   );
 
-const updateLabsPageCopy = async (payload: LabsPageUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return payload;
-};
-
 export function useUpdateLabsPageData() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateLabsPageCopy,
-    onSuccess: (payload) => {
+    mutationFn: async (payload: LabsPageUpdatePayload) => {
+      const current =
+        queryClient.getQueryData<LabsPageData>(["labsPage"]) ?? labsPageData;
+      const merged = applyLabsPageUpdate(current, payload.data);
+
+      try {
+        return await apiClient.patch<LabsPageData>("/content/labs-page", {
+          data: merged,
+          section: payload.section,
+        });
+      } catch (error) {
+        const status =
+          (error as any)?.response?.status ?? (error as any)?.status;
+
+        if (status === 404) {
+          return apiClient.put<LabsPageData>("/content/labs-page", {
+            data: merged,
+          });
+        }
+
+        throw error;
+      }
+    },
+    onSuccess: (updated) => {
       queryClient.setQueryData<LabsPageData>(["labsPage"], (current) => {
-        if (!current) return current;
-        return applyLabsPageUpdate(current, payload.data);
+        const base = current ?? labsPageData;
+        const unwrapped = (updated as any)?.data ?? updated;
+        if (unwrapped) {
+          return normalizeLabsPageData(unwrapped as Partial<LabsPageData>);
+        }
+        return base;
       });
     },
   });
