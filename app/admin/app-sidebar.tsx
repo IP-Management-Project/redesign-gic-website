@@ -109,6 +109,7 @@ export const data: {
         },
         { title: "Timetable", url: "/admin/timetable" },
         { title: "Calendar", url: "/admin/calendar" },
+        { title: "Glossary", url: "/admin/glossary" },
         { title: "FAQ", url: "/admin/faq" },
 
       ],

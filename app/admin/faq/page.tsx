@@ -20,7 +20,7 @@ export default function FaqAdminPage() {
   const [editingFaq, setEditingFaq] = useState<Partial<FaqItem> | null>(null);
   const [search, setSearch] = useState("");
 
-  const icons = {
+  const icons: Record<"cpu" | "rocket" | "shield", React.ReactNode> = {
     cpu: <Cpu size={16} />,
     rocket: <Rocket size={16} />,
     shield: <Shield size={16} />
@@ -28,7 +28,7 @@ export default function FaqAdminPage() {
 
   const filteredFaqs = data?.filter(f => 
     f.question.toLowerCase().includes(search.toLowerCase()) || 
-    f.category.toLowerCase().includes(search.toLowerCase())
+    f.category?.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
   const handleEdit = (item: FaqItem) => {
@@ -38,7 +38,6 @@ export default function FaqAdminPage() {
 
   const handleCreate = () => {
     setEditingFaq({ 
-      id: crypto.randomUUID(), 
       category: "Academic", 
       icon: "cpu" 
     });
@@ -52,12 +51,13 @@ export default function FaqAdminPage() {
       ...editingFaq,
       question: fd.get("question") as string,
       answer: fd.get("answer") as string,
-      category: fd.get("category") as string,
-      icon: fd.get("icon") as any,
+      category: fd.get("category") as string || undefined,
+      icon: fd.get("icon") as "cpu" | "rocket" | "shield" | undefined,
     } as FaqItem;
 
     upsertFaq(item);
     onClose();
+    setEditingFaq(null);
   };
 
   if (isLoading) return <div className="p-10 text-center font-black animate-pulse">Synchronizing Knowledge Base...</div>;
@@ -111,10 +111,12 @@ export default function FaqAdminPage() {
             <TableRow key={item.id} className="hover:bg-default-50/50 transition-colors border-b border-divider last:border-none">
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-                    {icons[item.icon]}
-                  </div>
-                  <span className="font-black text-[10px] uppercase tracking-widest text-default-400">{item.category}</span>
+                  {item.icon && (
+                    <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+                      {icons[item.icon]}
+                    </div>
+                  )}
+                  <span className="font-black text-[10px] uppercase tracking-widest text-default-400">{item.category || "General"}</span>
                 </div>
               </TableCell>
               <TableCell className="font-bold text-foreground max-w-xs">
@@ -131,7 +133,7 @@ export default function FaqAdminPage() {
                     </Button>
                   </Tooltip>
                   <Tooltip color="danger" content="Delete">
-                    <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => {if(confirm("Permanently delete this FAQ?")) removeFaq(item.id)}}>
+                    <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => {if(confirm("Permanently delete this FAQ?")) removeFaq(item.faqId)}}>
                       <Trash2 size={16} />
                     </Button>
                   </Tooltip>

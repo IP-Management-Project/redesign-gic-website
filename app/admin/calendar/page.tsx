@@ -14,7 +14,7 @@ import { useAcademicCalendarData, useCalendarActions, CalendarEvent } from "@/ho
 
 export default function CalendarAdminPage() {
   const { data, isLoading } = useAcademicCalendarData();
-  const { upsertEvent, removeEvent } = useCalendarActions();
+  const { createEvent, updateEvent, deleteEvent, isPending } = useCalendarActions();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [editingEvent, setEditingEvent] = useState<Partial<CalendarEvent> | null>(null);
@@ -40,29 +40,39 @@ export default function CalendarAdminPage() {
 
   const handleCreate = () => {
     setEditingEvent({ 
-      id: crypto.randomUUID(), 
       type: "Academic", 
-      month: "August", 
-      cite: 3 
+      month: "January", 
+      cite: 1 
     });
     onOpen();
   };
 
-  const onSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const event = {
-      ...editingEvent,
+    
+    const eventData = {
       title: fd.get("title") as string,
       month: fd.get("month") as string,
-      type: fd.get("type") as any,
+      type: fd.get("type") as CalendarEvent["type"],
       startDate: fd.get("startDate") as string,
-      endDate: fd.get("endDate") as string || undefined,
+      endDate: (fd.get("endDate") as string) || undefined,
       cite: Number(fd.get("cite")),
-    } as CalendarEvent;
+    };
 
-    upsertEvent(event);
-    onClose();
+    try {
+      if (editingEvent?.id && editingEvent.title) {
+        // Update existing event
+        await updateEvent(editingEvent.id, eventData);
+      } else {
+        // Create new event
+        await createEvent(eventData);
+      }
+      onClose();
+    } catch (error) {
+      console.error("Failed to save event:", error);
+      alert("Failed to save event. Please try again.");
+    }
   };
 
   if (isLoading || !data) return <div className="p-10 text-center uppercase font-black animate-pulse">Loading Registry...</div>;
@@ -139,7 +149,22 @@ export default function CalendarAdminPage() {
                     </Button>
                   </Tooltip>
                   <Tooltip color="danger" content="Remove">
-                    <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => {if(confirm("Delete event?")) removeEvent(event.id)}}>
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      color="danger"
+                      onPress={async () => {
+                        if (confirm("Delete event?")) {
+                          try {
+                            await deleteEvent(event.id);
+                          } catch (error) {
+                            console.error("Failed to delete event:", error);
+                            alert("Failed to delete event. Please try again.");
+                          }
+                        }
+                      }}
+                    >
                       <Trash2 size={16} />
                     </Button>
                   </Tooltip>
