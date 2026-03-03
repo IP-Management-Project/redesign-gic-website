@@ -3,7 +3,6 @@
 import React from "react";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Globe, GraduationCap, Rocket } from "lucide-react";
 
 import { Timeline } from "@/components/ui/timeline";
 import {
@@ -29,11 +28,11 @@ const defaultHero = {
   subtitle: "",
 };
 
-const iconMap: Record<HistoryIconKey, React.ReactNode> = {
-  rocket: <Rocket size={18} className="text-primary" />,
-  globe: <Globe size={18} className="text-primary" />,
-  graduation: <GraduationCap size={18} className="text-primary" />,
-};
+// const iconMap: Record<HistoryIconKey, React.ReactNode> = {
+//   rocket: null,
+//   globe: null,
+//   graduation: null,
+// };
 
 const tagColors: Array<"primary" | "secondary" | "success"> = [
   "primary",
@@ -41,7 +40,13 @@ const tagColors: Array<"primary" | "secondary" | "success"> = [
   "success",
 ];
 
-function TimelineEntryCard({ entry, editAction }: { entry: HistoryEntryCopy; editAction?: EditAction }) {
+function TimelineEntryCard({
+  entry,
+  editAction,
+}: {
+  entry: HistoryEntryCopy;
+  editAction?: EditAction;
+}) {
   const tags = entry.tags?.filter(Boolean) ?? [];
   const images = entry.images?.filter((image) => image.src) ?? [];
 
@@ -56,7 +61,6 @@ function TimelineEntryCard({ entry, editAction }: { entry: HistoryEntryCopy; edi
       ) : null}
 
       <div className="flex items-center gap-2 mb-4">
-        {iconMap[entry.icon]}
         <h3 className="text-xl font-black text-foreground">{entry.heading}</h3>
       </div>
 
@@ -95,12 +99,18 @@ function TimelineEntryCard({ entry, editAction }: { entry: HistoryEntryCopy; edi
   );
 }
 
-export default function HistoryPageContent({ editable = false, onEditSection }: HistoryPageContentProps) {
+export default function HistoryPageContent({
+  editable = false,
+  onEditSection,
+}: HistoryPageContentProps) {
   const { data } = useHistoryPageCopy();
   const hero = data?.hero ?? defaultHero;
   const entries = data?.entries ?? [];
 
-  const getEditAction = (section: HistorySectionKey, label: string): EditAction | undefined =>
+  const getEditAction = (
+    section: HistorySectionKey,
+    label: string,
+  ): EditAction | undefined =>
     editable && onEditSection
       ? {
           label,
@@ -120,11 +130,27 @@ export default function HistoryPageContent({ editable = false, onEditSection }: 
 
   return (
     <div className="relative w-full overflow-clip bg-background">
+      {editable && onEditSection ? (
+        <div className="max-w-7xl mx-auto px-6 pt-6 flex justify-end">
+          <Button
+            size="sm"
+            variant="flat"
+            onPress={() => onEditSection(`entry-${entries.length}`)}
+          >
+            Add entry
+          </Button>
+        </div>
+      ) : null}
+
       <section className="relative">
         {editable ? (
           <div className="pointer-events-none absolute inset-0">
             <div className="pointer-events-auto absolute right-6 top-6 z-20">
-              <Button size="sm" variant="flat" onPress={() => onEditSection?.("hero")}>
+              <Button
+                size="sm"
+                variant="flat"
+                onPress={() => onEditSection?.("hero")}
+              >
                 Edit hero
               </Button>
             </div>
@@ -135,7 +161,9 @@ export default function HistoryPageContent({ editable = false, onEditSection }: 
           <h2 className="mb-4 text-4xl font-black tracking-tighter text-foreground md:text-7xl">
             {hero.title}
           </h2>
-          <p className="max-w-2xl text-lg font-medium text-default-500">{hero.subtitle}</p>
+          <p className="max-w-2xl text-lg font-medium text-default-500">
+            {hero.subtitle}
+          </p>
         </div>
       </section>
 

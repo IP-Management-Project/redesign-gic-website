@@ -21,41 +21,60 @@ import GalleryModal from "./modals/gallery-modal";
 import HeritageModal from "./modals/heritage-modal";
 import SeasonModal from "./modals/season-modal";
 
-const parseSectionIndex = (section: TicShowcaseSectionKey | null, prefix: string) => {
+const parseSectionIndex = (
+  section: TicShowcaseSectionKey | null,
+  prefix: string,
+) => {
   if (!section || !section.startsWith(`${prefix}-`)) return null;
   const value = Number(section.replace(`${prefix}-`, ""));
   return Number.isNaN(value) ? null : value;
 };
 
 export default function TechnoInnovationAdminPage() {
-  const [activeSection, setActiveSection] = React.useState<TicShowcaseSectionKey | null>(null);
+  const [activeSection, setActiveSection] =
+    React.useState<TicShowcaseSectionKey | null>(null);
 
   const seasonIndex = parseSectionIndex(activeSection, "season");
   const galleryItemIndex = parseSectionIndex(activeSection, "gallery-item");
   const hubObjectiveIndex = parseSectionIndex(activeSection, "hub-objective");
   const hubPartnerIndex = parseSectionIndex(activeSection, "hub-partner");
   const hubMinistryIndex = parseSectionIndex(activeSection, "hub-ministry");
-  const hubRoadmapStageIndex = parseSectionIndex(activeSection, "hub-roadmap-stage");
+  const hubRoadmapStageIndex = parseSectionIndex(
+    activeSection,
+    "hub-roadmap-stage",
+  );
 
   return (
     <div className="relative">
       <TICShowcasePage editable onEditSection={setActiveSection} />
 
-      <LaunchpadModal isOpen={activeSection === "launchpad"} onClose={() => setActiveSection(null)} />
-      <HeritageModal isOpen={activeSection === "heritage"} onClose={() => setActiveSection(null)} />
+      <LaunchpadModal
+        isOpen={activeSection === "launchpad"}
+        onClose={() => setActiveSection(null)}
+      />
+      <HeritageModal
+        isOpen={activeSection === "heritage"}
+        onClose={() => setActiveSection(null)}
+      />
       <SeasonModal
         isOpen={seasonIndex !== null}
         seasonIndex={seasonIndex}
         onClose={() => setActiveSection(null)}
       />
-      <GalleryModal isOpen={activeSection === "gallery"} onClose={() => setActiveSection(null)} />
+      <GalleryModal
+        isOpen={activeSection === "gallery"}
+        onClose={() => setActiveSection(null)}
+      />
       <GalleryItemModal
         isOpen={galleryItemIndex !== null}
         galleryIndex={galleryItemIndex}
         onClose={() => setActiveSection(null)}
       />
 
-      <HubHeroModal isOpen={activeSection === "hub-hero"} onClose={() => setActiveSection(null)} />
+      <HubHeroModal
+        isOpen={activeSection === "hub-hero"}
+        onClose={() => setActiveSection(null)}
+      />
       <HubObjectivesModal
         isOpen={activeSection === "hub-objectives"}
         onClose={() => setActiveSection(null)}

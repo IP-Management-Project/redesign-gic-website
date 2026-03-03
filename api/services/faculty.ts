@@ -1,4 +1,8 @@
-import type { FacultyFormState, FacultyGroup, FacultySortKey } from "@/hooks/useFacultyCentralize";
+import type {
+  FacultyFormState,
+  FacultyGroup,
+  FacultySortKey,
+} from "@/hooks/useFacultyCentralize";
 import { apiClient } from "../axiosClient";
 import { SortDir } from "../service.type";
 
@@ -12,7 +16,7 @@ export interface FacultyApiResponse {
 export interface FacultyApiItem {
   id: string;
   name: string;
-  category: string; 
+  category: string;
   role: string | null;
   degree: string | null;
   focus: string | null;
@@ -22,15 +26,19 @@ export interface FacultyApiItem {
 
 export const facultyApi = {
   // GET /staff/groups?q=...&sortBy=...&sortDir=...
-  getAll: async (params: { q?: string; sortBy?: string; sortDir?: SortDir }) => {
-    return apiClient.get<FacultyApiResponse>('/staff/groups', { params });
+  getAll: async (params: {
+    q?: string;
+    sortBy?: string;
+    sortDir?: SortDir;
+  }) => {
+    return apiClient.get<FacultyApiResponse>("/staff/groups", { params });
   },
 
   // POST /staff
   create: async (data: Partial<FacultyFormState>) => {
     // Map frontend 'group' to backend 'category' if needed, or send as is
-    const payload = { ...data, category: data.group }; 
-    return apiClient.post('/staff', payload);
+    const payload = { ...data, category: data.group };
+    return apiClient.post("/staff", payload);
   },
 
   // PUT /staff/:id
@@ -42,5 +50,5 @@ export const facultyApi = {
   // DELETE /staff/:id
   delete: async (id: string) => {
     return apiClient.delete(`/staff/${id}`);
-  }
+  },
 };

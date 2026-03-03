@@ -17,7 +17,10 @@ import { Tooltip } from "@heroui/tooltip";
 import { Divider } from "@heroui/divider";
 import Image from "next/image";
 
-import { useIncubationRoadmapData } from "@/hooks/useIncubationRoadmapData";
+import {
+  useIncubationRoadmapData,
+  useUpdateIncubationRoadmapData,
+} from "@/hooks/useIncubationRoadmapData";
 
 import { ThreeDMarquee } from "./ui/3d-marquee";
 
@@ -37,7 +40,10 @@ type TICIncubationHubProps = {
   onEditSection?: (section: TicHubSectionKey) => void;
 };
 
-export default function TICIncubationHub({ editable = false, onEditSection }: TICIncubationHubProps) {
+export default function TICIncubationHub({
+  editable = false,
+  onEditSection,
+}: TICIncubationHubProps) {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -46,6 +52,7 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
   };
 
   const { data } = useIncubationRoadmapData();
+  const updateRoadmap = useUpdateIncubationRoadmapData();
   const hero = data?.hero;
   const objectives = data?.objectives;
   const ecosystem = data?.ecosystem;
@@ -59,6 +66,28 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
   const getEditAction = (section: TicHubSectionKey) =>
     editable && onEditSection ? () => onEditSection(section) : undefined;
 
+  const handleDeletePartner = (index: number) => {
+    const items = partners ?? [];
+    if (!items.length) return;
+
+    const nextPartners = items.filter((_, i) => i !== index);
+    updateRoadmap.mutate({
+      section: "hub-partners",
+      data: { partners: nextPartners },
+    });
+  };
+
+  const handleDeleteRoadmapStage = (index: number) => {
+    const items = ticRoadmap ?? [];
+    if (!items.length) return;
+
+    const nextStages = items.filter((_, i) => i !== index);
+    updateRoadmap.mutate({
+      section: "hub-roadmap",
+      data: { roadmap: nextStages },
+    });
+  };
+
   return (
     <div className="bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans overflow-hidden">
       {/* 1. BRANDED HERO SECTION */}
@@ -66,7 +95,11 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
         {editable ? (
           <div className="pointer-events-none absolute inset-0 z-30">
             <div className="pointer-events-auto absolute right-6 top-6">
-              <Button size="sm" variant="flat" onPress={getEditAction("hub-hero")}>
+              <Button
+                size="sm"
+                variant="flat"
+                onPress={getEditAction("hub-hero")}
+              >
                 Edit hero
               </Button>
             </div>
@@ -74,14 +107,20 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
         ) : null}
 
         <div className="absolute inset-0 z-0 h-full w-full">
-          <ThreeDMarquee className="h-full w-full opacity-80 dark:opacity-40" images={marqueeImages} />
+          <ThreeDMarquee
+            className="h-full w-full opacity-80 dark:opacity-40"
+            images={marqueeImages}
+          />
         </div>
 
         <div className="absolute inset-0 z-10 h-full w-full bg-white/40 dark:bg-black/60 backdrop-blur-[1px]" />
 
         <section className="relative py-24 dark:bg-zinc-900/10 border-b border-divider overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 relative z-10 text-center flex flex-col items-center">
-            <motion.div {...fadeIn} className="flex flex-col items-center leading-none text-center mb-12">
+            <motion.div
+              {...fadeIn}
+              className="flex flex-col items-center leading-none text-center mb-12"
+            >
               <h1 className="font-sans font-black tracking-[0.15em] text-[#1D56A5] text-5xl md:text-8xl">
                 TECHNO
               </h1>
@@ -113,15 +152,31 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div {...fadeIn} className="relative">
               {editable ? (
-                <div className="mb-6 flex justify-end gap-2">
-                  <Button size="sm" variant="flat" onPress={getEditAction("hub-objectives")}>
+                <div className="mb-6 flex flex-wrap justify-end gap-2">
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={getEditAction("hub-objectives")}
+                  >
                     Edit objectives
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="bordered"
+                    onPress={getEditAction(
+                      `hub-objective-${(objectives?.items ?? []).length}`,
+                    )}
+                  >
+                    Add objective
                   </Button>
                 </div>
               ) : null}
 
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-8 border-b-8 border-[#c8c8c8] inline-block pb-2">
-                {objectives?.titleMain} <span className="text-[#007d49]">{objectives?.titleHighlight}</span>
+                {objectives?.titleMain}{" "}
+                <span className="text-[#007d49]">
+                  {objectives?.titleHighlight}
+                </span>
               </h2>
               <p className="text-lg text-slate-600 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
                 {objectives?.description}
@@ -162,7 +217,11 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
             <motion.div {...fadeIn} className="relative">
               {editable ? (
                 <div className="mb-4 flex justify-end">
-                  <Button size="sm" variant="flat" onPress={getEditAction("hub-ecosystem")}>
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={getEditAction("hub-ecosystem")}
+                  >
                     Edit ecosystem
                   </Button>
                 </div>
@@ -201,9 +260,20 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
         <div className="max-w-7xl mx-auto px-6 text-center">
           <motion.div {...fadeIn} className="mb-16">
             {editable ? (
-              <div className="mb-6 flex justify-center">
-                <Button size="sm" variant="flat" onPress={getEditAction("hub-partners")}>
+              <div className="mb-6 flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  size="sm"
+                  variant="flat"
+                  onPress={getEditAction("hub-partners")}
+                >
                   Edit partners section
+                </Button>
+                <Button
+                  size="sm"
+                  variant="bordered"
+                  onPress={getEditAction(`hub-partner-${partners.length}`)}
+                >
+                  Add partner
                 </Button>
               </div>
             ) : null}
@@ -215,24 +285,43 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
 
           <div className="flex flex-wrap justify-center items-center gap-12 opacity-80 hover:opacity-100 transition-opacity">
             {partners.map((partner, index) => (
-              <div key={`${partner.name}-${index}`} className="flex flex-col items-center gap-3">
+              <div
+                key={`${partner.name || "partner"}-${index}`}
+                className="flex flex-col items-center gap-3"
+              >
                 <Tooltip content={partner.role} placement="bottom">
-                  <Image
-                    src={partner.img}
-                    width={110}
-                    height={110}
-                    alt={partner.name}
-                    className="hover:grayscale-0 transition-all duration-500"
-                  />
+                  {partner.img ? (
+                    <Image
+                      src={partner.img}
+                      width={110}
+                      height={110}
+                      alt={partner.name || `Partner ${index + 1}`}
+                      className="hover:grayscale-0 transition-all duration-500 rounded-xl"
+                    />
+                  ) : (
+                    <div className="w-[110px] h-[110px] rounded-xl border border-dashed border-[#c8c8c8]/70 bg-white dark:bg-zinc-900 flex items-center justify-center text-[10px] font-semibold text-slate-400">
+                      No logo
+                    </div>
+                  )}
                 </Tooltip>
                 {editable ? (
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    onPress={getEditAction(`hub-partner-${index}`)}
-                  >
-                    Edit partner {index + 1}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      onPress={getEditAction(`hub-partner-${index}`)}
+                    >
+                      Edit {index + 1}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="bordered"
+                      color="danger"
+                      onPress={() => handleDeletePartner(index)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 ) : null}
               </div>
             ))}
@@ -243,7 +332,10 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
           </p>
           <div className="flex flex-wrap justify-center items-center gap-12 mt-8">
             {ministries.map((ministry, index) => (
-              <div key={`${ministry.name}-${index}`} className="flex flex-col items-center gap-3">
+              <div
+                key={`${ministry.name}-${index}`}
+                className="flex flex-col items-center gap-3"
+              >
                 <Tooltip content={ministry.role} placement="bottom">
                   <Image
                     src={ministry.img}
@@ -274,15 +366,34 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
           <div className="mb-16 text-center lg:text-left">
             {editable ? (
               <div className="mb-6 flex justify-center lg:justify-end">
-                <Button size="sm" variant="flat" onPress={getEditAction("hub-roadmap")}>
+                <Button
+                  size="sm"
+                  variant="flat"
+                  onPress={getEditAction("hub-roadmap")}
+                >
                   Edit roadmap section
+                </Button>
+                <Button
+                  size="sm"
+                  variant="bordered"
+                  className="ml-3"
+                  onPress={getEditAction(
+                    `hub-roadmap-stage-${ticRoadmap.length}`,
+                  )}
+                >
+                  Add stage
                 </Button>
               </div>
             ) : null}
             <h2 className="text-4xl font-black tracking-tighter uppercase mb-4 border-l-8 border-[#007d49] pl-6">
-              {roadmapSection?.titleMain} <span className="text-[#007d49]">{roadmapSection?.titleHighlight}</span>
+              {roadmapSection?.titleMain}{" "}
+              <span className="text-[#007d49]">
+                {roadmapSection?.titleHighlight}
+              </span>
             </h2>
-            <p className="text-slate-500 font-medium">{roadmapSection?.subtitle}</p>
+            <p className="text-slate-500 font-medium">
+              {roadmapSection?.subtitle}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 relative">
@@ -294,13 +405,21 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
                 className="flex flex-col items-center text-center group"
               >
                 {editable ? (
-                  <div className="mb-4">
+                  <div className="mb-4 flex gap-2">
                     <Button
                       size="sm"
                       variant="flat"
                       onPress={getEditAction(`hub-roadmap-stage-${index}`)}
                     >
-                      Edit stage {index + 1}
+                      Edit {index + 1}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="bordered"
+                      color="danger"
+                      onPress={() => handleDeleteRoadmapStage(index)}
+                    >
+                      Delete
                     </Button>
                   </div>
                 ) : null}
@@ -309,9 +428,15 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
                 >
                   <Calendar size={24} />
                 </div>
-                <h4 className="font-black text-sm uppercase mb-1 tracking-widest text-[#007d49]">{item.stage}</h4>
-                <p className="text-[10px] font-bold text-slate-400 mb-3">{item.date}</p>
-                <p className="text-[11px] text-slate-500 leading-relaxed px-4 font-medium">{item.desc}</p>
+                <h4 className="font-black text-sm uppercase mb-1 tracking-widest text-[#007d49]">
+                  {item.stage}
+                </h4>
+                <p className="text-[10px] font-bold text-slate-400 mb-3">
+                  {item.date}
+                </p>
+                <p className="text-[11px] text-slate-500 leading-relaxed px-4 font-medium">
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -321,7 +446,15 @@ export default function TICIncubationHub({ editable = false, onEditSection }: TI
   );
 }
 
-function ObjectiveItem({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function ObjectiveItem({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
   return (
     <div className="flex items-start gap-6 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-[#c8c8c8] hover:shadow-lg hover:border-[#007d49] transition-all group">
       <div className="shrink-0 p-3 bg-[#c8c8c8]/20 rounded-2xl group-hover:bg-[#007d49] group-hover:text-white transition-colors">
@@ -331,7 +464,9 @@ function ObjectiveItem({ icon, title, desc }: { icon: React.ReactNode; title: st
         <h4 className="text-lg font-black tracking-tight mb-2 uppercase group-hover:text-[#007d49] transition-colors">
           {title}
         </h4>
-        <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed font-medium">{desc}</p>
+        <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed font-medium">
+          {desc}
+        </p>
       </div>
     </div>
   );

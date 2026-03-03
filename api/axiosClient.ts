@@ -26,12 +26,12 @@ class AxiosClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => Promise.reject(error.response?.data || error)
+      (error) => Promise.reject(error),
     );
   }
 
@@ -60,6 +60,4 @@ class AxiosClient {
   }
 }
 
-export const apiClient = new AxiosClient(
-  process.env.NEXT_PUBLIC_API_BASE_URL!
-);
+export const apiClient = new AxiosClient(process.env.NEXT_PUBLIC_API_BASE_URL!);

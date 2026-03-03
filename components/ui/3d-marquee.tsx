@@ -9,11 +9,20 @@ export const ThreeDMarquee = ({
   images: string[];
   className?: string;
 }) => {
+  const baseImages = images.filter(Boolean);
+  // Repeat images to keep the grid populated when only a few are provided.
+  const expandedImages = baseImages.length
+    ? Array.from(
+        { length: Math.max(baseImages.length, 8) },
+        (_, i) => baseImages[i % baseImages.length],
+      )
+    : [];
+
   // Split the images array into 4 equal parts
-  const chunkSize = Math.ceil(images.length / 4);
+  const chunkSize = Math.max(1, Math.ceil((expandedImages.length || 1) / 4));
   const chunks = Array.from({ length: 4 }, (_, colIndex) => {
     const start = colIndex * chunkSize;
-    return images.slice(start, start + chunkSize);
+    return expandedImages.slice(start, start + chunkSize);
   });
   return (
     <div

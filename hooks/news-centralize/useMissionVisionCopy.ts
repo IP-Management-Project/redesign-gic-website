@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/api/axiosClient";
 
 export type MissionVisionIconKey = "users" | "trending" | "globe" | "lightbulb";
 
@@ -45,72 +46,100 @@ export type MissionVisionUpdatePayload = {
 
 const missionVisionCopy: MissionVisionCopy = {
   hero: {
-    badge: "Our Foundation",
-    titleMain: "Mission &",
-    titleHighlight: "Vision",
-    subtitle:
-      "Leading the digital evolution of Cambodia through academic excellence, ethical professionalism, and impactful research.",
+    badge: "",
+    titleMain: "",
+    titleHighlight: "",
+    subtitle: "",
   },
   about: {
-    title: "About GIC",
-    descriptionBefore: "The",
-    departmentName: "Département de Génie d’Informatique et Communication",
-    descriptionAfter:
-      "(GIC) was established in 1998. Since our inception, we have formed more than one thousand engineers and technicians who are now participating actively in the development of both public and private sectors.",
+    title: "",
+    descriptionBefore: "",
+    departmentName: "",
+    descriptionAfter: "",
   },
   mission: {
-    title: "Our Mission",
-    bodyBefore: "Our main mission is to produce",
-    bodyHighlight: "highly qualified graduates",
-    bodyAfter:
-      "from both undergraduate and higher education in computer science.",
-    hardSkillsTitle: "Hard Skills",
-    hardSkillsDesc:
-      "Rigorous technical curriculum in software and systems engineering.",
-    softSkillsTitle: "Soft Skills",
-    softSkillsDesc:
-      "Communication and teamwork essential for the modern workplace.",
+    title: "",
+    bodyBefore: "",
+    bodyHighlight: "",
+    bodyAfter: "",
+    hardSkillsTitle: "",
+    hardSkillsDesc: "",
+    softSkillsTitle: "",
+    softSkillsDesc: "",
   },
   vision: {
-    titleMain: "Our",
-    titleHighlight: "Vision",
-    description:
-      "To be the core engine of Cambodia's ICT development through higher education and fruitful research.",
+    titleMain: "",
+    titleHighlight: "",
+    description: "",
   },
-  visionPoints: [
-    {
-      text: "Actively participate in human resource development in ICT",
-      icon: "users",
-    },
-    {
-      text: "Contribute in the development of related domains",
-      icon: "trending",
-    },
-    {
-      text: "Contribute in the development of higher education of the country",
-      icon: "globe",
-    },
-    {
-      text: "Conduct fruitful research that meet the needs of the country",
-      icon: "lightbulb",
-    },
-  ],
+  visionPoints: [],
 };
 
-const getMissionVisionCopy = async (): Promise<MissionVisionCopy> => missionVisionCopy;
+const extractStatusCode = (error: unknown) => {
+  const anyError = error as {
+    status?: number;
+    statusCode?: number;
+    response?: { status?: number };
+    request?: { status?: number };
+  };
+  return (
+    anyError?.statusCode ??
+    anyError?.status ??
+    anyError?.response?.status ??
+    (anyError as any)?.request?.status ??
+    null
+  );
+};
+
+const mergeSection = <T extends object>(
+  defaults: T,
+  incoming?: Partial<T>,
+) => ({
+  ...defaults,
+  ...(incoming ?? {}),
+});
+
+const normalizeMissionVisionCopy = (
+  incoming?: Partial<MissionVisionCopy>,
+): MissionVisionCopy => ({
+  hero: mergeSection(missionVisionCopy.hero, incoming?.hero),
+  about: mergeSection(missionVisionCopy.about, incoming?.about),
+  mission: mergeSection(missionVisionCopy.mission, incoming?.mission),
+  vision: mergeSection(missionVisionCopy.vision, incoming?.vision),
+  visionPoints: incoming?.visionPoints ?? missionVisionCopy.visionPoints,
+});
+
+const getMissionVisionCopy = async (): Promise<MissionVisionCopy> => {
+  try {
+    const response = await apiClient.get<
+      Partial<MissionVisionCopy> | undefined
+    >("/content/mission-vision-copy");
+    return normalizeMissionVisionCopy(response ?? undefined);
+  } catch (error) {
+    console.error(error);
+    return missionVisionCopy;
+  }
+};
 
 export function useMissionVisionCopy() {
   return useQuery({
     queryKey: ["missionVisionCopy"],
     queryFn: getMissionVisionCopy,
     initialData: missionVisionCopy,
-    staleTime: Number.POSITIVE_INFINITY,
+    // Always refetch on mount so we replace the fallback with live API data
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 }
 
 type UpdatableMissionVisionCopy = Record<string, unknown>;
 
-const setNestedValue = (source: UpdatableMissionVisionCopy, path: string, value: string) => {
+const setNestedValue = (
+  source: UpdatableMissionVisionCopy,
+  path: string,
+  value: string,
+) => {
   const keys = path.split(".");
   const root = Array.isArray(source) ? [...source] : { ...source };
   let cursor: any = root;
@@ -153,8 +182,23 @@ const applyMissionVisionUpdate = (
   );
 
 const updateMissionVisionCopy = async (payload: MissionVisionUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return payload;
+  try {
+    return await apiClient.patch<MissionVisionCopy>(
+      "/content/mission-vision-copy",
+      payload,
+    );
+  } catch (error) {
+    const status = extractStatusCode(error);
+
+    if (status === 404) {
+      const seeded = applyMissionVisionUpdate(missionVisionCopy, payload.data);
+      return apiClient.put<MissionVisionCopy>("/content/mission-vision-copy", {
+        data: seeded,
+      });
+    }
+
+    throw error;
+  }
 };
 
 export function useUpdateMissionVisionCopy() {
@@ -162,11 +206,17 @@ export function useUpdateMissionVisionCopy() {
 
   return useMutation({
     mutationFn: updateMissionVisionCopy,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<MissionVisionCopy>(["missionVisionCopy"], (current) => {
-        if (!current) return current;
-        return applyMissionVisionUpdate(current, payload.data);
-      });
+    onSuccess: (updated, payload) => {
+      queryClient.setQueryData<MissionVisionCopy>(
+        ["missionVisionCopy"],
+        (current) => {
+          const base = current ?? missionVisionCopy;
+          if (updated) {
+            return normalizeMissionVisionCopy(updated);
+          }
+          return applyMissionVisionUpdate(base, payload.data);
+        },
+      );
     },
   });
 }

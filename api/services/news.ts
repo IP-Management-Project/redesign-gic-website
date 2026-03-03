@@ -9,17 +9,14 @@ export interface User {
 export const userApi = {
   getUsers: () => apiClient.get<User[]>("/users"),
 
-  getUserById: (id: number) =>
-    apiClient.get<User>(`/users/${id}`),
+  getUserById: (id: number) => apiClient.get<User>(`/users/${id}`),
 
-  createUser: (data: Partial<User>) =>
-    apiClient.post<User>("/users", data),
+  createUser: (data: Partial<User>) => apiClient.post<User>("/users", data),
 
   updateUser: (id: number, data: Partial<User>) =>
     apiClient.put<User>(`/users/${id}`, data),
 
-  deleteUser: (id: number) =>
-    apiClient.delete<void>(`/users/${id}`),
+  deleteUser: (id: number) => apiClient.delete<void>(`/users/${id}`),
 };
 
 export type NewsEventArticleStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
@@ -99,7 +96,7 @@ export type NewStats = {
   total: number;
   published: number;
   draft: number;
-}
+};
 
 export type NewsResponse = {
   data: NewsTemplate[];
@@ -118,37 +115,34 @@ export type NewsQueryParams = {
 };
 
 export const newsApi = {
-
-  createNew: (data: any) =>
-    apiClient.post('/news', data),
-  duplicate: (id: string) =>
-    apiClient.post(`/news/${id}/duplicate`),
-  getNewsList: (params: NewsQueryParams) => 
-    apiClient.get<NewsResponse>('/news', { params }),
+  createNew: (data: any) => apiClient.post("/news", data),
+  duplicate: (id: string) => apiClient.post(`/news/${id}/duplicate`),
+  getNewsList: (params: NewsQueryParams) =>
+    apiClient.get<NewsResponse>("/news", { params }),
   getNewsBySlug: (slug: string) =>
-    apiClient.get<NewsEventArticleItem | { data: NewsEventArticleItem }>(`/news/${slug}`),
-  updateNews: (id: string, data: FormData) => 
-  apiClient.patch(`/news/${id}`, data, {
-    headers: {
-      'Content-Type': 'multipart/form-data', //Use this if need to upload with image
-    },
-  }),
+    apiClient.get<NewsEventArticleItem | { data: NewsEventArticleItem }>(
+      `/news/${slug}`,
+    ),
+  updateNews: (id: string, data: FormData) =>
+    apiClient.patch(`/news/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data", //Use this if need to upload with image
+      },
+    }),
 
-  toggleStatus: (id: string) =>
-    apiClient.patch(`/news/${id}/toggle-publish`),
-  delete: (id: string) =>
-    apiClient.delete(`/news/${id}`),
+  toggleStatus: (id: string) => apiClient.patch(`/news/${id}/toggle-publish`),
+  delete: (id: string) => apiClient.delete(`/news/${id}`),
 
-  getNewsTemplate: () =>
-    apiClient.get<NewsTemplate>(`/news-templates/`),
+  getNewsTemplate: () => apiClient.get<NewsTemplate>(`/news-templates/`),
   getNewTemplateById: (id: string) =>
     apiClient.get<NewsTemplate>(`/news-templates/${id}`),
 
-  createNewTemplate: async (data: Partial<NewsTemplate>): Promise<NewsTemplate> => {
-    return await apiClient.post<NewsTemplate>('/news-templates', data);
+  createNewTemplate: async (
+    data: Partial<NewsTemplate>,
+  ): Promise<NewsTemplate> => {
+    return await apiClient.post<NewsTemplate>("/news-templates", data);
   },
   updateNewTemplate: (id: string, data: Partial<NewsTemplate>) =>
     apiClient.patch(`/news-templates/${id}`, data),
-  deleteNewTemplate: (id: string) =>
-    apiClient.delete(`/news-templates/${id}`),
+  deleteNewTemplate: (id: string) => apiClient.delete(`/news-templates/${id}`),
 };
