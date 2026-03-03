@@ -1,108 +1,67 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React from "react";
 import { 
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
   Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-  useDisclosure, Avatar, Chip, Select, SelectItem, Tooltip, Textarea,
-  Card, Divider
+  Avatar, Chip, Select, SelectItem, Tooltip, Textarea,
+  Card, Spinner, Pagination
 } from "@heroui/react";
 import { 
-  Search, Plus, Upload, Trash2, Edit3, AlertCircle, 
-  FileText, Download, RefreshCcw, UserPlus, CheckCircle2 
+  Search, Upload, Trash2, Edit3, AlertCircle, 
+  FileText, RefreshCcw, UserPlus, CheckCircle2, X
 } from "lucide-react";
-import { useStudentGenerationData } from "@/hooks/useStudentGenerationData";
-
-// --- Types ---
-export type StudentEntry = {
-  id: string;
-  name: string;
-  quote: string;
-  image: string;
-  generation: string;
-};
-
-// --- Logic Hook ---
-function useStudentAdmin(rawData: any) {
-  const [localEntries, setLocalEntries] = useState<StudentEntry[]>([]);
-  const [search, setSearch] = useState("");
-  const [genFilter, setGenFilter] = useState("ALL");
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (rawData?.generations) {
-      const flattened: StudentEntry[] = [];
-      Object.entries(rawData.generations).forEach(([gen, students]: [string, any]) => {
-        students.forEach((s: any, index: number) => {
-          flattened.push({ ...s, id: `${gen}-${index}-${Date.now()}`, generation: gen });
-        });
-      });
-      setLocalEntries(flattened);
-    }
-  }, [rawData]);
-
-  const generations = useMemo(() => 
-    ["ALL", ...Array.from(new Set(localEntries.map((e) => e.generation)))], 
-  [localEntries]);
-
-  const filtered = useMemo(() => {
-    return localEntries.filter((e) => {
-      const matchesSearch = e.name.toLowerCase().includes(search.toLowerCase()) || 
-                            e.quote.toLowerCase().includes(search.toLowerCase());
-      const matchesGen = genFilter === "ALL" || e.generation === genFilter;
-      return matchesSearch && matchesGen;
-    });
-  }, [localEntries, search, genFilter]);
-
-  return {
-    entries: filtered,
-    generations,
-    search, setSearch,
-    genFilter, setGenFilter,
-    isDeleting, setIsDeleting,
-    localEntries, setLocalEntries
-  };
-}
+import { useStudentGenerationData, type StudentEntry } from "@/hooks/useStudentGenerationData";
 
 // --- Main Page Component ---
 export default function StudentAdminPage() {
-  const { data } = useStudentGenerationData();
-  const admin = useStudentAdmin(data);
-  
-  // Modal States
-  const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-  const { isOpen: isBulkOpen, onOpen: onBulkOpen, onClose: onBulkClose } = useDisclosure();
-  
-  // Form States
-  const [selected, setSelected] = useState<StudentEntry | null>(null);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const {
+    // Data
+    paginated,
+    generations,
+    isLoading,
+    
+    // State
+    filters,
+    form,
+    isFormOpen,
+    isBulkOpen,
+    isDeleting,
+    page,
+    totalPages,
+
+    // CSV Bulk
+    csvPreview,
+    csvError,
+    
+    // Setters
+    setFilters,
+    setForm,
+    setIsFormOpen,
+    setIsBulkOpen,
+    setIsDeleting,
+    setPage,
+    
+    // Actions
+    openCreate,
+    openEdit,
+    closeForm,
+    upsert,
+    confirmDelete,
+    parseCsvFile,
+    bulkUpload,
+    closeBulk,
+    
+    // Mutation states
+    isCreating,
+    isUpdating,
+    isDeletePending,
+    isBulkUploading,
+  } = useStudentGenerationData({ perPage: 20 });
 
   // --- Handlers ---
-
-  const handleUpsert = () => {
-    // In a real app, this would be a TanStack Mutation
-    // For now, we simulate the UI update
-    onFormClose();
-  };
-
-  const handleCsvProcess = async () => {
-    if (!csvFile) return;
-    const text = await csvFile.text();
-    const rows = text.split("\n").filter(row => row.trim() !== "");
-    
-    const newEntries: StudentEntry[] = rows.slice(1).map((row, i) => {
-      const [name, quote, image, generation] = row.split(",").map(s => s.trim());
-      return { id: `bulk-${Date.now()}-${i}`, name, quote, image, generation };
-    });
-
-    admin.setLocalEntries(prev => [...newEntries, ...prev]);
-    setCsvFile(null);
-    onBulkClose();
-  };
-
-  const confirmDelete = () => {
-    admin.setLocalEntries(prev => prev.filter(e => e.id !== admin.isDeleting));
-    admin.setIsDeleting(null);
+  const handleFormChange = (field: keyof typeof form, value: string) => {
+    setForm({ ...form, [field]: value });
   };
 
   return (
@@ -123,7 +82,7 @@ export default function StudentAdminPage() {
             variant="flat" 
             className="font-bold border border-divider" 
             startContent={<Upload size={18}/>} 
-            onPress={onBulkOpen}
+            onPress={() => setIsBulkOpen(true)}
           >
             Bulk CSV
           </Button>
@@ -131,7 +90,7 @@ export default function StudentAdminPage() {
             color="primary" 
             className="font-bold shadow-lg shadow-primary/20" 
             startContent={<UserPlus size={18}/>} 
-            onPress={() => { setSelected(null); onFormOpen(); }}
+            onPress={openCreate}
           >
             Add Student
           </Button>
@@ -144,18 +103,18 @@ export default function StudentAdminPage() {
           className="flex-1"
           placeholder="Search by student name or quote keywords..." 
           startContent={<Search size={18} className="text-default-400" />}
-          value={admin.search}
-          onValueChange={admin.setSearch}
+          value={filters.search}
+          onValueChange={(value) => setFilters({ ...filters, search: value })}
           variant="flat"
         />
         <div className="flex gap-2">
           <Select 
             className="w-48"
             placeholder="All Generations"
-            selectedKeys={[admin.genFilter]}
-            onSelectionChange={(keys) => admin.setGenFilter(Array.from(keys)[0] as string)}
+            selectedKeys={[filters.genFilter]}
+            onSelectionChange={(keys) => setFilters({ ...filters, genFilter: Array.from(keys)[0] as string })}
           >
-            {admin.generations.map((g) => (
+            {generations.map((g) => (
               <SelectItem key={g}>{g === "ALL" ? "All Generations" : g}</SelectItem>
             ))}
           </Select>
@@ -167,116 +126,288 @@ export default function StudentAdminPage() {
         </div>
       </Card>
 
+      {/* --- Loading State --- */}
+      {isLoading && (
+        <div className="flex justify-center items-center py-20">
+          <Spinner size="lg" label="Loading yearbook data..." />
+        </div>
+      )}
+
       {/* --- Main Table --- */}
-      <Table 
-        aria-label="Student database" 
-        shadow="none"
-        classNames={{ 
-          wrapper: "rounded-3xl border border-divider bg-content1 p-0 overflow-hidden",
-          th: "bg-default-50 py-4 text-default-600 font-bold uppercase text-[11px] tracking-widest border-b border-divider",
-          td: "py-4 font-medium"
-        }}
-      >
-        <TableHeader>
-          <TableColumn>STUDENT IDENTITY</TableColumn>
-          <TableColumn>CLASS GENERATION</TableColumn>
-          <TableColumn>YEARBOOK QUOTE</TableColumn>
-          <TableColumn align="end">MANAGEMENT</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="No records found. Try adjusting your search.">
-          {admin.entries.map((student) => (
-            <TableRow key={student.id} className="hover:bg-default-50/50 transition-colors">
-              <TableCell>
-                <div className="flex items-center gap-4">
-                  <Avatar src={student.image} radius="lg" className="w-12 h-12 shadow-sm border border-divider" />
-                  <span className="font-bold text-base">{student.name}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Chip size="sm" variant="dot" color="primary" className="font-bold border-none">
-                  {student.generation}
-                </Chip>
-              </TableCell>
-              <TableCell className="max-w-md italic text-default-500 leading-relaxed">
-                "{student.quote}"
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-end gap-1">
-                  <Button isIconOnly variant="light" radius="full" size="sm" onPress={() => { setSelected(student); onFormOpen(); }}>
-                    <Edit3 size={16} className="text-default-400" />
-                  </Button>
-                  <Button isIconOnly variant="light" radius="full" size="sm" color="danger" onPress={() => admin.setIsDeleting(student.id)}>
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      {!isLoading && (
+        <>
+          <Table 
+            aria-label="Student database" 
+            shadow="none"
+            classNames={{ 
+              wrapper: "rounded-3xl border border-divider bg-content1 p-0 overflow-hidden",
+              th: "bg-default-50 py-4 text-default-600 font-bold uppercase text-[11px] tracking-widest border-b border-divider",
+              td: "py-4 font-medium"
+            }}
+          >
+            <TableHeader>
+              <TableColumn>STUDENT IDENTITY</TableColumn>
+              <TableColumn>CLASS GENERATION</TableColumn>
+              <TableColumn>YEARBOOK QUOTE</TableColumn>
+              <TableColumn align="end">MANAGEMENT</TableColumn>
+            </TableHeader>
+            <TableBody emptyContent="No records found. Try adjusting your search or add a new student.">
+              {paginated.map((student) => (
+                <TableRow key={student.id} className="hover:bg-default-50/50 transition-colors">
+                  <TableCell>
+                    <div className="flex items-center gap-4">
+                      <Avatar src={student.image} radius="lg" className="w-12 h-12 shadow-sm border border-divider" />
+                      <span className="font-bold text-base">{student.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Chip size="sm" variant="dot" color="primary" className="font-bold border-none">
+                      {student.generation}
+                    </Chip>
+                  </TableCell>
+                  <TableCell className="max-w-md italic text-default-500 leading-relaxed">
+                    "{student.quote}"
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <Button 
+                        isIconOnly 
+                        variant="light" 
+                        radius="full" 
+                        size="sm" 
+                        onPress={() => openEdit(student)}
+                      >
+                        <Edit3 size={16} className="text-default-400" />
+                      </Button>
+                      <Button 
+                        isIconOnly 
+                        variant="light" 
+                        radius="full" 
+                        size="sm" 
+                        color="danger" 
+                        onPress={() => setIsDeleting(student.id)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {/* --- Pagination --- */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6">
+              <Pagination
+                total={totalPages}
+                page={page}
+                onChange={setPage}
+                showControls
+                color="primary"
+              />
+            </div>
+          )}
+        </>
+      )}
 
       {/* --- MODAL: CREATE / EDIT --- */}
-      <Modal isOpen={isFormOpen} onClose={onFormClose} size="2xl" backdrop="blur">
+      <Modal isOpen={isFormOpen} onClose={closeForm} size="2xl" backdrop="blur">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1 py-6 border-b border-divider">
             <div className="flex items-center gap-2">
               <div className="p-2 bg-primary/10 rounded-lg text-primary"><Edit3 size={20}/></div>
-              <h2 className="text-xl font-bold">{selected ? "Edit Profile" : "New Student Entry"}</h2>
+              <h2 className="text-xl font-bold">{form.id ? "Edit Profile" : "New Student Entry"}</h2>
             </div>
           </ModalHeader>
           <ModalBody className="py-8 gap-6">
             <div className="grid grid-cols-2 gap-4">
-              <Input label="Student Name" placeholder="e.g. Sok Rathana" labelPlacement="outside" variant="bordered" defaultValue={selected?.name} />
-              <Input label="Generation" placeholder="e.g. Gen 8" labelPlacement="outside" variant="bordered" defaultValue={selected?.generation} />
+              <Input 
+                label="Student Name" 
+                placeholder="e.g. Sok Rathana" 
+                labelPlacement="outside" 
+                variant="bordered" 
+                value={form.name}
+                onValueChange={(value) => handleFormChange("name", value)}
+                isRequired
+              />
+              <Input 
+                label="Generation" 
+                placeholder="e.g. Gen 8" 
+                labelPlacement="outside" 
+                variant="bordered" 
+                value={form.generation}
+                onValueChange={(value) => handleFormChange("generation", value)}
+                isRequired
+                isDisabled={!!form.id} // Cannot change generation when editing
+              />
             </div>
-            <Input label="Portrait Image URL" placeholder="https://i.pravatar.cc/..." labelPlacement="outside" variant="bordered" defaultValue={selected?.image} />
-            <Textarea label="Yearbook Quote" placeholder="Enter an inspiring quote..." labelPlacement="outside" variant="bordered" minRows={3} defaultValue={selected?.quote} />
+            <Input 
+              label="Portrait Image URL" 
+              placeholder="https://i.pravatar.cc/..." 
+              labelPlacement="outside" 
+              variant="bordered" 
+              value={form.image}
+              onValueChange={(value) => handleFormChange("image", value)}
+            />
+            <Textarea 
+              label="Yearbook Quote" 
+              placeholder="Enter an inspiring quote..." 
+              labelPlacement="outside" 
+              variant="bordered" 
+              minRows={3} 
+              value={form.quote}
+              onValueChange={(value) => handleFormChange("quote", value)}
+            />
           </ModalBody>
           <ModalFooter className="border-t border-divider py-4">
-            <Button variant="light" className="font-bold" onPress={onFormClose}>Discard</Button>
-            <Button color="primary" className="font-bold px-8" onPress={handleUpsert}>
-              {selected ? "Update Profile" : "Create Entry"}
+            <Button variant="light" className="font-bold" onPress={closeForm}>
+              Discard
+            </Button>
+            <Button 
+              color="primary" 
+              className="font-bold px-8" 
+              onPress={upsert}
+              isLoading={isCreating || isUpdating}
+              startContent={!isCreating && !isUpdating ? <CheckCircle2 size={16} /> : null}
+            >
+              {form.id ? "Update Profile" : "Create Entry"}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* --- MODAL: BULK CSV UPLOAD --- */}
-      <Modal isOpen={isBulkOpen} onClose={onBulkClose} size="md" backdrop="blur">
+      {/* --- MODAL: BULK CSV UPLOAD WITH PREVIEW --- */}
+      <Modal isOpen={isBulkOpen} onClose={closeBulk} size="4xl" backdrop="blur" scrollBehavior="inside">
         <ModalContent>
-          <ModalHeader className="py-6 border-b border-divider">Bulk CSV Import</ModalHeader>
-          <ModalBody className="py-8">
+          <ModalHeader className="py-6 border-b border-divider">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-primary/10 rounded-lg text-primary"><Upload size={20}/></div>
+              <h2 className="text-xl font-bold">Bulk CSV Import</h2>
+            </div>
+          </ModalHeader>
+          <ModalBody className="py-8 gap-6">
+            {/* Drop zone */}
             <div className="relative border-2 border-dashed border-divider rounded-3xl p-10 flex flex-col items-center justify-center gap-4 bg-default-50 hover:bg-default-100 transition-colors cursor-pointer group">
               <div className="p-4 bg-background rounded-2xl shadow-sm group-hover:scale-110 transition-transform">
                 <FileText size={40} className="text-primary" />
               </div>
               <div className="text-center">
-                <p className="font-bold text-lg">Select CSV File</p>
-                <p className="text-xs text-default-400 mt-2">Required: name, quote, image, generation</p>
+                <p className="font-bold text-lg">
+                  {csvPreview.length > 0 ? "Replace CSV File" : "Select CSV File"}
+                </p>
+                <p className="text-xs text-default-400 mt-2">
+                  Header row required: <span className="font-mono">name, quote, image, generation</span>
+                </p>
               </div>
               <input 
                 type="file" accept=".csv" 
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) parseCsvFile(file);
+                  e.target.value = ""; // allow re-selecting same file
+                }}
               />
-              {csvFile && (
-                <Chip color="success" variant="flat" className="mt-2 font-bold" startContent={<CheckCircle2 size={14}/>}>
-                  {csvFile.name}
-                </Chip>
-              )}
             </div>
+
+            {/* CSV parse error */}
+            {csvError && (
+              <Card className="p-4 bg-danger-50 border border-danger-200 flex flex-row items-center gap-3">
+                <AlertCircle size={20} className="text-danger shrink-0" />
+                <p className="text-danger text-sm font-medium">{csvError}</p>
+              </Card>
+            )}
+
+            {/* CSV preview table */}
+            {csvPreview.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-base">
+                    Preview 
+                    <Chip size="sm" variant="flat" color="primary" className="ml-2 font-bold">
+                      {csvPreview.length} {csvPreview.length === 1 ? "row" : "rows"}
+                    </Chip>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="light" 
+                    color="danger"
+                    startContent={<X size={14}/>} 
+                    onPress={() => { closeBulk(); setIsBulkOpen(true); }}
+                  >
+                    Clear
+                  </Button>
+                </div>
+
+                <Table
+                  aria-label="CSV preview"
+                  shadow="none"
+                  classNames={{
+                    wrapper: "rounded-2xl border border-divider bg-content1 p-0 overflow-hidden max-h-80",
+                    th: "bg-default-50 py-3 text-default-600 font-bold uppercase text-[10px] tracking-widest border-b border-divider",
+                    td: "py-3 text-sm"
+                  }}
+                >
+                  <TableHeader>
+                    <TableColumn>#</TableColumn>
+                    <TableColumn>NAME</TableColumn>
+                    <TableColumn>GENERATION</TableColumn>
+                    <TableColumn>QUOTE</TableColumn>
+                    <TableColumn>IMAGE</TableColumn>
+                  </TableHeader>
+                  <TableBody>
+                    {csvPreview.map((row, idx) => (
+                      <TableRow key={idx} className="hover:bg-default-50/50 transition-colors">
+                        <TableCell className="font-mono text-default-400 w-10">{idx + 1}</TableCell>
+                        <TableCell className="font-semibold">{row.name}</TableCell>
+                        <TableCell>
+                          <Chip size="sm" variant="dot" color="secondary" className="border-none font-semibold">
+                            {row.generation}
+                          </Chip>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate italic text-default-500">
+                          {row.quote || <span className="text-default-300">—</span>}
+                        </TableCell>
+                        <TableCell className="max-w-[120px] truncate text-default-400 text-xs font-mono">
+                          {row.image || <span className="text-default-300">—</span>}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </ModalBody>
           <ModalFooter className="border-t border-divider py-4">
-            <Button variant="light" className="font-bold" onPress={onBulkClose}>Cancel</Button>
-            <Button color="primary" className="font-bold px-10" isDisabled={!csvFile} onPress={handleCsvProcess}>
-              Start Import
+            <Button variant="light" className="font-bold" onPress={closeBulk}>
+              Cancel
+            </Button>
+            <Button 
+              color="primary" 
+              className="font-bold px-10" 
+              isDisabled={csvPreview.length === 0} 
+              onPress={bulkUpload}
+              isLoading={isBulkUploading}
+              startContent={!isBulkUploading ? <CheckCircle2 size={16}/> : null}
+            >
+              {isBulkUploading 
+                ? "Importing..." 
+                : `Import ${csvPreview.length} Student${csvPreview.length !== 1 ? "s" : ""}`
+              }
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
       {/* --- MODAL: DELETE CONFIRMATION --- */}
-      <Modal isOpen={!!admin.isDeleting} onClose={() => admin.setIsDeleting(null)} size="sm" backdrop="blur" hideCloseButton>
+      <Modal 
+        isOpen={!!isDeleting} 
+        onClose={() => setIsDeleting(null)} 
+        size="sm" 
+        backdrop="blur" 
+        hideCloseButton
+      >
         <ModalContent>
           <ModalBody className="p-10 text-center flex flex-col items-center">
             <div className="w-20 h-20 bg-danger/10 text-danger rounded-full flex items-center justify-center mb-6 animate-pulse">
@@ -288,10 +419,20 @@ export default function StudentAdminPage() {
             </p>
           </ModalBody>
           <ModalFooter className="flex flex-col gap-2 pb-10 px-10 border-none">
-            <Button color="danger" className="font-black w-full text-lg shadow-lg shadow-danger/20" onPress={confirmDelete}>
-              Confirm Delete
+            <Button 
+              color="danger" 
+              className="font-black w-full text-lg shadow-lg shadow-danger/20" 
+              onPress={confirmDelete}
+              isLoading={isDeletePending}
+            >
+              {isDeletePending ? "Deleting..." : "Confirm Delete"}
             </Button>
-            <Button variant="light" className="font-bold w-full" onPress={() => admin.setIsDeleting(null)}>
+            <Button 
+              variant="light" 
+              className="font-bold w-full" 
+              onPress={() => setIsDeleting(null)}
+              isDisabled={isDeletePending}
+            >
               Keep Profile
             </Button>
           </ModalFooter>
