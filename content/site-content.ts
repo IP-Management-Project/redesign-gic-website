@@ -431,7 +431,7 @@ const contentByLocale: Record<Locale, SiteContent> = {
       ],
       utility: [
         { label: "FAQ", href: "/program/faq" },
-        { label: "Calendar", href: "/calendar" },
+        { label: "Calendar", href: "/news-events/calendar" },
         { label: "Our Students", href: "/student" },
       ],
     },

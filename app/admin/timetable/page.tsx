@@ -132,7 +132,7 @@ export default function TimetableAdmin() {
 
       {/* Timetable Grid */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
           
           {/* Time Sidebar */}
           <div className="hidden lg:flex flex-col gap-6 pt-16">

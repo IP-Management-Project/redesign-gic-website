@@ -82,7 +82,7 @@ export default function TimetableClientPage() {
 
         {/* --- GRID --- */}
         
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-x-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-x-8 gap-border">
           
           {/* Sidebar: Time Metadata */}
           <div className="hidden lg:flex flex-col gap-0 pt-20">
@@ -118,7 +118,7 @@ export default function TimetableClientPage() {
                       
                       {/* Sub-block Divider */}
                       {idx !== FIXED_SLOTS.length - 1 && (
-                        <Divider className="absolute bottom-0 w-full opacity-30" />
+                        <Divider className="absolute bottom-0 w-full opacity-50" />
                       )}
                     </div>
                   );
