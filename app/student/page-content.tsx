@@ -9,24 +9,45 @@ import {
 import { Select, SelectItem } from "@heroui/select";
 import { GraduationCap } from "lucide-react";
 import { useStudentGenerationData } from "@/hooks/useStudentGenerationData";
-import { Input, Textarea } from "@heroui/input";
-import { Button } from "@heroui/button";
 import { addToast } from "@heroui/toast";
 import { useUpdateStudentGenerationData } from "@/hooks/useUpdateStudentGenerationData";
+
+// Seeded random — stable across re-renders
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  return x - Math.floor(x);
+}
 
 export default function StudentGenerationPage() {
   const [selectedGen, setSelectedGen] = useState("Gen 8");
   const { data } = useStudentGenerationData();
   const { mutateAsync, isPending } = useUpdateStudentGenerationData();
   const generations = data?.generations ?? {};
-  const cardPositions = data?.positions ?? [];
   const generationOptions = useMemo(() => Object.keys(generations), [generations]);
   const [formValues, setFormValues] = useState({
+    id: "",
     generation: "",
     name: "",
     quote: "",
     image: "",
   });
+
+  // Per-card random offsets & rotation (stable per generation)
+  const cardRandoms = useMemo(() => {
+    const map: Record<string, { offsetX: number; offsetY: number; rotate: number }[]> = {};
+    for (const gen of Object.keys(generations)) {
+      const students = generations[gen] ?? [];
+      map[gen] = students.map((_, i) => {
+        const seed = gen.charCodeAt(gen.length - 1) * 100 + i;
+        return {
+          offsetX: (seededRandom(seed) - 0.5) * 16,
+          offsetY: (seededRandom(seed + 1) - 0.5) * 14,
+          rotate: (seededRandom(seed + 2) - 0.5) * 8,
+        };
+      });
+    }
+    return map;
+  }, [generations]);
 
   useEffect(() => {
     if (!formValues.generation && selectedGen) {
@@ -51,9 +72,11 @@ export default function StudentGenerationPage() {
     await mutateAsync({
       generation: formValues.generation,
       student: {
+        id: formValues.id,
         name: formValues.name,
         quote: formValues.quote,
         image: formValues.image,
+        generation: formValues.generation,
       },
     });
 
@@ -65,88 +88,123 @@ export default function StudentGenerationPage() {
     }));
   };
 
+  const currentStudents = generations[selectedGen] ?? [];
+  const studentCount = currentStudents.length;
+
   return (
     <div className="relative min-h-screen bg-white dark:bg-zinc-950 overflow-hidden">
       
-      {/* SELECTION OVERLAY (Professional Dropdown) */}
-      <div className="absolute top-24 left-[85%] -translate-x-1/2 z-[10] w-full max-w-xs px-6">
-        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl p-6 rounded-[2.5rem] border border-[#76879d]/20 shadow-2xl flex flex-col items-center">
-          <GraduationCap className="text-[#26304d] mb-2" size={24} />
-          <h1 className="text-xl font-black text-[#26304d] uppercase tracking-tighter mb-4">
-             GIC Generation
+      {/* HEADER BAR */}
+      <div className="relative z-20 pt-6 md:pt-10 pb-3 md:pb-4 px-4 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
+        <div>
+          <h1 className="text-2xl md:text-4xl font-black text-[#26304d] dark:text-white uppercase tracking-tighter">
+            GIC <span className="text-[#76879d]">Yearbook</span>
           </h1>
-          <Select 
-            aria-label="Select GIC Generation"
-            variant="bordered"
-            selectedKeys={[selectedGen]}
-            onSelectionChange={(keys) => setSelectedGen(Array.from(keys)[0] as string)}
-            className="w-full"
-            classNames={{
-              trigger: "rounded-2xl border-[#c8c8c8] hover:border-[#26304d]",
-              value: "font-bold text-[#26304d]"
-            }}
-          >
-            {generationOptions.map((gen) => (
-              <SelectItem key={gen} textValue={gen}>{gen}</SelectItem>
-            ))}
-          </Select>
-        </div>
-      </div>
-
-      <DraggableCardContainer className="relative flex h-screen w-full items-center justify-center">
-        
-        {/* REVEALED BACKGROUND TEXT */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none opacity-10">
-          <h2 className="max-w-2xl text-[8vw] font-black text-[#26304d] uppercase tracking-tighter leading-none">
-            GIC Excellence
-          </h2>
-          <p className="mt-6 text-sm font-black uppercase tracking-[0.5em] text-[#76879d]">
-            Revealing Students Potential
+          <p className="text-xs md:text-sm text-zinc-400 mt-1 italic">
+            Capturing the legacy of GIC excellence, one generation at a time.
           </p>
         </div>
 
-        {/* DRAGGABLE CARDS WITH ANIMATED SWITCHING */}
-        <AnimatePresence mode="wait">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl px-3 md:px-5 py-2.5 md:py-3 rounded-2xl border border-[#76879d]/20 shadow-lg flex items-center gap-2 md:gap-3 w-full md:w-auto">
+            <GraduationCap className="text-[#26304d] shrink-0" size={18} />
+            <Select 
+              aria-label="Select GIC Generation"
+              variant="bordered"
+              selectedKeys={[selectedGen]}
+              onSelectionChange={(keys) => setSelectedGen(Array.from(keys)[0] as string)}
+              className="w-full md:w-40"
+              classNames={{
+                trigger: "rounded-xl border-[#c8c8c8] hover:border-[#26304d] h-9 min-h-9",
+                value: "font-bold text-[#26304d] text-sm"
+              }}
+            >
+              {generationOptions.map((gen) => (
+                <SelectItem key={gen} textValue={gen}>{gen}</SelectItem>
+              ))}
+            </Select>
+            <span className="text-[10px] md:text-xs font-bold text-[#26304d] bg-[#26304d]/10 px-2 md:px-3 py-1 rounded-full whitespace-nowrap">
+              {studentCount} Student{studentCount !== 1 ? "s" : ""}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* CARD GRID */}
+      <DraggableCardContainer className="relative w-full min-h-[calc(100vh-140px)] px-3 sm:px-6 md:px-12 pb-8 md:pb-12">
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={selectedGen}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full relative bg-amber- "
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 justify-items-center py-2 md:py-4"
           >
-            {(generations[selectedGen] ?? []).map((student, index) => (
-              <DraggableCardBody 
-                key={`${selectedGen}-${index}`} 
-                className={`${cardPositions[index % cardPositions.length]} z-[${index + 10}]`}
-              >
-                <div className="relative p-2 bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl border border-[#c8c8c8]/30 hover:border-[#26304d] transition-all group">
-                  <img
-                    src={student.image}
-                    alt={student.name}
-                    className="pointer-events-none rounded-[2rem] h-64 w-64 md:h-80 md:w-80 object-cover group-hover:grayscale-0 transition-all duration-700"
-                  />
-                  
-                  <div className="p-6 text-center">
-                    <h3 className="text-2xl font-black text-[#26304d] dark:text-white uppercase tracking-tighter">
-                      {student.name}
-                    </h3>
-                    <div className="h-1 w-12 bg-[#76879d] mx-auto my-3 group-hover:w-20 transition-all" />
-                    <p className="text-[10px] md:text-xs font-medium italic text-slate-500 dark:text-zinc-400 leading-relaxed max-w-[240px] mx-auto">
-                      "{student.quote}"
-                    </p>
-                  </div>
-                </div>
-              </DraggableCardBody>
-            ))}
+            {currentStudents.map((student, index) => {
+              const rnd = cardRandoms[selectedGen]?.[index] ?? { offsetX: 0, offsetY: 0, rotate: 0 };
+
+              return (
+                <motion.div
+                  key={`${selectedGen}-${student.id || index}`}
+                  initial={{ opacity: 0, y: 30, rotate: rnd.rotate }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    rotate: rnd.rotate,
+                    x: rnd.offsetX,
+                    translateY: rnd.offsetY,
+                  }}
+                  transition={{
+                    delay: Math.min(index * 0.03, 0.6),
+                    duration: 0.4,
+                    ease: "easeOut",
+                  }}
+                  whileHover={{
+                    rotate: 0,
+                    x: 0,
+                    translateY: -8,
+                    scale: 1.06,
+                    zIndex: 50,
+                    transition: { duration: 0.2 },
+                  }}
+                >
+                  <DraggableCardBody className="!min-h-0 !w-auto !rounded-xl md:!rounded-2xl">
+                    <div className="p-1.5 sm:p-2 bg-white dark:bg-zinc-900 rounded-xl md:rounded-2xl shadow-md border border-zinc-200/60 dark:border-zinc-800 group cursor-grab active:cursor-grabbing">
+                      {/* Image */}
+                      <div className="relative overflow-hidden rounded-lg md:rounded-xl">
+                        <img
+                          src={student.image}
+                          alt={student.name}
+                          className="pointer-events-none object-cover w-36 h-36 sm:w-40 sm:h-40 md:w-48 md:h-48 transition-transform duration-500 group-hover:scale-105"
+                          draggable={false}
+                        />
+                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+
+                      {/* Info */}
+                      <div className="py-1.5 sm:py-2.5 px-1 text-center">
+                        <h3 className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-100 tracking-tight leading-tight truncate max-w-[140px] sm:max-w-[170px]">
+                          {student.name}
+                        </h3>
+                        <div className="h-[2px] w-5 sm:w-6 bg-[#26304d]/30 dark:bg-zinc-600 mx-auto my-1 sm:my-1.5 group-hover:w-10 group-hover:bg-[#26304d] transition-all duration-300" />
+                        <p className="text-[8px] sm:text-[9px] font-normal italic text-zinc-400 dark:text-zinc-500 leading-relaxed max-w-[130px] sm:max-w-[160px] mx-auto line-clamp-2">
+                          &ldquo;{student.quote}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+                  </DraggableCardBody>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </AnimatePresence>
 
-        {/* INTERACTION GUIDANCE */}
-        <div className="absolute bottom-10 left-10 hidden md:block">
-           <p className="text-[9px] font-black text-[#76879d] uppercase tracking-[0.4em] opacity-40">
-             GIC Archive / {selectedGen} / Engineering foundations
-           </p>
+        {/* FOOTER */}
+        <div className="mt-8 text-center">
+          <p className="text-[9px] font-black text-[#76879d] uppercase tracking-[0.4em] opacity-40">
+            GIC Archive / {selectedGen} / Engineering foundations
+          </p>
         </div>
       </DraggableCardContainer>
     </div>
