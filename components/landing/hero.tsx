@@ -37,7 +37,8 @@ export default function HeroSection({ t, hero, editAction }: HeroSectionProps) {
       ) : null}
       {/* Background Image Layer */}
       <div className="absolute inset-0 z-0">
-        <motion.img
+        {hero.backgroundImage ? (
+          <motion.img
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
@@ -47,6 +48,7 @@ export default function HeroSection({ t, hero, editAction }: HeroSectionProps) {
           className="w-full h-full object-cover opacity-60"
           alt="Networking Background"
         />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
       </div>
 
