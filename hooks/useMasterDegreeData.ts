@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import merge from "lodash/merge";
 import type { CurriculumData } from "@/hooks/useCurriculumData";
+import { programsApi } from "@/api/services/programs";
 
 export type CourseTypeGroup = {
   title: string;
@@ -69,201 +71,90 @@ export type MasterDegreeUpdatePayload = {
   data: Record<string, string>;
 };
 
-export const masterDegreeSeed: MasterDegreeData = {
+const emptyMasterDegreeData: MasterDegreeData = {
   hero: {
-    badge: "Graduate School of ITC",
-    titleMain: "Master of",
-    titleHighlight: "Engineering",
-    subtitle:
-      "A prestigious two-academic-year program designed to provide advanced skills in Artificial Intelligence (AI) and Information Security.",
+    badge: "",
+    titleMain: "",
+    titleHighlight: "",
+    subtitle: "",
   },
   overview: {
-    title: "Advanced Research Trends",
-    description:
-      "This program aims to provide the essential skills to develop human resources in the current trends of computer science. We emphasize the need for AI applications, Blockchain technology, and Smart Information Systems.",
-    highlights: [
-      { text: "Focus on Information Security & Application Design." },
-      { text: "Deployment of advanced AI and data-related technology." },
-    ],
+    title: "",
+    description: "",
+    highlights: [],
   },
   career: {
-    title: "Career Opportunities",
-    description:
-      "Graduates become high-level researchers or developers in advanced fields, with opportunities for Ph.D. level research.",
-    tags: ["Researcher", "AI Developer", "System Architect", "Security Consultant"],
+    title: "",
+    description: "",
+    tags: [],
   },
   framework: {
-    title: "Course Framework",
-    description: "Delivered over 4 semesters covering a minimum of 54 credits.",
+    title: "",
+    description: "",
   },
   eligibility: {
-    title: "Admission & Eligibility",
-    cards: [
-      {
-        title: "For ITC Students",
-        items: [
-          "Engineering graduates: Start from Year 2 (1-year study).",
-          "GIC Year 4 students: Start from Year 1 (2-year study).",
-        ],
-      },
-      {
-        title: "External Applicants",
-        items: [
-          "Bachelor's degree or equivalent in CS, IT, or related fields (2-year study duration).",
-        ],
-      },
-    ],
-    applyTitle: "How to Apply",
-    deadlineLabel: "Application Deadline",
-    deadlineValue: "30th September 5pm",
-    submissionLabel: "Submission",
-    submissionValue: "Graduate School, Room B-110",
-    downloadLabel: "DOWNLOAD APPLICATION",
+    title: "",
+    cards: [],
+    applyTitle: "",
+    deadlineLabel: "",
+    deadlineValue: "",
+    submissionLabel: "",
+    submissionValue: "",
+    downloadLabel: "",
   },
   coordinator: {
-    title: "Program Coordinator",
+    title: "",
     contacts: {
-      email: "rathpisey@itc.edu.kh",
-      phone: "(+855) 96 631 12 21",
+      email: "",
+      phone: "",
     },
   },
   curriculumSection: {
-    title: "Master's Program Curriculum",
-    description:
-      "A specialized 54-credit path focusing on AI, Deep Learning, and Advanced Research Methodology. All courses are delivered in English.",
+    title: "",
+    description: "",
   },
-  curriculum: {
-    "Semester I": [
-      {
-        subject: "Advanced Algorithms and Data Structures", code: "MSC101", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 0
-      },
-      {
-        subject: "Object-Oriented Programming", code: "MSC102", hC: 16, hTD: 16, hTP: 16, credit: 2.0,
-        order: 1
-      },
-      {
-        subject: "Calculus for Machine Learning", code: "MSC103", hC: 16, hTD: 0, hTP: 0, credit: 1.0,
-        order: 2
-      },
-      {
-        subject: "Probability and Mathematical Statistics", code: "MSC104", hC: 32, hTD: 16, hTP: 0, credit: 3.0,
-        order: 3
-      },
-      {
-        subject: "Discrete Mathematics", code: "MSC105", hC: 16, hTD: 0, hTP: 0, credit: 1.0,
-        order: 4
-      },
-      {
-        subject: "Artificial Intelligence", code: "MSC106", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 5
-      },
-      {
-        subject: "Scientific Communication", code: "MSC107", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 6
-      },
-    ],
-    "Semester II": [
-      {
-        subject: "Neural Network and Deep Learning", code: "MSC201", hC: 32, hTD: 0, hTP: 32, credit: 4.0,
-        order: 0
-      },
-      {
-        subject: "Machine Learning", code: "MSC202", hC: 32, hTD: 0, hTP: 16, credit: 3.0,
-        order: 0
-      },
-      {
-        subject: "Computer Vision", code: "MSC203", hC: 32, hTD: 0, hTP: 16, credit: 3.0,
-        order: 0
-      },
-      {
-        subject: "Natural Language Processing", code: "MSC204", hC: 32, hTD: 0, hTP: 16, credit: 3.0,
-        order: 0
-      },
-      {
-        subject: "Data Mining", code: "MSC205", hC: 32, hTD: 0, hTP: 16, credit: 3.0,
-        order: 0
-      },
-      {
-        subject: "Information Security", code: "MSC206", hC: 16, hTD: 0, hTP: 16, credit: 2.0,
-        order: 0
-      },
-    ],
-    "Semester III": [
-      {
-        subject: "Research Methodology", code: "MSC301", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 0
-      },
-      {
-        subject: "Project Management for Researching", code: "MSC302", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 0
-      },
-      {
-        subject: "IT Project Management", code: "MSC303", hC: 16, hTD: 16, hTP: 0, credit: 1.5,
-        order: 0
-      },
-      {
-        subject: "Entrepreneurship", code: "MSC304", hC: 32, hTD: 0, hTP: 0, credit: 2.0,
-        order: 0
-      },
-      {
-        subject: "Cloud Computing", code: "MSC305", hC: 16, hTD: 0, hTP: 16, credit: 1.5,
-        order: 0
-      },
-    ],
-    "Semester IV": [
-      {
-        subject: "Master Thesis / Final Research", code: "MSC401", hC: 0, hTD: 0, hTP: 0, credit: 20.0,
-        order: 0
-      },
-    ],
-  },
-  courseTypes: [
-    {
-      title: "Core Courses",
-      icon: "brain",
-      courses: [
-        "Advanced Algorithms",
-        "Object-Oriented Programming",
-        "Calculus for Machine Learning",
-        "Discrete Mathematics",
-        "Artificial Intelligence",
-      ],
-    },
-    {
-      title: "Specialized Courses",
-      icon: "cpu",
-      courses: [
-        "Neural Network and Deep Learning",
-        "Machine Learning",
-        "Computer Vision",
-        "Natural Language Processing",
-        "Data Mining",
-        "Information Security",
-      ],
-    },
-    {
-      title: "Research & Electives",
-      icon: "search",
-      courses: [
-        "Scientific Communication",
-        "Research Methodology",
-        "IT Project Management",
-        "Entrepreneurship",
-        "Cloud Computing",
-      ],
-    },
-  ],
+  curriculum: {},
+  courseTypes: [],
 };
 
-const getMasterDegreeData = async (): Promise<MasterDegreeData> => masterDegreeSeed;
+const getMasterDegreeData = async (): Promise<MasterDegreeData> => {
+  const res = await programsApi.getMaster();
+  const raw = res as any;
+  const copy = raw?.copyData;
+
+  if (!copy || typeof copy !== "object") {
+    return emptyMasterDegreeData;
+  }
+
+  return merge({}, emptyMasterDegreeData, copy) as MasterDegreeData;
+};
 
 export function useMasterDegreeData() {
   return useQuery({
     queryKey: ["masterDegree"],
     queryFn: getMasterDegreeData,
-    initialData: masterDegreeSeed,
-    staleTime: Number.POSITIVE_INFINITY,
+    placeholderData: emptyMasterDegreeData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // Don't retry on 404
+  });
+}
+
+// ── Create / Initialize Master program ───────────────────────────────
+export function useCreateMasterProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      programsApi.create({
+        title: "Master Degree Program",
+        slug: "master",
+        type: "master",
+        isActive: true,
+        displayOrder: 4,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["masterDegree"] });
+    },
   });
 }
 
@@ -312,7 +203,22 @@ const applyMasterDegreeUpdate = (
   );
 
 const updateMasterDegreeCopy = async (payload: MasterDegreeUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  const res = await programsApi.getMaster();
+  const raw = res as any;
+  const programId = raw?.id;
+
+  if (!programId) {
+    throw new Error("Master degree program not found");
+  }
+
+  const currentCopyData = raw.copyData ?? {};
+  const updatedCopyData = applyMasterDegreeUpdate(
+    { ...currentCopyData } as MasterDegreeData,
+    payload.data,
+  );
+
+  await programsApi.update(programId, { copyData: updatedCopyData });
+
   return payload;
 };
 
@@ -321,11 +227,8 @@ export function useUpdateMasterDegreeData() {
 
   return useMutation({
     mutationFn: updateMasterDegreeCopy,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<MasterDegreeData>(["masterDegree"], (current) => {
-        if (!current) return current;
-        return applyMasterDegreeUpdate(current, payload.data);
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["masterDegree"] });
     },
   });
 }

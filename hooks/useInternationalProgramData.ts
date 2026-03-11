@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import merge from "lodash/merge";
+import { programsApi } from "@/api/services/programs";
 
 export type InternationalPartner = {
   name: string;
@@ -56,72 +58,97 @@ export type InternationalProgramUpdatePayload = {
 
 const internationalProgramData: InternationalProgramData = {
   hero: {
-    badge: "Global Academic Standards",
-    titleMain: "International",
-    titleHighlight: "Program",
-    subtitle:
-      "A premium 5-year engineering curriculum modeled after the French educational system, bridging Cambodian talent with world-class European partnerships.",
+    badge: "",
+    titleMain: "",
+    titleHighlight: "",
+    subtitle: "",
   },
   architecture: {
-    title: "Program Architecture",
-    description:
-      "Our program is structured to transform high-potential students into specialized engineers capable of competing in the global market.",
+    title: "",
+    description: "",
     foundation: {
-      title: "Years 1 - 2: Foundation",
-      description:
-        "The Tronc Commun: Mastering math, physics, chemistry, and humanities to build a multi-disciplinary base.",
+      title: "",
+      description: "",
     },
     specialization: {
-      title: "Years 3 - 5: Specialization",
-      description:
-        "Focusing on advanced computer science, professional technologies, and research in AI and NLP.",
+      title: "",
+      description: "",
     },
-    mobilityTitle: "Global Mobility",
-    mobilityDescription:
-      "The hallmark of our International Program is the opportunity for dual-degree paths, allowing students to earn degrees recognized both in Cambodia and Europe.",
+    mobilityTitle: "",
+    mobilityDescription: "",
   },
   partnersSection: {
-    title: "European Partners",
-    subtitle: "Collaborating with elite French engineering institutions.",
+    title: "",
+    subtitle: "",
   },
   enrollment: {
-    titleMain: "Secure Your",
-    titleHighlight: "Future",
-    description:
-      "High school graduates are eligible for the national entrance exam held every October. Securing a spot means joining the top 1,500 students in the country.",
-    primaryCtaLabel: "APPLY FOR EXAM",
-    secondaryCtaLabel: "VIEW REQUIREMENTS",
-    scholarshipsLabel: "Annual Scholarships Provided",
+    titleMain: "",
+    titleHighlight: "",
+    description: "",
+    primaryCtaLabel: "",
+    secondaryCtaLabel: "",
+    scholarshipsLabel: "",
     duration: {
-      label: "Duration",
-      value: "5 Years",
+      label: "",
+      value: "",
     },
     status: {
-      label: "Status",
-      value: "Top 1500",
+      label: "",
+      value: "",
     },
   },
-  partners: [
-    { name: "INSA Lyon", location: "Lyon, France", focus: "Master & PhD tracks" },
-    { name: "INP Toulouse", location: "Toulouse, France", focus: "Joint-supervision" },
-    { name: "UTC Compiègne", location: "Compiègne, France", focus: "Software Architecture" },
-    { name: "Polytech Network", location: "France-wide", focus: "Specialized Labs" },
-  ],
-  mobilityHighlights: [
-    "Dual-degree paths with France",
-    "International research tracks",
-    "French & English language mastery",
-  ],
+  partners: [],
+  mobilityHighlights: [],
 };
 
-const getInternationalProgramData = async (): Promise<InternationalProgramData> => internationalProgramData;
+const getInternationalProgramData = async (): Promise<InternationalProgramData> => {
+  const res = await programsApi.getInternational();
+  const raw = res as any;
+  const copy = raw?.copyData;
+
+  if (!copy || typeof copy !== "object") {
+    return internationalProgramData;
+  }
+
+  // Deep-merge fetched copyData on top of the empty defaults.
+  // This ensures sections not yet saved (e.g. architecture when only hero
+  // has been edited) always have safe empty-string values instead of
+  // undefined, preventing runtime crashes.
+  return merge({}, internationalProgramData, copy) as InternationalProgramData;
+};
 
 export function useInternationalProgramData() {
   return useQuery({
     queryKey: ["internationalProgram"],
     queryFn: getInternationalProgramData,
-    initialData: internationalProgramData,
-    staleTime: Number.POSITIVE_INFINITY,
+    placeholderData: internationalProgramData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // Don't retry on 404
+  });
+}
+
+// ── Create / Initialize a program ────────────────────────────────────
+export function useCreateProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (dto: {
+      title: string;
+      slug: string;
+      type: "engineer" | "international" | "associate" | "master";
+      isActive?: boolean;
+      displayOrder?: number;
+    }) =>
+      programsApi.create({
+        title: dto.title,
+        slug: dto.slug,
+        type: dto.type,
+        isActive: dto.isActive ?? true,
+        displayOrder: dto.displayOrder ?? 1,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["internationalProgram"] });
+    },
   });
 }
 
@@ -170,7 +197,25 @@ const applyInternationalProgramUpdate = (
   );
 
 const updateInternationalProgramCopy = async (payload: InternationalProgramUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  // Fetch the international program to get its id and current copyData
+  const res = await programsApi.getInternational();
+  const raw = res as any;
+  const programId = raw.id;
+
+  if (!programId) {
+    throw new Error("International program not found");
+  }
+
+  // Build updated copyData by applying dot-path updates to the current data
+  const currentCopyData = raw.copyData ?? {};
+  const updatedCopyData = applyInternationalProgramUpdate(
+    { ...currentCopyData } as InternationalProgramData,
+    payload.data,
+  );
+
+  // PATCH with copyData as a top-level field
+  await programsApi.update(programId, { copyData: updatedCopyData });
+
   return payload;
 };
 
@@ -179,11 +224,9 @@ export function useUpdateInternationalProgramData() {
 
   return useMutation({
     mutationFn: updateInternationalProgramCopy,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<InternationalProgramData>(["internationalProgram"], (current) => {
-        if (!current) return current;
-        return applyInternationalProgramUpdate(current, payload.data);
-      });
+    onSuccess: () => {
+      // Refetch from backend to get the latest data
+      queryClient.invalidateQueries({ queryKey: ["internationalProgram"] });
     },
   });
 }

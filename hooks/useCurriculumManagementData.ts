@@ -6,7 +6,11 @@ import type {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { defaultCurriculumPageData } from "@/hooks/useCurriculumData";
-import { masterDegreeSeed } from "@/hooks/useMasterDegreeData";
+import {
+  curriculumApi,
+  type UpsertCurriculumCourseDto,
+} from "@/api/services/curriculum";
+import { programsApi, type ProgramType } from "@/api/services/programs";
 
 export type CurriculumProgramKey =
   | "national"
@@ -52,6 +56,13 @@ export const curriculumProgramKeys = Object.keys(
 export const isCurriculumProgramKey = (
   value: string,
 ): value is CurriculumProgramKey => value in curriculumProgramMeta;
+
+export const programKeyToType: Record<CurriculumProgramKey, ProgramType> = {
+  national: "engineer",
+  international: "international",
+  associate: "associate",
+  master: "master",
+};
 
 export type CurriculumProgramData = {
   programKey: CurriculumProgramKey;
@@ -118,7 +129,7 @@ const curriculumSeedByProgram: Record<
   master: {
     programKey: "master",
     program: curriculumProgramMeta.master,
-    curriculum: cloneValue(masterDegreeSeed.curriculum),
+    curriculum: cloneValue(defaultCurriculumPageData.curriculum),
     legend: baseLegend,
   },
 };
@@ -126,8 +137,16 @@ const curriculumSeedByProgram: Record<
 const getCurriculumManagementData = async (
   programKey: CurriculumProgramKey,
 ): Promise<CurriculumProgramData> => {
-  // TODO: replace with API call once curriculum endpoints are available.
-  return cloneValue(curriculumSeedByProgram[programKey]);
+  const programType = programKeyToType[programKey];
+  const program = await programsApi.findByType(programType);
+  const response = await curriculumApi.getCurriculum(program.id);
+
+  return {
+    programKey,
+    program: curriculumProgramMeta[programKey],
+    curriculum: response.curriculum,
+    legend: response.legend,
+  };
 };
 
 const applyCurriculumUpdates = (
@@ -177,21 +196,11 @@ const applyCurriculumUpdates = (
   };
 };
 
-const updateCurriculumManagementData = async (
-  payload: CurriculumManagementUpdatePayload,
-): Promise<CurriculumManagementUpdatePayload> => {
-  // TODO: replace with API mutation.
-  await new Promise((resolve) => setTimeout(resolve, 200));
-
-  return payload;
-};
-
 export function useCurriculumManagementData(programKey: CurriculumProgramKey) {
   return useQuery({
     queryKey: ["curriculumManagement", programKey],
     queryFn: () => getCurriculumManagementData(programKey),
-    initialData: curriculumSeedByProgram[programKey],
-    staleTime: Number.POSITIVE_INFINITY,
+    placeholderData: curriculumSeedByProgram[programKey],
   });
 }
 
@@ -201,7 +210,71 @@ export function useUpdateCurriculumManagementData(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateCurriculumManagementData,
+    mutationFn: async (payload: CurriculumManagementUpdatePayload) => {
+      const currentData = queryClient.getQueryData<CurriculumProgramData>([
+        "curriculumManagement",
+        payload.programKey,
+      ]);
+
+      const programType = programKeyToType[payload.programKey];
+      const program = await programsApi.findByType(programType);
+      const programId = program.id;
+
+      for (const update of payload.updates) {
+        switch (update.type) {
+          case "add": {
+            const dto: UpsertCurriculumCourseDto = {
+              subject: update.course.subject,
+              code: update.course.code,
+              hC: update.course.hC,
+              hTD: update.course.hTD,
+              hTP: update.course.hTP,
+              credit: update.course.credit,
+              order: update.course.order,
+            };
+            await curriculumApi.upsertCourse(programId, update.semester, dto);
+            break;
+          }
+          case "update": {
+            const existing =
+              currentData?.curriculum[update.semester]?.[update.courseIndex];
+            if (existing) {
+              const merged = { ...existing, ...update.changes };
+              const dto: UpsertCurriculumCourseDto = {
+                id: existing.id,
+                subject: merged.subject,
+                code: merged.code,
+                hC: merged.hC,
+                hTD: merged.hTD,
+                hTP: merged.hTP,
+                credit: merged.credit,
+                order: merged.order,
+              };
+              await curriculumApi.upsertCourse(
+                programId,
+                update.semester,
+                dto,
+              );
+            }
+            break;
+          }
+          case "delete": {
+            const existing =
+              currentData?.curriculum[update.semester]?.[update.courseIndex];
+            if (existing) {
+              await curriculumApi.removeCourse(
+                programId,
+                update.semester,
+                existing.code,
+              );
+            }
+            break;
+          }
+        }
+      }
+
+      return payload;
+    },
     onSuccess: (payload) => {
       queryClient.setQueryData<CurriculumProgramData>(
         ["curriculumManagement", payload.programKey],
@@ -213,27 +286,12 @@ export function useUpdateCurriculumManagementData(
         },
       );
 
-      if (payload.programKey === "master") {
-        queryClient.setQueryData(
-          ["masterDegree"],
-          (current: typeof masterDegreeSeed | undefined) => {
-            const baseState = current ?? masterDegreeSeed;
-            const updatedCurriculum = applyCurriculumUpdates(
-              {
-                programKey: "master",
-                program: curriculumProgramMeta.master,
-                curriculum: baseState.curriculum,
-                legend: baseLegend,
-              },
-              payload.updates,
-            );
+      queryClient.invalidateQueries({
+        queryKey: ["curriculumManagement", payload.programKey],
+      });
 
-            return {
-              ...baseState,
-              curriculum: updatedCurriculum.curriculum,
-            };
-          },
-        );
+      if (payload.programKey === "master") {
+        queryClient.invalidateQueries({ queryKey: ["masterDegree"] });
       }
     },
   });

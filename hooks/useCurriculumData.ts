@@ -1,10 +1,13 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { curriculumApi } from "@/api/services/curriculum";
+import { programsApi } from "@/api/services/programs";
 
 // --- Types ---
 
 export interface CurriculumCourse {
+  id?: string;
   subject: string;
   code: string;
   hC: number;
@@ -86,9 +89,21 @@ export const defaultCurriculumPageData: CurriculumPageData = {
   ],
 };
 
-// --- API Mock ---
+// --- API ---
 
-const fetchCurriculum = async (): Promise<CurriculumPageData> => defaultCurriculumPageData;
+const fetchCurriculum = async (): Promise<CurriculumPageData> => {
+  try {
+    const program = await programsApi.findByType("engineer");
+    const response = await curriculumApi.getCurriculum(program.id);
+
+    return {
+      curriculum: response.curriculum,
+      legend: response.legend,
+    };
+  } catch {
+    return defaultCurriculumPageData;
+  }
+};
 
 // --- Primary Hook ---
 
@@ -96,8 +111,7 @@ export function useCurriculumData() {
   return useQuery({
     queryKey: ["curriculum"],
     queryFn: fetchCurriculum,
-    initialData: defaultCurriculumPageData,
-    staleTime: Number.POSITIVE_INFINITY,
+    placeholderData: defaultCurriculumPageData,
   });
 }
 
