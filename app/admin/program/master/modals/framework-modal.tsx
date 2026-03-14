@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { get } from "lodash";
+import { Button } from "@heroui/button";
 
 import FieldsForm from "@/app/admin/landing-page/modals/fields-form";
 import SectionModal from "@/app/admin/landing-page/modals/section-modal";
@@ -14,31 +14,6 @@ const parseLines = (value: string) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
-const buildFields = (typesLength: number) => {
-  const baseFields = [
-    { key: "framework.title", label: "Framework title", value: "" },
-    {
-      key: "framework.description",
-      label: "Framework description",
-      value: "",
-      multiline: true,
-    },
-  ];
-
-  const typeFields = Array.from({ length: typesLength }, (_, index) => [
-    { key: `courseTypes.${index}.title`, label: `Course type ${index + 1} title`, value: "" },
-    { key: `courseTypes.${index}.icon`, label: `Course type ${index + 1} icon`, value: "" },
-    {
-      key: `courseTypes.${index}.coursesText`,
-      label: `Course type ${index + 1} courses (one per line)`,
-      value: "",
-      multiline: true,
-    },
-  ]).flat();
-
-  return [...baseFields, ...typeFields];
-};
-
 export default function MasterFrameworkModal({ isOpen, onClose }: SectionModalProps) {
   const { data } = useMasterDegreeData();
   const updateProgram = useUpdateMasterDegreeData();
@@ -46,10 +21,13 @@ export default function MasterFrameworkModal({ isOpen, onClose }: SectionModalPr
   const framework = data?.framework ?? { title: "", description: "" };
   const courseTypes = data?.courseTypes ?? [];
 
+  const [typeCount, setTypeCount] = React.useState(courseTypes.length);
   const [formValues, setFormValues] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
     if (!isOpen) return;
+
+    setTypeCount(courseTypes.length);
 
     const nextValues: Record<string, string> = {
       "framework.title": framework.title ?? "",
@@ -63,27 +41,39 @@ export default function MasterFrameworkModal({ isOpen, onClose }: SectionModalPr
     });
 
     setFormValues(nextValues);
-  }, [courseTypes, framework.description, framework.title, isOpen]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fields = buildFields(courseTypes.length);
+  const handleAddType = () => setTypeCount((prev) => prev + 1);
+
+  const handleRemoveType = (indexToRemove: number) => {
+    const updated = { ...formValues };
+    for (let i = indexToRemove; i < typeCount - 1; i++) {
+      updated[`courseTypes.${i}.title`] = formValues[`courseTypes.${i + 1}.title`] ?? "";
+      updated[`courseTypes.${i}.icon`] = formValues[`courseTypes.${i + 1}.icon`] ?? "";
+      updated[`courseTypes.${i}.coursesText`] = formValues[`courseTypes.${i + 1}.coursesText`] ?? "";
+    }
+    delete updated[`courseTypes.${typeCount - 1}.title`];
+    delete updated[`courseTypes.${typeCount - 1}.icon`];
+    delete updated[`courseTypes.${typeCount - 1}.coursesText`];
+    setFormValues(updated);
+    setTypeCount((prev) => prev - 1);
+  };
 
   const handleSave = () => {
     const updates: Record<string, string> = {
-      "framework.title": String(get(formValues, "framework.title", "")),
-      "framework.description": String(get(formValues, "framework.description", "")),
+      "framework.title": formValues["framework.title"] ?? "",
+      "framework.description": formValues["framework.description"] ?? "",
     };
 
-    courseTypes.forEach((type, index) => {
-      updates[`courseTypes.${index}.title`] = String(get(formValues, `courseTypes.${index}.title`, ""));
-      updates[`courseTypes.${index}.icon`] = String(get(formValues, `courseTypes.${index}.icon`, ""));
+    for (let index = 0; index < typeCount; index++) {
+      updates[`courseTypes.${index}.title`] = formValues[`courseTypes.${index}.title`] ?? "";
+      updates[`courseTypes.${index}.icon`] = formValues[`courseTypes.${index}.icon`] ?? "";
 
-      const nextCourses = parseLines(String(get(formValues, `courseTypes.${index}.coursesText`, "")));
-      const maxCourses = Math.max(type.courses.length, nextCourses.length);
-
-      for (let courseIndex = 0; courseIndex < maxCourses; courseIndex += 1) {
-        updates[`courseTypes.${index}.courses.${courseIndex}`] = nextCourses[courseIndex] ?? "";
-      }
-    });
+      const nextCourses = parseLines(formValues[`courseTypes.${index}.coursesText`] ?? "");
+      nextCourses.forEach((course, courseIndex) => {
+        updates[`courseTypes.${index}.courses.${courseIndex}`] = course;
+      });
+    }
 
     updateProgram.mutate(
       { section: "framework", data: updates },
@@ -102,11 +92,59 @@ export default function MasterFrameworkModal({ isOpen, onClose }: SectionModalPr
       isSaving={updateProgram.isPending}
     >
       <FieldsForm
-        fields={fields}
+        fields={[
+          { key: "framework.title", label: "Framework title", value: "" },
+          { key: "framework.description", label: "Framework description", value: "", multiline: true },
+        ]}
         formValues={formValues}
         onChange={(key, value) => setFormValues((prev) => ({ ...prev, [key]: value }))}
         description="Icon options: brain, cpu, search."
       />
+
+      <div className="mt-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold">Course Types</p>
+          <Button size="sm" variant="flat" color="primary" onPress={handleAddType}>
+            + Add Course Type
+          </Button>
+        </div>
+
+        {typeCount === 0 && (
+          <p className="text-sm text-slate-400">No course types yet. Add one above.</p>
+        )}
+
+        {Array.from({ length: typeCount }, (_, index) => (
+          <div key={index} className="rounded-xl border border-gray-200 p-4 dark:border-zinc-700">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Course Type {index + 1}
+              </p>
+              <Button
+                size="sm"
+                variant="light"
+                color="danger"
+                onPress={() => handleRemoveType(index)}
+              >
+                🗑 Remove
+              </Button>
+            </div>
+            <FieldsForm
+              fields={[
+                { key: `courseTypes.${index}.title`, label: "Title", value: "" },
+                { key: `courseTypes.${index}.icon`, label: "Icon (brain / cpu / search)", value: "" },
+                {
+                  key: `courseTypes.${index}.coursesText`,
+                  label: "Courses (one per line)",
+                  value: "",
+                  multiline: true,
+                },
+              ]}
+              formValues={formValues}
+              onChange={(key, value) => setFormValues((prev) => ({ ...prev, [key]: value }))}
+            />
+          </div>
+        ))}
+      </div>
     </SectionModal>
   );
 }

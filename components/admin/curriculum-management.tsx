@@ -13,6 +13,15 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Spinner } from "@heroui/spinner";
 import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@heroui/modal";
+import { BookOpen, Plus } from "lucide-react";
+import {
   Table,
   TableBody,
   TableCell,
@@ -438,6 +447,36 @@ export function CurriculumManagement({
     );
   };
 
+  // ── Add Semester ──
+  const addSemesterModal = useDisclosure();
+  const [newSemesterName, setNewSemesterName] = React.useState("");
+
+  const handleAddSemester = () => {
+    const name = newSemesterName.trim();
+    if (!name) return;
+
+    const course: CurriculumCourse = {
+      ...blankCourse,
+      subject: "New Subject",
+      code: "NEWCODE",
+      credit: 1,
+      order: 0,
+    };
+
+    updateCurriculum.mutate(
+      {
+        programKey,
+        updates: [{ type: "add", semester: name, course }],
+      },
+      {
+        onSuccess: () => {
+          setNewSemesterName("");
+          addSemesterModal.onClose();
+        },
+      },
+    );
+  };
+
   if (isLoading && !programData) {
     return (
       <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-dashed border-divider">
@@ -475,47 +514,125 @@ export function CurriculumManagement({
         ) : null}
       </div>
 
-      <Tabs
-        aria-label="Curriculum semesters"
-        classNames={{
-          tabList:
-            "w-full gap-6 overflow-x-auto rounded-none border-b border-divider p-0",
-          cursor: "w-full bg-blue-600",
-          tab: "h-12 max-w-fit px-0",
-          tabContent:
-            "font-bold text-default-500 group-data-[selected=true]:text-blue-600",
-        }}
-        color="primary"
-        variant="underlined"
-      >
-        {semesters.map(([semester, courses]) => (
-          <Tab key={semester} title={semester}>
-            <div className="mt-6">
-              <CurriculumTable
-                courses={courses}
-                disableActions={
-                  updateCurriculum.isPending || editingRow !== null
-                }
-                draft={draft}
-                editingRow={editingRow}
-                isSaving={updateCurriculum.isPending}
-                programKey={programKey}
-                semester={semester}
-                onAdd={handleAdd}
-                onCancel={handleCancel}
-                onDelete={handleDelete}
-                onDraftChange={(field, value) =>
-                  setDraft((prev) =>
-                    prev ? { ...prev, [field]: value } : prev,
-                  )
-                }
-                onEdit={handleEdit}
-                onSave={handleSave}
-              />
-            </div>
-          </Tab>
-        ))}
-      </Tabs>
+      {/* ── Add-Semester Modal ── */}
+      <Modal isOpen={addSemesterModal.isOpen} onOpenChange={addSemesterModal.onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Add New Semester
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  autoFocus
+                  label="Semester Name"
+                  placeholder='e.g. "Semester I"'
+                  value={newSemesterName}
+                  onValueChange={setNewSemesterName}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddSemester();
+                  }}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="flat" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  isDisabled={!newSemesterName.trim()}
+                  isLoading={updateCurriculum.isPending}
+                  onPress={handleAddSemester}
+                >
+                  Create Semester
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* ── Empty State ── */}
+      {semesters.length === 0 ? (
+        <div className="flex min-h-[400px] flex-col items-center justify-center gap-6 rounded-2xl border border-dashed border-divider bg-content1 p-12">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 text-primary">
+            <BookOpen size={40} />
+          </div>
+          <div className="text-center">
+            <h3 className="text-xl font-bold tracking-tight text-foreground">
+              No semesters yet
+            </h3>
+            <p className="mt-2 max-w-md text-sm text-default-500">
+              This program doesn&apos;t have any curriculum data. Create your
+              first semester to start building the curriculum.
+            </p>
+          </div>
+          <Button
+            color="primary"
+            size="lg"
+            startContent={<Plus size={18} />}
+            onPress={addSemesterModal.onOpen}
+          >
+            Add First Semester
+          </Button>
+        </div>
+      ) : (
+        /* ── Semester Tabs ── */
+        <>
+          <div className="flex justify-end">
+            <Button
+              color="primary"
+              variant="flat"
+              size="sm"
+              startContent={<Plus size={16} />}
+              onPress={addSemesterModal.onOpen}
+            >
+              Add Semester
+            </Button>
+          </div>
+          <Tabs
+            aria-label="Curriculum semesters"
+            classNames={{
+              tabList:
+                "w-full gap-6 overflow-x-auto rounded-none border-b border-divider p-0",
+              cursor: "w-full bg-blue-600",
+              tab: "h-12 max-w-fit px-0",
+              tabContent:
+                "font-bold text-default-500 group-data-[selected=true]:text-blue-600",
+            }}
+            color="primary"
+            variant="underlined"
+          >
+            {semesters.map(([semester, courses]) => (
+              <Tab key={semester} title={semester}>
+                <div className="mt-6">
+                  <CurriculumTable
+                    courses={courses}
+                    disableActions={
+                      updateCurriculum.isPending || editingRow !== null
+                    }
+                    draft={draft}
+                    editingRow={editingRow}
+                    isSaving={updateCurriculum.isPending}
+                    programKey={programKey}
+                    semester={semester}
+                    onAdd={handleAdd}
+                    onCancel={handleCancel}
+                    onDelete={handleDelete}
+                    onDraftChange={(field, value) =>
+                      setDraft((prev) =>
+                        prev ? { ...prev, [field]: value } : prev,
+                      )
+                    }
+                    onEdit={handleEdit}
+                    onSave={handleSave}
+                  />
+                </div>
+              </Tab>
+            ))}
+          </Tabs>
+        </>
+      )}
     </div>
   );
 }

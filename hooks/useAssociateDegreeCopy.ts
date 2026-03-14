@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import merge from "lodash/merge";
+import { programsApi } from "@/api/services/programs";
 
 export type AssociateFeatureCard = {
   title: string;
@@ -44,70 +46,76 @@ export type AssociateProgramUpdatePayload = {
   data: Record<string, string>;
 };
 
-const associateProgramCopy: AssociateProgramCopy = {
+const emptyAssociateProgramCopy: AssociateProgramCopy = {
   hero: {
-    badge: "Professional Technical Track",
-    titleMain: "Associate",
-    titleHighlight: "Degree",
-    subtitle:
-      "A specialized 2-year program designed for high school graduates to gain immediate technical expertise and professional ethics for the modern IT workforce.",
+    badge: "",
+    titleMain: "",
+    titleHighlight: "",
+    subtitle: "",
   },
   admission: {
-    title: "Direct Admission Path",
-    description:
-      "Open enrollment for high school graduates — no entrance exam required for the Associate track.",
+    title: "",
+    description: "",
   },
   identity: {
-    title: "Who We Are?",
-    paragraph1:
-      "Founded in 1998, GIC has formed more than one thousand technicians in computer science who are now participating actively in the development of both public and private sectors.",
-    paragraph2:
-      "Our curriculum covers fundamental theories while emphasizing hands-on skills in analysis, design, and implementation of computer-based systems.",
-    features: [
-      {
-        title: "Technical Skills",
-        desc: "Mastering software solutions and network infrastructure.",
-      },
-      {
-        title: "Soft Skills",
-        desc: "Communication and teamwork for real working environments.",
-      },
-    ],
+    title: "",
+    paragraph1: "",
+    paragraph2: "",
+    features: [],
   },
   industry: {
-    title: "Industry Training",
-    subtitle:
-      "We provide a solid technical foundation enhanced by professional ethics and patriotism.",
-    sectors: [
-      { title: "IT Software Solutions" },
-      { title: "Network & Infrastructure" },
-      { title: "Telecommunications" },
-      { title: "Business Intelligence" },
-      { title: "Finance & Banking" },
-      { title: "Media & Broadcasting" },
-    ],
+    title: "",
+    subtitle: "",
+    sectors: [],
   },
   careers: {
-    title: "Beyond Graduation",
-    description:
-      "Most of our graduates secure successful careers as IT professionals, researchers, lecturers, and consultants. Many become workforce for government, academic sectors, or run their own startups.",
-    tags: ["iOS/Android Dev", "Data Mining", "Big Data", "System Admin"],
-    bullets: [
-      "2-Year Full-Time Duration",
-      "Focus on Computer Science Foundations",
-      "Obligatory Industry Internships",
-    ],
+    title: "",
+    description: "",
+    tags: [],
+    bullets: [],
   },
 };
 
-const getAssociateProgramCopy = async (): Promise<AssociateProgramCopy> => associateProgramCopy;
+const getAssociateProgramCopy = async (): Promise<AssociateProgramCopy> => {
+  const res = await programsApi.getAssociateCopy();
+  const raw = res as any;
+  const copy = raw?.copyData;
+
+  if (!copy || typeof copy !== "object") {
+    return emptyAssociateProgramCopy;
+  }
+
+  // Deep-merge fetched copyData on top of the empty defaults so any
+  // section not yet saved always has safe empty values instead of undefined.
+  return merge({}, emptyAssociateProgramCopy, copy) as AssociateProgramCopy;
+};
 
 export function useAssociateDegreeCopy() {
   return useQuery({
     queryKey: ["associateDegreeCopy"],
     queryFn: getAssociateProgramCopy,
-    initialData: associateProgramCopy,
-    staleTime: Number.POSITIVE_INFINITY,
+    placeholderData: emptyAssociateProgramCopy,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}
+
+// ── Create / Initialize a program ────────────────────────────────────
+export function useCreateAssociateProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      programsApi.create({
+        title: "Associate Degree",
+        slug: "associate",
+        type: "associate",
+        isActive: true,
+        displayOrder: 3,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["associateDegreeCopy"] });
+    },
   });
 }
 
@@ -156,7 +164,25 @@ const applyAssociateProgramUpdate = (
   );
 
 const updateAssociateProgramCopy = async (payload: AssociateProgramUpdatePayload) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  // Fetch the associate program to get its id and current copyData
+  const res = await programsApi.getAssociateCopy();
+  const raw = res as any;
+  const programId = raw.id;
+
+  if (!programId) {
+    throw new Error("Associate program not found");
+  }
+
+  // Build updated copyData by applying dot-path updates to the current data
+  const currentCopyData = raw.copyData ?? {};
+  const updatedCopyData = applyAssociateProgramUpdate(
+    { ...currentCopyData } as AssociateProgramCopy,
+    payload.data,
+  );
+
+  // PATCH with copyData as a top-level field
+  await programsApi.update(programId, { copyData: updatedCopyData });
+
   return payload;
 };
 
@@ -165,11 +191,8 @@ export function useUpdateAssociateDegreeCopy() {
 
   return useMutation({
     mutationFn: updateAssociateProgramCopy,
-    onSuccess: (payload) => {
-      queryClient.setQueryData<AssociateProgramCopy>(["associateDegreeCopy"], (current) => {
-        if (!current) return current;
-        return applyAssociateProgramUpdate(current, payload.data);
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["associateDegreeCopy"] });
     },
   });
 }

@@ -100,11 +100,11 @@ export const data: {
       title: "Management",
       items: [
         {
-          title: "Curriculum", url: "/admin", items: [
-            { title: "National Program", url: "/admin/cirriculmn/national" },
-            { title: "International Program", url: "/admin/cirriculmn/international" },
-            { title: "Associate Program", url: "/admin/cirriculmn/associate" },
-            { title: "Master Program", url: "/admin/cirriculmn/master" }
+          title: "Curriculum", items: [
+            { title: "National Program", url: "/admin/curriculum/national" },
+            { title: "International Program", url: "/admin/curriculum/international" },
+            { title: "Associate Program", url: "/admin/curriculum/associate" },
+            { title: "Master Program", url: "/admin/curriculum/master" }
           ]
         },
         { title: "Timetable", url: "/admin/timetable" },

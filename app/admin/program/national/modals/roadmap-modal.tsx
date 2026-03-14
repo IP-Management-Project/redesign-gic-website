@@ -2,6 +2,8 @@
 
 import React from "react";
 import { get } from "lodash";
+import { Button } from "@heroui/react";
+import { Plus, Trash2 } from "lucide-react";
 
 import FieldsForm from "@/app/admin/landing-page/modals/fields-form";
 import SectionModal from "@/app/admin/landing-page/modals/section-modal";
@@ -17,42 +19,19 @@ const parseLines = (value: string) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
-const buildFields = (stepsLength: number) => {
-  const baseFields = [
-    { key: "roadmap.title", label: "Roadmap title", value: "" },
-    { key: "roadmap.subtitle", label: "Roadmap subtitle", value: "", multiline: true },
-  ];
-
-  const stepFields = Array.from({ length: stepsLength }, (_, index) => [
-    { key: `roadmap.steps.${index}.year`, label: `Step ${index + 1} year`, value: "" },
-    { key: `roadmap.steps.${index}.title`, label: `Step ${index + 1} title`, value: "" },
-    {
-      key: `roadmap.steps.${index}.desc`,
-      label: `Step ${index + 1} description`,
-      value: "",
-      multiline: true,
-    },
-    {
-      key: `roadmap.steps.${index}.tagsText`,
-      label: `Step ${index + 1} tags (one per line)`,
-      value: "",
-      multiline: true,
-    },
-  ]).flat();
-
-  return [...baseFields, ...stepFields];
-};
-
 export default function EngineeringRoadmapModal({ isOpen, onClose }: SectionModalProps) {
   const { data } = useEngineeringProgramCopy();
   const updateProgram = useUpdateEngineeringProgramCopy();
 
   const roadmap = data?.roadmap ?? { title: "", subtitle: "", steps: [] };
 
+  const [stepCount, setStepCount] = React.useState(roadmap.steps.length);
   const [formValues, setFormValues] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
     if (!isOpen) return;
+
+    setStepCount(roadmap.steps.length);
 
     const nextValues: Record<string, string> = {
       "roadmap.title": roadmap.title ?? "",
@@ -69,7 +48,26 @@ export default function EngineeringRoadmapModal({ isOpen, onClose }: SectionModa
     setFormValues(nextValues);
   }, [isOpen, roadmap]);
 
-  const fields = buildFields(roadmap.steps.length);
+  const handleAddStep = () => setStepCount((prev) => prev + 1);
+
+  const handleRemoveStep = (indexToRemove: number) => {
+    const newValues = { ...formValues };
+
+    for (let i = indexToRemove; i < stepCount - 1; i++) {
+      newValues[`roadmap.steps.${i}.year`] = newValues[`roadmap.steps.${i + 1}.year`] ?? "";
+      newValues[`roadmap.steps.${i}.title`] = newValues[`roadmap.steps.${i + 1}.title`] ?? "";
+      newValues[`roadmap.steps.${i}.desc`] = newValues[`roadmap.steps.${i + 1}.desc`] ?? "";
+      newValues[`roadmap.steps.${i}.tagsText`] = newValues[`roadmap.steps.${i + 1}.tagsText`] ?? "";
+    }
+
+    delete newValues[`roadmap.steps.${stepCount - 1}.year`];
+    delete newValues[`roadmap.steps.${stepCount - 1}.title`];
+    delete newValues[`roadmap.steps.${stepCount - 1}.desc`];
+    delete newValues[`roadmap.steps.${stepCount - 1}.tagsText`];
+
+    setFormValues(newValues);
+    setStepCount((prev) => prev - 1);
+  };
 
   const handleSave = () => {
     const updates: Record<string, string> = {
@@ -77,25 +75,24 @@ export default function EngineeringRoadmapModal({ isOpen, onClose }: SectionModa
       "roadmap.subtitle": String(get(formValues, "roadmap.subtitle", "")),
     };
 
-    roadmap.steps.forEach((step, index) => {
+    for (let index = 0; index < stepCount; index++) {
       updates[`roadmap.steps.${index}.year`] = String(get(formValues, `roadmap.steps.${index}.year`, ""));
       updates[`roadmap.steps.${index}.title`] = String(get(formValues, `roadmap.steps.${index}.title`, ""));
       updates[`roadmap.steps.${index}.desc`] = String(get(formValues, `roadmap.steps.${index}.desc`, ""));
 
       const tagsText = String(get(formValues, `roadmap.steps.${index}.tagsText`, ""));
       const nextTags = parseLines(tagsText);
-      const maxTags = Math.max(step.tags?.length ?? 0, nextTags.length);
+      const currentTags = roadmap.steps[index]?.tags ?? [];
+      const maxTags = Math.max(currentTags.length, nextTags.length);
 
-      for (let tagIndex = 0; tagIndex < maxTags; tagIndex += 1) {
+      for (let tagIndex = 0; tagIndex < maxTags; tagIndex++) {
         updates[`roadmap.steps.${index}.tags.${tagIndex}`] = nextTags[tagIndex] ?? "";
       }
-    });
+    }
 
     updateProgram.mutate(
       { section: "roadmap", data: updates },
-      {
-        onSuccess: () => onClose(),
-      },
+      { onSuccess: () => onClose() },
     );
   };
 
@@ -108,11 +105,54 @@ export default function EngineeringRoadmapModal({ isOpen, onClose }: SectionModa
       isSaving={updateProgram.isPending}
     >
       <FieldsForm
-        fields={fields}
+        fields={[
+          { key: "roadmap.title", label: "Roadmap title", value: "" },
+          { key: "roadmap.subtitle", label: "Roadmap subtitle", value: "", multiline: true },
+        ]}
         formValues={formValues}
         onChange={(key, value) => setFormValues((prev) => ({ ...prev, [key]: value }))}
         description="Tags appear as badges. Use one tag per line for each step."
       />
+
+      <div className="mt-4 flex flex-col gap-4">
+        {Array.from({ length: stepCount }, (_, index) => (
+          <div key={index} className="rounded-xl border border-default-200 p-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-semibold text-default-600">Step {index + 1}</span>
+              <Button
+                isIconOnly
+                size="sm"
+                variant="light"
+                color="danger"
+                onPress={() => handleRemoveStep(index)}
+              >
+                <Trash2 size={15} />
+              </Button>
+            </div>
+            <FieldsForm
+              fields={[
+                { key: `roadmap.steps.${index}.year`, label: "Year label", value: "" },
+                { key: `roadmap.steps.${index}.title`, label: "Title", value: "" },
+                { key: `roadmap.steps.${index}.desc`, label: "Description", value: "", multiline: true },
+                { key: `roadmap.steps.${index}.tagsText`, label: "Tags (one per line)", value: "", multiline: true },
+              ]}
+              formValues={formValues}
+              onChange={(key, value) => setFormValues((prev) => ({ ...prev, [key]: value }))}
+            />
+          </div>
+        ))}
+
+        <Button
+          variant="bordered"
+          color="primary"
+          startContent={<Plus size={16} />}
+          onPress={handleAddStep}
+          className="w-full border-dashed"
+        >
+          Add Step
+        </Button>
+      </div>
     </SectionModal>
   );
 }
+

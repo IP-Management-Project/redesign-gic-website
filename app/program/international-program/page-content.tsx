@@ -226,7 +226,7 @@ export default function InternationalProgramPage({
       {/* 4. ENROLLMENT & SCHOLARSHIPS */}
       <section className="relative mx-4 mb-24 overflow-hidden rounded-[3rem] bg-slate-900 py-24 text-white md:mx-6">
         {enrollmentEdit ? (
-          <div className="mx-auto mb-6 flex max-w-7xl justify-end px-6">
+          <div className="relative z-20 mx-auto mb-6 flex max-w-7xl justify-end px-6">
             <Button size="sm" variant="flat" onPress={enrollmentEdit.onEdit}>
               {enrollmentEdit.label}
             </Button>
