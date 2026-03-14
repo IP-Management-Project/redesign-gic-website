@@ -48,7 +48,7 @@ export function useTimetableData(year?: string, semester?: string) {
       return {
         academicYears: ["Year 3", "Year 4", "Year 5", "Master 1", "Master 2"],
         semesters: ["Semester I", "Semester II"],
-        days: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"],
+        days: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
         timetable: timetable as TimetableSession[]
       };
     },

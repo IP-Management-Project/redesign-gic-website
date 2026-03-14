@@ -107,7 +107,7 @@ export default function StudentGenerationPage() {
 
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl px-3 md:px-5 py-2.5 md:py-3 rounded-2xl border border-[#76879d]/20 shadow-lg flex items-center gap-2 md:gap-3 w-full md:w-auto">
-            <GraduationCap className="text-[#26304d] shrink-0" size={18} />
+            <GraduationCap className="text-[#26304d] dark:text-white shrink-0" size={18} />
             <Select 
               aria-label="Select GIC Generation"
               variant="bordered"
@@ -123,7 +123,7 @@ export default function StudentGenerationPage() {
                 <SelectItem key={gen} textValue={gen}>{gen}</SelectItem>
               ))}
             </Select>
-            <span className="text-[10px] md:text-xs font-bold text-[#26304d] bg-[#26304d]/10 px-2 md:px-3 py-1 rounded-full whitespace-nowrap">
+            <span className="text-[10px] md:text-xs font-bold text-[#26304d] bg-[#26304d]/10 px-2 md:px-3 py-1 rounded-full whitespace-nowrap dark:text-[white] dark:bg-[#76879d]/10">
               {studentCount} Student{studentCount !== 1 ? "s" : ""}
             </span>
           </div>
@@ -202,7 +202,7 @@ export default function StudentGenerationPage() {
 
         {/* FOOTER */}
         <div className="mt-8 text-center">
-          <p className="text-[9px] font-black text-[#76879d] uppercase tracking-[0.4em] opacity-40">
+          <p className="text-[9px] font-black text-[#76879d] dark:text-zinc-400 uppercase tracking-[0.4em] opacity-40">
             GIC Archive / {selectedGen} / Engineering foundations
           </p>
         </div>
