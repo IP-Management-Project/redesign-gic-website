@@ -13,6 +13,7 @@ export default function ExchangeStoriesAdminPage() {
   const {
     filtered, paginated, stats, filters, setFilters,
     form, setForm, isOpen, page, setPage, totalPages,
+    isLoading, isMutating, mutationError,
     openCreate, openEdit, upsert, remove, resetFilters, closeModal
   } = useExchangeStoriesCentralize();
 
@@ -26,7 +27,7 @@ export default function ExchangeStoriesAdminPage() {
             <h1 className="text-4xl font-extrabold tracking-tight">Exchange <span className="text-primary">Stories</span></h1>
             <p className="text-default-500 mt-1 text-medium">Manage student testimonials and global exchange highlights.</p>
           </div>
-          <Button color="primary" size="lg" className="font-bold shadow-lg" startContent={<Plus size={20}/>} onPress={openCreate}>
+          <Button color="primary" size="lg" className="font-bold shadow-lg" startContent={<Plus size={20}/>} onPress={openCreate} isDisabled={isLoading}>
             Add Story
           </Button>
         </div>
@@ -71,9 +72,20 @@ export default function ExchangeStoriesAdminPage() {
           </div>
         </Card>
 
+        {/* Mutation error banner */}
+        {mutationError && (
+          <div className="mb-4 rounded-xl bg-danger-50 border border-danger-200 px-4 py-3 text-danger text-sm font-medium">
+            {mutationError.message || "An error occurred. Please try again."}
+          </div>
+        )}
+
         {/* Stories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {paginated.map((item) => (
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="p-6 border border-divider bg-content1 animate-pulse h-36" />
+            ))
+          ) : paginated.map((item) => (
             <Card key={item.id} className="p-6 border border-divider bg-content1 hover:shadow-md transition-all">
                <div className="flex gap-5">
                   <Avatar src={item.portrait} className="w-24 h-24 shrink-0 shadow-lg" radius="lg" />
@@ -127,8 +139,8 @@ export default function ExchangeStoriesAdminPage() {
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-divider">
-              <Button variant="flat" onPress={closeModal}>Discard</Button>
-              <Button color="primary" className="font-bold px-10" onPress={upsert}>Save Profile</Button>
+              <Button variant="flat" onPress={closeModal} isDisabled={isMutating}>Discard</Button>
+              <Button color="primary" className="font-bold px-10" onPress={upsert} isLoading={isMutating}>Save Profile</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>

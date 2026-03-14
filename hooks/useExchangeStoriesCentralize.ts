@@ -1,99 +1,88 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExchangeStoryCard, useExchangeSemesterData } from "./useExchangeSemesterData";
+import { exchangeApi } from "@/api/services/exchange";
 
-export type ShowcaseItem = {
-  id: number;
-  /** The direction of exchange, e.g., "Khmer to France" or "French to Cambodia" */
-  type: string;
-  /** The student's full name */
-  name: string;
-  /** The institution or city and country, e.g., "INSA Rennes, France" */
-  destination: string;
-  /** The large cinematic background image used for the card expansion */
-  backgroundImg: string;
-  /** The student's headshot/portrait image */
-  portrait: string;
-  /** The long-form testimonial or quote provided by the student */
-  story: string;
-  /** Their academic field of study or project focus, e.g., "Cybersecurity & R&D" */
-  focus: string;
-  /** Optional array of additional photos from their exchange activities */
-  activityImages?: string[];
-  /** * CSS Grid span settings for the Bento-style gallery layout.
-   * e.g., "md:col-span-2 md:row-span-2"
-   */
-  span: string;
-};
+const QUERY_KEY = ["exchangeSemester"];
 
-/**
- * Filter state for the Exchange Stories Admin Portal
- */
-export type ShowcaseFilters = {
-  query: string;
-  typeFilter: string | "ALL";
-};
-
-/**
- * UI State for the Centralized Hook
- */
-export type ShowcaseState = {
-  items: ShowcaseItem[];
-  filtered: ShowcaseItem[];
-  paginated: ShowcaseItem[];
-  stats: {
-    total: number;
-    khmerAbroad: number;
-    international: number;
-  };
+const EMPTY_FORM: Partial<ExchangeStoryCard> = {
+  type: "Khmer to France",
+  name: "",
+  destination: "",
+  story: "",
+  focus: "",
+  backgroundImg: "",
+  portrait: "",
+  span: "md:col-span-1 md:row-span-1",
 };
 
 export function useExchangeStoriesCentralize() {
-  const { data: stories = [] } = useExchangeSemesterData();
-  
-  // Local state for items so we can simulate Add/Edit/Delete without a real backend
-  const [localStories, setLocalStories] = useState<ExchangeStoryCard[]>([]);
-
-  useEffect(() => {
-    if (stories.length) setLocalStories(stories);
-  }, [stories]);
+  const queryClient = useQueryClient();
+  const { data: stories = [], isLoading } = useExchangeSemesterData();
 
   const [filters, setFilters] = useState({ query: "", typeFilter: "ALL" });
   const [isOpen, setIsOpen] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 6;
 
-  const [form, setForm] = useState<Partial<ExchangeStoryCard>>({
-    type: "Khmer to France",
-    name: "",
-    destination: "",
-    story: "",
-    focus: "",
-    backgroundImg: "",
-    portrait: "",
-    span: "md:col-span-1 md:row-span-1",
+  const [form, setForm] = useState<Partial<ExchangeStoryCard>>(EMPTY_FORM);
+
+  // ─── Mutations ────────────────────────────────────────────────────────────
+
+  const createMutation = useMutation({
+    mutationFn: (data: Omit<ExchangeStoryCard, "id">) => exchangeApi.create(data),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<ExchangeStoryCard[]>(QUERY_KEY, updated);
+      setIsOpen(false);
+    },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<ExchangeStoryCard> }) =>
+      exchangeApi.update(id, data),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<ExchangeStoryCard[]>(QUERY_KEY, updated);
+      setIsOpen(false);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => exchangeApi.delete(id),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<ExchangeStoryCard[]>(QUERY_KEY, updated);
+    },
+  });
+
+  const isMutating =
+    createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+
+  // ─── Derived state ────────────────────────────────────────────────────────
+
   const stats = useMemo(() => ({
-    total: localStories.length,
-    khmerAbroad: localStories.filter(s => s.type.includes("Khmer to")).length,
-    international: localStories.filter(s => s.type.includes("to Cambodia")).length,
-  }), [localStories]);
+    total: stories.length,
+    khmerAbroad: stories.filter((s) => s.type.includes("Khmer to")).length,
+    international: stories.filter((s) => s.type.includes("to Cambodia")).length,
+  }), [stories]);
 
   const filtered = useMemo(() => {
-    return localStories.filter(item => {
-      const matchQuery = `${item.name} ${item.destination} ${item.focus}`.toLowerCase().includes(filters.query.toLowerCase());
+    return stories.filter((item) => {
+      const matchQuery = `${item.name} ${item.destination} ${item.focus}`
+        .toLowerCase()
+        .includes(filters.query.toLowerCase());
       const matchType = filters.typeFilter === "ALL" || item.type === filters.typeFilter;
       return matchQuery && matchType;
     });
-  }, [localStories, filters]);
+  }, [stories, filters]);
 
-  const totalPages = Math.ceil(filtered.length / perPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
+  // ─── Modal helpers ────────────────────────────────────────────────────────
+
   const openCreate = () => {
-    setForm({ type: "Khmer to France", name: "", destination: "", story: "", focus: "", backgroundImg: "", portrait: "", span: "md:col-span-1 md:row-span-1" });
+    setForm(EMPTY_FORM);
     setIsOpen(true);
   };
 
@@ -102,23 +91,53 @@ export function useExchangeStoriesCentralize() {
     setIsOpen(true);
   };
 
-  const upsert = () => {
-    if (form.id) {
-      setLocalStories(prev => prev.map(s => s.id === form.id ? (form as ExchangeStoryCard) : s));
-    } else {
-      setLocalStories(prev => [{ ...form, id: Date.now() } as ExchangeStoryCard, ...prev]);
-    }
+  const closeModal = () => {
     setIsOpen(false);
+    createMutation.reset();
+    updateMutation.reset();
+  };
+
+  // ─── CRUD actions ─────────────────────────────────────────────────────────
+
+  const upsert = () => {
+    const { id, ...rest } = form as ExchangeStoryCard;
+    if (id) {
+      updateMutation.mutate({ id, data: rest });
+    } else {
+      createMutation.mutate(rest as Omit<ExchangeStoryCard, "id">);
+    }
   };
 
   const remove = (id: number) => {
-    setLocalStories(prev => prev.filter(s => s.id !== id));
+    deleteMutation.mutate(id);
   };
 
+  // ─── Error helpers ────────────────────────────────────────────────────────
+
+  const mutationError =
+    (createMutation.error ?? updateMutation.error ?? deleteMutation.error) as Error | null;
+
   return {
-    filtered, paginated, stats, filters, setFilters,
-    form, setForm, isOpen, setIsOpen, page, setPage, totalPages,
-    openCreate, openEdit, upsert, remove, resetFilters: () => setFilters({ query: "", typeFilter: "ALL" }),
-    closeModal: () => setIsOpen(false)
+    filtered,
+    paginated,
+    stats,
+    filters,
+    setFilters,
+    form,
+    setForm,
+    isOpen,
+    setIsOpen,
+    page,
+    setPage,
+    totalPages,
+    isLoading,
+    isMutating,
+    mutationError,
+    openCreate,
+    openEdit,
+    upsert,
+    remove,
+    resetFilters: () => setFilters({ query: "", typeFilter: "ALL" }),
+    closeModal,
   };
 }
